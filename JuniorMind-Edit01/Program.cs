@@ -8,6 +8,7 @@ namespace JuniorMind_Edit01
         {
             Console.WriteLine("Hello World!");
             Console.WriteLine("New commit");
+            Console.WriteLine("Second commit");
             Console.Read();
         }
     }
