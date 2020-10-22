@@ -13,7 +13,7 @@ namespace Json
                 return false;
             }
 
-            return ControlCharsAreMissing(input);
+            return ControlCharsAreMissing(input) && AreRecognizibleEscapedChars(input);
         }
 
         private static bool IsWrrapedInDoubleQuotes(string input)
@@ -32,6 +32,45 @@ namespace Json
             }
 
             return true;
+        }
+
+        private static bool AreRecognizibleEscapedChars(string input)
+        {
+            const int NextSubstring = 2;
+            if (input.Length <= NextSubstring)
+            {
+                return input[0] != '\\';
+            }
+
+            int correctNextChar = 0;
+            char[] unallowed = { '\\', '"', '/', 'b', 'f', 'n', 'r', 't', 'u' };
+            if (input[0] == '\\')
+            {
+                foreach (char element in unallowed)
+                {
+                    if (input[1] == element)
+                    {
+                        correctNextChar++;
+                    }
+
+                    if (correctNextChar > 0)
+                    {
+                        break;
+                    }
+                }
+
+                if (correctNextChar == 0)
+                {
+                    return false;
+                }
+            }
+
+            if (correctNextChar > 0)
+            {
+                return AreRecognizibleEscapedChars(input.Substring(NextSubstring));
+            }
+
+            return AreRecognizibleEscapedChars(input.Substring(1));
         }
     }
 }
