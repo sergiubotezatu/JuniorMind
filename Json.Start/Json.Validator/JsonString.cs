@@ -13,7 +13,7 @@ namespace Json
                 return false;
             }
 
-            return ControlCharsAreMissing(input) && AreRecognizibleEscapedChars(input);
+            return ControlCharsAreMissing(input) && AreRecognizibleEscapedChars(input) && IsCorrectOrUnfinishedHexNumber(input);
         }
 
         private static bool IsWrrapedInDoubleQuotes(string input)
@@ -71,6 +71,60 @@ namespace Json
             }
 
             return AreRecognizibleEscapedChars(input.Substring(1));
+        }
+
+        private static bool IsCorrectOrUnfinishedHexNumber(string input)
+        {
+            const int HexNumberLength = 5;
+            bool containsHexInitiator = input.IndexOf('u') != -1 && input[input.IndexOf('u') - 1] == '\\';
+            if (!containsHexInitiator)
+            {
+                return true;
+            }
+
+            if (input.Length <= HexNumberLength)
+            {
+                return false;
+            }
+
+            int lastPossibleHex = input.Length - HexNumberLength;
+            for (int currentChar = 1; currentChar <= lastPossibleHex; currentChar++)
+            {
+                if (input[currentChar] == 'u' && input[currentChar - 1] == '\\')
+                {
+                    if (input.Substring(input.IndexOf('u') + 1).Length < HexNumberLength - 1)
+                    {
+                        return false;
+                    }
+                    else if (!CheckIfValidHexNumber(input.Substring(input.IndexOf('u') + 1, HexNumberLength - 1)))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static bool CheckIfValidHexNumber(string hexToCheck)
+        {
+            const int CapitalLowerLimit = 65;
+            const int CapitalUpperLimit = 70;
+            const int LowerCaseLowwerLimit = 97;
+            const int LowerCaseUpperLimit = 102;
+            foreach (char element in hexToCheck)
+            {
+                bool isLowerCaseHex = element > LowerCaseLowwerLimit && element < LowerCaseUpperLimit;
+                bool isCapitalHex = element > CapitalLowerLimit && element < CapitalUpperLimit;
+                bool isValidLetter = isLowerCaseHex || isCapitalHex;
+                bool isNumber = int.TryParse(element.ToString(), out int digit);
+                if (!isNumber && !isValidLetter)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
