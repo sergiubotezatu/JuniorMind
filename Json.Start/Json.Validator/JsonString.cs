@@ -18,7 +18,7 @@ namespace Json
 
         private static bool IsWrrapedInDoubleQuotes(string input)
         {
-            return input[0] == '"' && input[input.Length - 1] == '"' && input.Length - 1 > 0;
+            return input.Length - 1 > 0 && input[0] == '"' && input[input.Length - 1] == '"';
         }
 
         private static bool ControlCharsAreMissing(string input)
@@ -36,41 +36,40 @@ namespace Json
 
         private static bool AreRecognizibleEscapedChars(string input)
         {
-            const int NextSubstring = 2;
-            if (input.Length <= NextSubstring)
+            const string Unallowed = "\\\"/bfnrtu";
+            int wrongNextCounter = 0;
+            string withoutQuotes = input.Substring(1).Remove(input.Substring(1).Length - 1);
+            while (withoutQuotes.Contains('\\') && withoutQuotes.Length >= 1)
             {
-                return input[0] != '\\';
-            }
-
-            int correctNextChar = 0;
-            char[] unallowed = { '\\', '"', '/', 'b', 'f', 'n', 'r', 't', 'u' };
-            if (input[0] == '\\')
-            {
-                foreach (char element in unallowed)
+               if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1)
                 {
-                    if (input[1] == element)
-                    {
-                        correctNextChar++;
-                    }
-
-                    if (correctNextChar > 0)
-                    {
-                        break;
-                    }
+                    return false;
                 }
 
-                if (correctNextChar == 0)
+               foreach (char element in Unallowed)
+                {
+                    int indexOfNext = withoutQuotes.IndexOf('\\') + 1;
+                    if (withoutQuotes[indexOfNext] == element)
+                    {
+                        EliminateCheckedChars(ref withoutQuotes, indexOfNext);
+                        break;
+                    }
+
+                    wrongNextCounter++;
+                }
+
+               if (wrongNextCounter == Unallowed.Length)
                 {
                     return false;
                 }
             }
 
-            if (correctNextChar > 0)
-            {
-                return AreRecognizibleEscapedChars(input.Substring(NextSubstring));
-            }
+            return true;
+        }
 
-            return AreRecognizibleEscapedChars(input.Substring(1));
+        private static void EliminateCheckedChars(ref string toBeModified, int indexOfelement)
+        {
+            toBeModified = toBeModified.Substring(indexOfelement + 1);
         }
 
         private static bool IsCorrectOrUnfinishedHexNumber(string input)
