@@ -41,7 +41,7 @@ namespace Json
             var withoutQuotes = input[1..^1];
             while (withoutQuotes.Contains('\\') && withoutQuotes.Length >= 1)
             {
-                if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1 || !LookForWrongFormat(Unallowed, withoutQuotes[withoutQuotes.IndexOf('\\') + 1].ToString()))
+                if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1 || !Unallowed.Contains(withoutQuotes[withoutQuotes.IndexOf('\\') + 1]))
                 {
                     return false;
                 }
@@ -50,19 +50,6 @@ namespace Json
             }
 
             return true;
-        }
-
-        private static bool LookForWrongFormat(string toBeEscaped, string withoutQuotes)
-        {
-            foreach (char element in toBeEscaped)
-            {
-                if (withoutQuotes.Contains(element))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         private static bool IsCorrectHexNumber(string input)
