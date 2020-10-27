@@ -37,74 +37,80 @@ namespace Json
         private static bool AreRecognizibleEscapedChars(string input)
         {
             const string Unallowed = "\\\"/bfnrtu";
-            int wrongNextCounter = 0;
+            const int AlreadyChecked = 2;
             string withoutQuotes = input.Substring(1).Remove(input.Substring(1).Length - 1);
             while (withoutQuotes.Contains('\\') && withoutQuotes.Length >= 1)
             {
-               if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1)
+               if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1 || !LookForWrongFormat(Unallowed, withoutQuotes))
                 {
                     return false;
                 }
 
-               LookForWrongFormat(Unallowed, ref withoutQuotes, ref wrongNextCounter);
-               if (wrongNextCounter == Unallowed.Length)
+               withoutQuotes = withoutQuotes.Substring(withoutQuotes.IndexOf('\\') + AlreadyChecked);
+            }
+
+            return true;
+        }
+
+        private static bool LookForWrongFormat(string toBeEscaped, string withoutQuotes)
+        {
+            bool correctEscape = false;
+            foreach (char element in toBeEscaped)
+            {
+                int indexOfNext = withoutQuotes.IndexOf('\\') + 1;
+                if (withoutQuotes[indexOfNext] == element)
+                {
+                    correctEscape = true;
+                    break;
+                }
+            }
+
+            return correctEscape;
+        }
+
+        private static bool IsCorrectHexNumber(string input)
+        {
+            int[] hexIndexes = GetHexIndexes(input);
+            if (hexIndexes.Length == 0)
+            {
+                return true;
+            }
+
+            return CheckAllHexNumbers(input, hexIndexes);
+        }
+
+        private static int[] GetHexIndexes(string input)
+        {
+            int[] result = new int[0];
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (input[i] == 'u' && input[i - 1] == '\\')
+                {
+                    Array.Resize(ref result, result.Length + 1);
+                    result[result.Length - 1] = i + 1;
+                }
+            }
+
+            return result;
+        }
+
+        private static bool CheckAllHexNumbers(string input, int[] startingPoints)
+        {
+            const int HexNumberLength = 4;
+            foreach (int index in startingPoints)
+            {
+                if (input.Length - index <= HexNumberLength)
+                {
+                    return false;
+                }
+
+                if (!CheckIfValidHexNumber(input.Substring(index, HexNumberLength)))
                 {
                     return false;
                 }
             }
 
             return true;
-        }
-
-        private static void LookForWrongFormat(string toBeEscaped, ref string withoutQuotes, ref int counter)
-        {
-            foreach (char element in toBeEscaped)
-            {
-                int indexOfNext = withoutQuotes.IndexOf('\\') + 1;
-                if (withoutQuotes[indexOfNext] == element)
-                {
-                    EliminateCheckedChars(ref withoutQuotes, indexOfNext);
-                    break;
-                }
-
-                counter++;
-            }
-        }
-
-        private static void EliminateCheckedChars(ref string toBeModified, int indexOfelement)
-        {
-            toBeModified = toBeModified.Substring(indexOfelement + 1);
-        }
-
-        private static bool IsCorrectHexNumber(string input)
-        {
-            const int HexNumberLength = 4;
-            bool containsHexInitiator = input.Contains('u') && input[input.IndexOf('u') - 1] == '\\';
-            if (!containsHexInitiator)
-            {
-                return true;
-            }
-
-            return CheckAllHexNumbers(input.Substring(input.IndexOf('u') + 1), HexNumberLength);
-        }
-
-        private static bool CheckAllHexNumbers(string input, int hexNumberLength)
-            {
-            if (input.Length < hexNumberLength + 1)
-            {
-                return false;
-            }
-            else if (!CheckIfValidHexNumber(input.Substring(0, hexNumberLength)))
-            {
-                return false;
-            }
-
-            if (!input.Contains('u') || input[input.IndexOf('u') - 1] != '\\')
-            {
-                return true;
-            }
-
-            return IsCorrectHexNumber(input.Substring(hexNumberLength));
         }
 
         private static bool CheckIfValidHexNumber(string hexToCheck)
