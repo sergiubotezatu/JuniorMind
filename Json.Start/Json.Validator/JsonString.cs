@@ -38,15 +38,15 @@ namespace Json
         {
             const string Unallowed = "\\\"/bfnrtu";
             const int AlreadyChecked = 2;
-            string withoutQuotes = input.Substring(1).Remove(input.Substring(1).Length - 1);
+            var withoutQuotes = input[1..^1];
             while (withoutQuotes.Contains('\\') && withoutQuotes.Length >= 1)
             {
-               if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1 || !LookForWrongFormat(Unallowed, withoutQuotes))
+                if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1 || !LookForWrongFormat(Unallowed, withoutQuotes[withoutQuotes.IndexOf('\\') + 1].ToString()))
                 {
                     return false;
                 }
 
-               withoutQuotes = withoutQuotes.Substring(withoutQuotes.IndexOf('\\') + AlreadyChecked);
+                withoutQuotes = withoutQuotes.Substring(withoutQuotes.IndexOf('\\') + AlreadyChecked);
             }
 
             return true;
@@ -54,18 +54,15 @@ namespace Json
 
         private static bool LookForWrongFormat(string toBeEscaped, string withoutQuotes)
         {
-            bool correctEscape = false;
             foreach (char element in toBeEscaped)
             {
-                int indexOfNext = withoutQuotes.IndexOf('\\') + 1;
-                if (withoutQuotes[indexOfNext] == element)
+                if (withoutQuotes.Contains(element))
                 {
-                    correctEscape = true;
-                    break;
+                    return true;
                 }
             }
 
-            return correctEscape;
+            return false;
         }
 
         private static bool IsCorrectHexNumber(string input)
@@ -82,7 +79,7 @@ namespace Json
         private static int[] GetHexIndexes(string input)
         {
             int[] result = new int[0];
-            for (int i = 0; i < input.Length; i++)
+            for (int i = 1; i < input.Length; i++)
             {
                 if (input[i] == 'u' && input[i - 1] == '\\')
                 {
