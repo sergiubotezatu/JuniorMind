@@ -41,19 +41,12 @@ namespace Json
             string withoutQuotes = input.Substring(1).Remove(input.Substring(1).Length - 1);
             while (withoutQuotes.Contains('\\') && withoutQuotes.Length >= 1)
             {
-               if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1)
+               if (withoutQuotes.IndexOf('\\') == withoutQuotes.Length - 1 || !LookForWrongFormat(Unallowed, withoutQuotes))
                 {
                     return false;
                 }
 
-               if (LookForWrongFormat(Unallowed, withoutQuotes))
-                {
-                    withoutQuotes = withoutQuotes.Substring(withoutQuotes.IndexOf('\\') + AlreadyChecked);
-                }
-                else
-                {
-                    return false;
-                }
+               withoutQuotes = withoutQuotes.Substring(withoutQuotes.IndexOf('\\') + AlreadyChecked);
             }
 
             return true;
