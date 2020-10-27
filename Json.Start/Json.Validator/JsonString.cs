@@ -13,7 +13,7 @@ namespace Json
                 return false;
             }
 
-            return ControlCharsAreMissing(input) && AreRecognizibleEscapedChars(input) && IsCorrectOrUnfinishedHexNumber(input);
+            return ControlCharsAreMissing(input) && AreRecognizibleEscapedChars(input) && IsCorrectHexNumber(input);
         }
 
         private static bool IsWrrapedInDoubleQuotes(string input)
@@ -46,18 +46,7 @@ namespace Json
                     return false;
                 }
 
-               foreach (char element in Unallowed)
-                {
-                    int indexOfNext = withoutQuotes.IndexOf('\\') + 1;
-                    if (withoutQuotes[indexOfNext] == element)
-                    {
-                        EliminateCheckedChars(ref withoutQuotes, indexOfNext);
-                        break;
-                    }
-
-                    wrongNextCounter++;
-                }
-
+               LookForWrongFormat(Unallowed, ref withoutQuotes, ref wrongNextCounter);
                if (wrongNextCounter == Unallowed.Length)
                 {
                     return false;
@@ -67,63 +56,80 @@ namespace Json
             return true;
         }
 
+        private static void LookForWrongFormat(string toBeEscaped, ref string withoutQuotes, ref int counter)
+        {
+            foreach (char element in toBeEscaped)
+            {
+                int indexOfNext = withoutQuotes.IndexOf('\\') + 1;
+                if (withoutQuotes[indexOfNext] == element)
+                {
+                    EliminateCheckedChars(ref withoutQuotes, indexOfNext);
+                    break;
+                }
+
+                counter++;
+            }
+        }
+
         private static void EliminateCheckedChars(ref string toBeModified, int indexOfelement)
         {
             toBeModified = toBeModified.Substring(indexOfelement + 1);
         }
 
-        private static bool IsCorrectOrUnfinishedHexNumber(string input)
+        private static bool IsCorrectHexNumber(string input)
         {
-            const int HexNumberLength = 5;
-            bool containsHexInitiator = input.IndexOf('u') != -1 && input[input.IndexOf('u') - 1] == '\\';
+            const int HexNumberLength = 4;
+            bool containsHexInitiator = input.Contains('u') && input[input.IndexOf('u') - 1] == '\\';
             if (!containsHexInitiator)
             {
                 return true;
             }
 
-            if (input.Length <= HexNumberLength)
+            return CheckAllHexNumbers(input.Substring(input.IndexOf('u') + 1), HexNumberLength);
+        }
+
+        private static bool CheckAllHexNumbers(string input, int hexNumberLength)
+            {
+            if (input.Length < hexNumberLength + 1)
+            {
+                return false;
+            }
+            else if (!CheckIfValidHexNumber(input.Substring(0, hexNumberLength)))
             {
                 return false;
             }
 
-            int lastPossibleHex = input.Length - HexNumberLength;
-            for (int currentChar = 1; currentChar <= lastPossibleHex; currentChar++)
+            if (!input.Contains('u') || input[input.IndexOf('u') - 1] != '\\')
             {
-                if (input[currentChar] == 'u' && input[currentChar - 1] == '\\')
-                {
-                    if (input.Substring(input.IndexOf('u') + 1).Length < HexNumberLength - 1)
-                    {
-                        return false;
-                    }
-                    else if (!CheckIfValidHexNumber(input.Substring(input.IndexOf('u') + 1, HexNumberLength - 1)))
-                    {
-                        return false;
-                    }
-                }
+                return true;
             }
 
-            return true;
+            return IsCorrectHexNumber(input.Substring(hexNumberLength));
         }
 
         private static bool CheckIfValidHexNumber(string hexToCheck)
         {
-            const int CapitalLowerLimit = 65;
-            const int CapitalUpperLimit = 70;
-            const int LowerCaseLowwerLimit = 97;
-            const int LowerCaseUpperLimit = 102;
             foreach (char element in hexToCheck)
             {
-                bool isLowerCaseHex = element > LowerCaseLowwerLimit && element < LowerCaseUpperLimit;
-                bool isCapitalHex = element > CapitalLowerLimit && element < CapitalUpperLimit;
-                bool isValidLetter = isLowerCaseHex || isCapitalHex;
-                bool isNumber = int.TryParse(element.ToString(), out int digit);
-                if (!isNumber && !isValidLetter)
+                if (!IsvalidHexChar(element))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private static bool IsvalidHexChar(char toBechecked)
+        {
+            return InRange(toBechecked, '0', '9')
+            || InRange(toBechecked, 'a', 'f')
+            || InRange(toBechecked, 'A', 'F');
+        }
+
+        private static bool InRange(char toBeChecked, int lowerLimit, int upperLimit)
+        {
+            return lowerLimit <= toBeChecked && toBeChecked <= upperLimit;
         }
     }
 }
