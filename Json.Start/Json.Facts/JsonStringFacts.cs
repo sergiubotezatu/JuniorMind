@@ -169,6 +169,13 @@ namespace Json.Facts
             Assert.True(IsJsonString(Quoted(@"abcdefg\u1234 ijk\b\\""d156\u45AB \nlmnopqrs-\\⚾tuvxyz")));
         }
 
+        [Theory]
+        [ClassData(typeof(JsonStringValidatorData))]
+        public void ValidatesCorrectlyMultipleStringsTheory(string input, bool expected)
+        {
+            bool result = IsJsonString(input);   
+            Assert.Equal(expected, result);
+        }
         public static string Quoted(string text)
             => $"\"{text}\"";
     }
