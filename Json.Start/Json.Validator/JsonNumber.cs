@@ -6,7 +6,13 @@ namespace Json
     {
         public static bool IsJsonNumber(string input)
         {
-            return double.TryParse(input, out double number);
+            bool isNumber = double.TryParse(input, out double number);
+            if (input == null || input.Length <= 1)
+            {
+                return isNumber;
+            }
+
+            return !input.Contains('.') ? input[0] != '0' && isNumber : isNumber;
         }
     }
 }
