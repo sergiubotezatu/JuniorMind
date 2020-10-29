@@ -25,7 +25,7 @@ namespace Json
                 }
             }
 
-            return true;
+            return input[0] != '0';
         }
     }
 }
