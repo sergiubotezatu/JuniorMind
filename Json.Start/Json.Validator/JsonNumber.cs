@@ -19,7 +19,6 @@ namespace Json
         {
             if (input.Contains("e", StringComparison.CurrentCultureIgnoreCase))
             {
-                Console.WriteLine("");
                 int positionOfExponent = input.IndexOf('e'.ToString(), StringComparison.CurrentCultureIgnoreCase);
                 int sameExponentPosition = input.LastIndexOf('e'.ToString(), StringComparison.CurrentCultureIgnoreCase);
                 bool onlyOneExponent = positionOfExponent == sameExponentPosition;
