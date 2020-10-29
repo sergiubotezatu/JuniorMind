@@ -39,8 +39,9 @@ namespace Json
             string exponenetLeft = input.Substring(0, positionOfExponent);
             char sign = input[positionOfExponent + 1];
             positionOfExponent += PermittedNonDigits.Contains(sign) ? 1 : 0;
-            string exponenetRight = input.Substring(positionOfExponent + 1);
-            return double.TryParse(exponenetLeft, out double number) && int.TryParse(exponenetRight, out int exponenet);
+            string exponentRight = input.Substring(positionOfExponent + 1);
+            return exponenetLeft[exponenetLeft.Length - 1] != '.' && double.TryParse(exponenetLeft, out double number)
+                && int.TryParse(exponentRight, out int exponent);
         }
 
         private static bool IsCompleteExponent(string input, string signs, int exponenet)
