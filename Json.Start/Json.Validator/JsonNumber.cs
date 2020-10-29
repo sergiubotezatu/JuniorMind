@@ -31,11 +31,21 @@ namespace Json
         private static bool AreValidLeftAndRight(string input, int positionOfExponent)
         {
             const string PermittedNonDigits = "+-";
+            if (!IsCompleteExponent(input, PermittedNonDigits, positionOfExponent))
+            {
+                return false;
+            }
+
             string exponenetLeft = input.Substring(0, positionOfExponent);
             char sign = input[positionOfExponent + 1];
             positionOfExponent += PermittedNonDigits.Contains(sign) ? 1 : 0;
             string exponenetRight = input.Substring(positionOfExponent + 1);
             return double.TryParse(exponenetLeft, out double number) && int.TryParse(exponenetRight, out int exponenet);
+        }
+
+        private static bool IsCompleteExponent(string input, string signs, int exponenet)
+        {
+            return exponenet != input.Length - 1 && !signs.Contains(input[input.Length - 1]);
         }
     }
 }

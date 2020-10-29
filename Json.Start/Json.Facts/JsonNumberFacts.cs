@@ -141,7 +141,7 @@ namespace Json.Facts
             Assert.False(IsJsonNumber("23E-"));
         }
 
-        [Fact(Skip = "Remove this Skip as you implement")]
+        [Fact]
         public void TheExponentIsAfterTheFraction()
         {
             Assert.False(IsJsonNumber("22e3.3"));
