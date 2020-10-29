@@ -33,7 +33,6 @@ namespace Json
             const string PermittedNonDigits = "+-";
             if (!IsCompleteExponent(input, PermittedNonDigits, positionOfExponent))
             {
-                Console.WriteLine(" ");
                 return false;
             }
 
