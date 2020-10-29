@@ -5,7 +5,12 @@ namespace Json
     public static class JsonNumber
     {
         public static bool IsJsonNumber(string input)
-        {
+            {
+            if (input == null || input.Length < 1)
+            {
+                return false;
+            }
+
             return IsNumber(input);
         }
 
