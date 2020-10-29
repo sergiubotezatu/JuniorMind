@@ -12,7 +12,7 @@ namespace Json
                 return isNumber;
             }
 
-            return !input.Contains('.') ? input[0] != '0' && isNumber : isNumber;
+            return !input.Contains('.') ? input[0] != '0' && isNumber : input[input.Length - 1] != '.' && isNumber;
         }
     }
 }
