@@ -16,16 +16,21 @@ namespace Json
 
         private static bool IsNumber(string input)
         {
-            const string Digits = "0123456789";
-            foreach (char digit in input)
+          for (int i = 0; i < input.Length; i++)
             {
-                if (!Digits.Contains(digit))
+                if (!IsCorrectDigit(input[i], i))
                 {
                     return false;
                 }
             }
 
-            return input[0] != '0';
+          return input[0] != '0';
+        }
+
+        private static bool IsCorrectDigit(char digit, int inputIndex)
+        {
+            const string Digits = "0123456789";
+            return inputIndex == 0 ? (Digits + "+-").Contains(digit) : Digits.Contains(digit);
         }
     }
 }
