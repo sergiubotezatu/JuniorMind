@@ -5,15 +5,40 @@ namespace Json
     public static class JsonNumber
     {
         const string Digits = "0123456789";
+        const char Fraction = '.';
+        const char Exponent = 'e';
 
         public static bool IsJsonNumber(string input)
             {
-            if (input == null || input.Length < 1)
+            if (string.IsNullOrEmpty(input))
             {
                 return false;
             }
 
-            return IsCorrectFraction(input) && IsNumber(input);
+            if (!input.ToLower().Contains(Exponent))
+            {
+                return CorrectNonDigitDistribution(input, Fraction) && IsNumber(input);
+            }
+
+            return CorrectNonDigitDistribution(input, Fraction) && IsCorrectExponent(input.ToLower());
+        }
+
+        private static bool IsCorrectExponent(string input)
+        {
+              return CorrectNonDigitDistribution(input, Exponent)
+                && IsCorrectLeftAndRight(input, input.IndexOf(Exponent));
+        }
+
+        private static bool IsCorrectLeftAndRight(string input, int positionOfExpo)
+        {
+            string leftSide = input.Substring(0, positionOfExpo);
+            string rightSide = input.Substring(positionOfExpo + 1);
+            if (!CorrectNonDigitDistribution(leftSide, Fraction) || rightSide.Contains(Fraction))
+            {
+                return false;
+            }
+
+            return IsNumber(leftSide) && IsNumber(rightSide);
         }
 
         private static bool IsNumber(string input)
@@ -25,7 +50,7 @@ namespace Json
 
           for (int i = 1; i < input.Length; i++)
             {
-                if (!IsCorrectDigit(input[i], i))
+                if (!IsCorrectDigit(input[i]))
                 {
                     return false;
                 }
@@ -36,7 +61,7 @@ namespace Json
 
         private static bool IsValidFirstDigit(string input)
         {
-            if (input.Contains('.'))
+            if (input.Contains(Fraction))
             {
                 return (Digits + "+-").Contains(input[0]);
             }
@@ -45,15 +70,15 @@ namespace Json
             return input.Length > 1 ? digitsWithoutZero.Contains(input[0]) : Digits.Contains(input[0]);
         }
 
-        private static bool IsCorrectFraction(string input)
+        private static bool CorrectNonDigitDistribution(string input, char nonDigit)
         {
-            return input.IndexOf('.') == input.LastIndexOf('.') && input.IndexOf('.') != 0
-                && input.IndexOf('.') != input.Length - 1;
+           return input.IndexOf(nonDigit) == input.LastIndexOf(nonDigit) && input.IndexOf(nonDigit) != 0
+                && input.IndexOf(nonDigit) != input.Length - 1;
         }
 
-        private static bool IsCorrectDigit(char digit, int inputIndex)
+        private static bool IsCorrectDigit(char digit)
             {
-            return (Digits + '.').Contains(digit);
+            return (Digits + Fraction + Exponent).Contains(digit);
             }
     }
 }
