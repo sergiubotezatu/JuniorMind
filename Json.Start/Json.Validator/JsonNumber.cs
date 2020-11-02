@@ -26,14 +26,14 @@ namespace Json
         private static bool IsCorrectExponent(string input)
         {
               return CorrectNonDigitDistribution(input, Exponent)
-                && IsCorrectLeftAndRight(input, input.IndexOf(Exponent));
+                && ExponentFlankedByCorrectNumbers(input, input.IndexOf(Exponent));
         }
 
-        private static bool IsCorrectLeftAndRight(string input, int positionOfExpo)
+        private static bool ExponentFlankedByCorrectNumbers(string input, int positionOfExpo)
         {
             string leftSide = input.Substring(0, positionOfExpo);
             string rightSide = input.Substring(positionOfExpo + 1);
-            if (!CorrectNonDigitDistribution(leftSide, Fraction) || rightSide.Contains(Fraction))
+            if (leftSide[leftSide.Length - 1] == Fraction || rightSide.Contains(Fraction))
             {
                 return false;
             }
@@ -50,7 +50,7 @@ namespace Json
 
           for (int i = 1; i < input.Length; i++)
             {
-                if (!IsCorrectDigit(input[i]))
+                if (!IsCorrectDigitOrSign(input[i]))
                 {
                     return false;
                 }
@@ -76,7 +76,7 @@ namespace Json
                 && input.IndexOf(nonDigit) != input.Length - 1;
         }
 
-        private static bool IsCorrectDigit(char digit)
+        private static bool IsCorrectDigitOrSign(char digit)
             {
             return (Digits + Fraction + Exponent).Contains(digit);
             }
