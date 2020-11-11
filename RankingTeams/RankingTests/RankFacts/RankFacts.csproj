@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ranking\Ranking.csproj" />
+    <ProjectReference Include="..\..\Ranking\Ranking.csproj" />
   </ItemGroup>
 
 </Project>

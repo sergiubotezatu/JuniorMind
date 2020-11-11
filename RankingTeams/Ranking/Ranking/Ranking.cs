@@ -2,50 +2,86 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Ranking
+namespace RankingTeams
 {
     public class Ranking
     {
         private Team[] Allteams;
-
+        
         public Ranking(Team[] teams)
         {
             Allteams = teams;
+            for (int i = 0; i < Allteams.Length - 1; i++)
+            {
+                for (int j = 0; j < Allteams.Length - (i+ 1); j++)
+                {
+                    UpGradeHigherPoints(j + 1, j);
+                }
+            }
         }
 
         const int Victory = 3;
+
+        public void UpdateRanking(Team host, Team guest, int hostScore, int guestScore)
+        {
+            if (hostScore > guestScore)
+            {
+                Allteams[GetTeamIndex(host)].UpdatePointsWith(Victory);
+                RankNewScores(host);
+            }
+            else if (hostScore < guestScore)
+            {
+                Allteams[GetTeamIndex(guest)].UpdatePointsWith(Victory);
+                RankNewScores(guest);
+            }
+            else
+            {
+                Allteams[GetTeamIndex(host)].UpdatePointsWith(1);
+                Allteams[GetTeamIndex(guest)].UpdatePointsWith(1);
+                RankNewScores(host);
+                RankNewScores(guest);
+            }
+        }
+
+        public void RankNewScores(Team toBeRanked)
+        {
+            int indexOfUpGrade = GetTeamIndex(toBeRanked);
+            if (indexOfUpGrade > 0)
+            {
+                int indexOfDownGrade = GetTeamIndex(Allteams[indexOfUpGrade - 1]);
+                UpGradeHigherPoints(indexOfUpGrade, indexOfDownGrade);
+            }
+        }
+
+        public void UpGradeHigherPoints(int winnerIndex, int loserIndex)
+        {
+            if (Allteams[winnerIndex].HasMorePointsThan(Allteams[loserIndex]))
+            {
+                Team temp = Allteams[winnerIndex];
+                Allteams[winnerIndex] = Allteams[loserIndex];
+                Allteams[loserIndex] = temp;
+            }
+        }
 
         public void AddNewTeam(Team another)
         {
             Array.Resize(ref Allteams, Allteams.Length + 1);
             Allteams[^1] = another;
+            PlaceNewTeam(another);
         }
 
-        public void Rank()
+        private void PlaceNewTeam(Team newTeam)
         {
-            for (int i = 0; i < Allteams.Length - 1; i++)
+            int newTeamIndex = GetTeamIndex(newTeam);
+            int nextTeamIndex = GetTeamIndex(newTeam) - 1;
+            while (nextTeamIndex >= 0 && newTeam.HasMorePointsThan(Allteams[nextTeamIndex]))
             {
-                for (int j = 0; j < Allteams.Length - 1; j++)
-                {
-                    if (!this.Allteams[j].HasMorePointsThan(this.Allteams[j + 1]))
-                    {
-                        Team winner = Allteams[j + 1];
-                        Allteams[j + 1] = Allteams[j];
-                        Allteams[j] = winner;
-                    }
-                }
+                Team temp = Allteams[newTeamIndex];
+                Allteams[newTeamIndex] = Allteams[nextTeamIndex];
+                Allteams[nextTeamIndex] = temp;
+                nextTeamIndex--;
+                newTeamIndex--;
             }
-        }
-
-        public void UpdateWinner(Team winner)
-        {
-            Allteams[GetTeamIndex(winner)] = Allteams[GetTeamIndex(winner)].UpdatePointsWith(Victory);
-        }
-
-        public void UpdateTie(Team host, Team guest)
-        {
-            Allteams[GetTeamIndex(host)] = Allteams[GetTeamIndex(host)].UpdatePointsWith(1);
-            Allteams[GetTeamIndex(guest)] = Allteams[GetTeamIndex(guest)].UpdatePointsWith(1);
         }
 
         public int GetTeamIndex(Team winner)
@@ -59,22 +95,14 @@ namespace Ranking
             return i;
         }
 
-        public void PrintTeamPosition(Team toBeFound)
+        public int TeamPositionOf(Team toBeFound)
         {
-            Console.WriteLine(GetTeamIndex(toBeFound) + 1);
+            return GetTeamIndex(toBeFound) + 1;
         }
 
-        public void FindTeamSpecifiedPos(int index)
+        public Team TeamAtPosition(int index)
         {
-            Allteams[index - 1].PrintName();
-        }
-
-        public void PrintTeams()
-        {
-            foreach (Team element in Allteams)
-            {
-                element.PrintTeam();
-            }
-        }
+            return Allteams[index - 1];
+        }              
     }
 }

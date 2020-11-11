@@ -1,8 +1,8 @@
 using System;
 using Xunit;
-using Ranking;
+using RankingTeams;
 
-namespace ClassTeamFacts
+namespace TeamFacts
 {
     public class TeamFacts
     {
@@ -18,16 +18,17 @@ namespace ClassTeamFacts
         public void ProgramUpdatesWinnersPoints()
         {
             Team Barcelona = new Team("Barcelona", 28);
-            Team methodCheck = Barcelona.UpdatePointsWith(3);
-            Assert.True(methodCheck.HasMorePointsThan(Barcelona));
+            Team methodCheck = new Team("methodCheck", 28);
+            Barcelona.UpdatePointsWith(3);
+            Assert.True(Barcelona.HasMorePointsThan(methodCheck));
         }
 
         [Fact]
         public void ProgramIdentifiesTeamsWithSameName()
         {
             Team Barcelona = new Team("Barcelona", 28);
-            Team methodCheck = new Team("Barcelona", 28);
-            Assert.True(methodCheck.TheSameTeam(methodCheck));
+            Team methodCheck = new Team("Barcelona", 24);
+            Assert.True(methodCheck.TheSameTeam(Barcelona));
         }
     }
 }

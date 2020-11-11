@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Ranking
+namespace RankingTeams
 {
     public class Team
     {
@@ -19,24 +19,19 @@ namespace Ranking
             return this.Points > toCompareTo.Points;
         }
 
-        public Team UpdatePointsWith(int pointsToAdd)
+        public void UpdatePointsWith(int pointsToAdd)
         {
-            return new Team(this.Name, this.Points + pointsToAdd);
+            this.Points += pointsToAdd;
         }
 
         public bool TheSameTeam(Team toCompareTo)
         {
             return this.Name == toCompareTo.Name;
         }
-
-        public void PrintName()
+        
+        public bool TeamPointsAre(int points)
         {
-            Console.WriteLine(this.Name);
-        }
-
-        public void PrintTeam()
-        {
-            Console.WriteLine($"{this.Name} - { this.Points}");
+            return this.Points == points;
         }
     }
 }
