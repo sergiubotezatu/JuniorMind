@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace RankingTeams
 {
     public class Ranking
@@ -24,43 +21,49 @@ namespace RankingTeams
 
         public void UpdateRanking(Team host, Team guest, int hostScore, int guestScore)
         {
+            int hostPos = GetTeamIndex(host);
+            int guestPos = GetTeamIndex(guest);
             if (hostScore > guestScore)
             {
-                Allteams[GetTeamIndex(host)].UpdatePointsWith(Victory);
+                Allteams[hostPos].UpdatePointsWith(Victory);
                 RankNewScores(host);
             }
             else if (hostScore < guestScore)
             {
-                Allteams[GetTeamIndex(guest)].UpdatePointsWith(Victory);
+                Allteams[guestPos].UpdatePointsWith(Victory);
                 RankNewScores(guest);
             }
             else
             {
-                Allteams[GetTeamIndex(host)].UpdatePointsWith(1);
-                Allteams[GetTeamIndex(guest)].UpdatePointsWith(1);
+                Allteams[hostPos].UpdatePointsWith(1);
+                Allteams[guestPos].UpdatePointsWith(1);
                 RankNewScores(host);
                 RankNewScores(guest);
             }
         }
 
         public void RankNewScores(Team toBeRanked)
-        {
-            int indexOfUpGrade = GetTeamIndex(toBeRanked);
-            if (indexOfUpGrade > 0)
             {
-                int indexOfDownGrade = GetTeamIndex(Allteams[indexOfUpGrade - 1]);
-                UpGradeHigherPoints(indexOfUpGrade, indexOfDownGrade);
+            int indexOfUpGrade = GetTeamIndex(toBeRanked);
+            if (indexOfUpGrade <= 0)
+            {
+                return;
             }
+
+            int indexOfDownGrade = GetTeamIndex(Allteams[indexOfUpGrade - 1]);
+            UpGradeHigherPoints(indexOfUpGrade, indexOfDownGrade);
         }
 
-        public void UpGradeHigherPoints(int winnerIndex, int loserIndex)
-        {
-            if (Allteams[winnerIndex].HasMorePointsThan(Allteams[loserIndex]))
+        private void UpGradeHigherPoints(int winnerIndex, int loserIndex)
             {
-                Team temp = Allteams[winnerIndex];
-                Allteams[winnerIndex] = Allteams[loserIndex];
-                Allteams[loserIndex] = temp;
+            if (!Allteams[winnerIndex].HasMorePointsThan(Allteams[loserIndex]))
+            {
+                return;
             }
+
+            Team temp = Allteams[winnerIndex];
+            Allteams[winnerIndex] = Allteams[loserIndex];
+            Allteams[loserIndex] = temp;
         }
 
         public void AddNewTeam(Team another)
@@ -74,11 +77,9 @@ namespace RankingTeams
         {
             int newTeamIndex = GetTeamIndex(newTeam);
             int nextTeamIndex = GetTeamIndex(newTeam) - 1;
-            while (nextTeamIndex >= 0 && newTeam.HasMorePointsThan(Allteams[nextTeamIndex]))
+            while (nextTeamIndex >= 0)
             {
-                Team temp = Allteams[newTeamIndex];
-                Allteams[newTeamIndex] = Allteams[nextTeamIndex];
-                Allteams[nextTeamIndex] = temp;
+                UpGradeHigherPoints(newTeamIndex, nextTeamIndex);
                 nextTeamIndex--;
                 newTeamIndex--;
             }
@@ -87,9 +88,12 @@ namespace RankingTeams
         public int GetTeamIndex(Team winner)
         {
             int i = 0;
-            while (!winner.TheSameTeam(Allteams[i]))
+            if (winner != null)
             {
-                i++;
+                while (!winner.TheSameTeam(Allteams[i]))
+                {
+                    i++;
+                }
             }
 
             return i;

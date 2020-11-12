@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace RankingTeams
 {
     public class Team
@@ -16,6 +13,10 @@ namespace RankingTeams
 
         public bool HasMorePointsThan(Team toCompareTo)
         {
+            if (toCompareTo == null)
+            {
+                return false;
+            }
             return this.Points > toCompareTo.Points;
         }
 
@@ -26,6 +27,10 @@ namespace RankingTeams
 
         public bool TheSameTeam(Team toCompareTo)
         {
+            if (toCompareTo == null)
+            {
+                return false;
+            }
             return this.Name == toCompareTo.Name;
         }
         
