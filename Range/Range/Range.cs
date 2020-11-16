@@ -4,13 +4,13 @@ namespace RangeClass
 {
     public class Range
     {
-        private char Start;
-        private char End;
+        private readonly char start;
+        private readonly char end;
 
         public Range(char start, char end)
         {
-            this.Start = start;
-            this.End = end;
+            this.start = start;
+            this.end = end;
         }
 
         public bool Match(string text)
@@ -25,7 +25,7 @@ namespace RangeClass
 
         private bool IsInRange(char firstChar)
         {
-            return firstChar >= this.Start && firstChar <= this.End;
+            return firstChar >= this.start && firstChar <= this.end;
         }
     }
 
