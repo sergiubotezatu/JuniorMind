@@ -40,7 +40,7 @@ namespace RangeFacts
         }
 
         [Fact]
-        public void ReturnsTrueIfAllCharsInRange()
+        public void ReturnsTrueIfFirstCharInRange()
         {
             string test = "AGHD";
             Range upperCase = new Range('A', 'I');
@@ -48,21 +48,21 @@ namespace RangeFacts
         }
 
         [Fact]
-        public void ReturnsFalseIfAllCharsInRangeAndOneOutOfRange()
+        public void ReturnsFalseIfFirstCharOutOfRange()
         {
-            string test = "AGHZD";
+            string test = "ZGHAD";
             Range upperCase = new Range('A', 'I');
             Assert.False(upperCase.Match(test));
         }
 
         [Theory]
         [InlineData('0', '9', "34896021", true)]
-        [InlineData('1', '9', "34896021", false)]
+        [InlineData('1', '9', "04896021", false)]
         [InlineData('a', 'z', "bcefghijklmn", true)]
-        [InlineData('a', 'z', "AZ", false)]
+        [InlineData('a', 'z', "Az", false)]
         [InlineData('0', 'z', "1234A56", true)]
-        [InlineData('0', 'Z', "1234a56", false)]
-        public void ValidatesCorrectltyInRangeChars(char start, char end, string test, bool expected)
+        [InlineData('0', 'Z', "a234a56", false)]
+        public void ValidatesCorrectltyFirstCharInRange(char start, char end, string test, bool expected)
         {
             var rangeTest = new Range(start, end);
             bool result = rangeTest.Match(test);

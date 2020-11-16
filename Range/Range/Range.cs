@@ -20,20 +20,12 @@ namespace RangeClass
                 return false;
             }
 
-            return this.AreCharsInRange(text);
+            return this.IsInRange(text[0]);
         }
 
-        private bool AreCharsInRange(string text)
+        private bool IsInRange(char firstChar)
         {
-            foreach (char element in text)
-            {
-                if (element < this.Start || element > this.End)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return firstChar >= this.Start && firstChar <= this.End;
         }
     }
 
