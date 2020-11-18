@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Choice\ChoiceClass.csproj" />
+    <ProjectReference Include="..\ChoiceLibrary\ChoiceLibrary.csproj" />
   </ItemGroup>
 
 </Project>

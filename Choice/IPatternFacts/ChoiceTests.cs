@@ -1,7 +1,7 @@
 using System;
 using Xunit;
-using ChoiceClass;
-using Range = ChoiceClass.Range;
+using InterFace;
+using Range = InterFace.Range;
 
 namespace IPatternFacts
 {
