@@ -14,7 +14,7 @@ namespace IPatternFacts
              new Character('0'),
              new Range('1', '9')
                                   );
-            Assert.False(digit.Match("null"));        
+            Assert.False(digit.Match("null"));
         }
 
         [Fact]
@@ -30,10 +30,10 @@ namespace IPatternFacts
         [Fact]
         public void InValidatesCorrectlyOneCharString()
         {
-             var digit = new Choice(
-             new Character('0'),
-             new Range('1', '9')
-                                  );
+            var digit = new Choice(
+            new Character('0'),
+            new Range('1', '9')
+                                 );
             Assert.False(digit.Match("a"));
         }
 
@@ -46,7 +46,7 @@ namespace IPatternFacts
              new Range('1', '9')
                                   );
             Assert.True(digit.Match("2"));
-        }        
+        }
 
         [Fact]
         public void ValidatesCorrectlyMultipleCharsUsingCharacter()
@@ -126,4 +126,5 @@ namespace IPatternFacts
             Assert.True(result == expected);
         }
     }
+}
 }

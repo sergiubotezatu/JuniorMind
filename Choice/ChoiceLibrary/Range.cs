@@ -15,14 +15,14 @@ namespace InterFace
             this.end = end;
         }
 
-        public bool Match(string text)
+        public IMatch Match(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
-                return false;
+                return new Match(false, text);
             }
 
-            return this.IsInRange(text[0]);
+            return new Match(IsInRange(text[0]), text.Substring(1));
         }
 
         private bool IsInRange(char firstChar)
@@ -31,3 +31,4 @@ namespace InterFace
         }
     }
 }
+

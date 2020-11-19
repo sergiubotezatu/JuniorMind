@@ -4,7 +4,7 @@ using System.Text;
 
 namespace InterFace
 {
-    
+
     public class Choice : IPattern
     {
         IPattern[] patterns;
@@ -13,17 +13,22 @@ namespace InterFace
             this.patterns = patterns;
         }
 
-        public bool Match(string text)
+        public IMatch Match(string text)
         {
-            foreach (var pattern in patterns)
+            int lastChecked = 0;
+            for (int i = 0; i < patterns.Length; i++) 
             {
-                if (pattern.Match(text))
+                string toCheck = text.Substring(i);
+                if (!patterns[i].Match(toCheck).Success())
                 {
-                    return true;
+                   break;
                 }
+                    
+                lastChecked = i;
             }
 
-            return false;
+            Match result = (Match)patterns[lastChecked].Match(text.Substring(lastChecked));
+            return result;
         }
-    }
+    }    
 }
