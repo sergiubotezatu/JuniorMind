@@ -10,25 +10,26 @@ namespace InterFace
         IPattern[] patterns;
         public Choice(params IPattern[] patterns)
         {
-            this.patterns = patterns;
+           this.patterns = patterns;
         }
 
         public IMatch Match(string text)
         {
-            int lastChecked = 0;
-            for (int i = 0; i < patterns.Length; i++) 
+            bool matchResult = false;
+            foreach (IPattern pattern in patterns)
             {
-                string toCheck = text.Substring(i);
-                if (!patterns[i].Match(toCheck).Success())
+                if (!pattern.Match(text).Success())
                 {
-                   break;
+                    matchResult = false;
+                    text = pattern.Match(text).RemainingText();
+                    break;
                 }
-                    
-                lastChecked = i;
+
+                matchResult = true;
+                text = text.Substring(1);                
             }
 
-            Match result = (Match)patterns[lastChecked].Match(text.Substring(lastChecked));
-            return result;
+            return new Match(matchResult, text);
         }
     }    
 }

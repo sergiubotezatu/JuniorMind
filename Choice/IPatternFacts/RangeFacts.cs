@@ -14,7 +14,7 @@ namespace IPatternFacts
         {
             string test = null;
             Range upperCase = new Range('A', 'B');
-            Assert.False(upperCase.Match(test));
+            Assert.False(upperCase.Match(test).Success());
         }
 
         [Fact]
@@ -22,7 +22,7 @@ namespace IPatternFacts
         {
             string test = "";
             Range upperCase = new Range('A', 'B');
-            Assert.False(upperCase.Match(test));
+            Assert.False(upperCase.Match(test).Success());
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace IPatternFacts
         {
             string test = "D";
             Range upperCase = new Range('A', 'C');
-            Assert.False(upperCase.Match(test));
+            Assert.False(upperCase.Match(test).Success());
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace IPatternFacts
         {
             string test = "C";
             Range upperCase = new Range('A', 'D');
-            Assert.True(upperCase.Match(test));
+            Assert.True(upperCase.Match(test).Success());
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace IPatternFacts
         {
             string test = "AGHD";
             Range upperCase = new Range('A', 'I');
-            Assert.True(upperCase.Match(test));
+            Assert.True(upperCase.Match(test).Success());
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace IPatternFacts
         {
             string test = "ZGHAD";
             Range upperCase = new Range('A', 'I');
-            Assert.False(upperCase.Match(test));
+            Assert.False(upperCase.Match(test).Success());
         }
 
         [Theory]
@@ -67,7 +67,7 @@ namespace IPatternFacts
         public void ValidatesCorrectltyFirstCharInRange(char start, char end, string test, bool expected)
         {
             var rangeTest = new Range(start, end);
-            bool result = rangeTest.Match(test);
+            bool result = rangeTest.Match(test).Success();
             Assert.True(result == expected);
         }
     }

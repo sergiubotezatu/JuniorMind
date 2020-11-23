@@ -20,7 +20,8 @@ namespace InterFace
                 return new Match(false, text);
             }
 
-            return new Match(text[0] == pattern, text.Substring(1));
+            string remainder = text[0] == pattern ? text.Substring(1) : text;
+            return new Match(text[0] == pattern, remainder);
         }
     }
 }

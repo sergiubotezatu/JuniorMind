@@ -22,7 +22,8 @@ namespace InterFace
                 return new Match(false, text);
             }
 
-            return new Match(IsInRange(text[0]), text.Substring(1));
+            string remainder = IsInRange(text[0]) ? text.Substring(1) : text;
+            return new Match(IsInRange(text[0]), remainder);
         }
 
         private bool IsInRange(char firstChar)
