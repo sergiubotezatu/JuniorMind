@@ -26,7 +26,7 @@ namespace InterFace
                 }
 
                 matchResult = true;
-                text = text.Substring(1);                
+                text = pattern.Match(text).RemainingText();
             }
 
             return new Match(matchResult, text);
