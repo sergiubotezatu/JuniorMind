@@ -7,13 +7,18 @@ namespace InterFace
     public class Match : IMatch
     {
         bool match;
-        string text;
+        string text;        
 
         public Match(bool match, string text)
         {
             this.match = match;
             this.text = text;
         }
+
+        public Match()
+        {
+        }
+
         public bool Success()
         {
             return this.match;

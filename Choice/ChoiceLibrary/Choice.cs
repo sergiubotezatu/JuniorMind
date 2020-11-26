@@ -15,21 +15,20 @@ namespace InterFace
 
         public IMatch Match(string text)
         {
-            bool matchResult = false;
+            bool correctMAtch = true;
             foreach (IPattern pattern in patterns)
             {
                 if (!pattern.Match(text).Success())
                 {
-                    matchResult = false;
+                    correctMAtch = false;
                     text = pattern.Match(text).RemainingText();
-                    break;
+                    return new Match(correctMAtch, pattern.Match(text).RemainingText());
                 }
 
-                matchResult = true;
                 text = pattern.Match(text).RemainingText();
             }
 
-            return new Match(matchResult, text);
+            return new Match(correctMAtch, text);
         }
     }    
 }

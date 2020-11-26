@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChoiceFacts", "IPatternFacts\ChoiceFacts.csproj", "{24992E3C-3717-42E1-B94E-299BBF5713FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChoiceLibrary", "ChoiceLibrary\ChoiceLibrary.csproj", "{D70051AC-299D-4518-A4B4-7B5A62F1764F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChoiceLibrary", "ChoiceLibrary\ChoiceLibrary.csproj", "{D70051AC-299D-4518-A4B4-7B5A62F1764F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
