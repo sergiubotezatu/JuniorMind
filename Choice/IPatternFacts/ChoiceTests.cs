@@ -40,7 +40,6 @@ namespace IPatternFacts
             Assert.True(digit.Match("a").RemainingText() == "a");
         }
 
-
         [Fact]
         public void ValidatesCorrectString()
         {
@@ -49,7 +48,7 @@ namespace IPatternFacts
              new Range('1', '9')
                                   );
             Assert.True(digit.Match("02").Success());
-            Assert.True(digit.Match("02").RemainingText() == "");
+            Assert.True(digit.Match("02").RemainingText() == "2");
         }
 
         [Fact]
@@ -60,23 +59,23 @@ namespace IPatternFacts
              new Range('1', '9')
                                   );
             Assert.True(digit.Match("052").Success());
-            Assert.True(digit.Match("052").RemainingText() == "2");
+            Assert.True(digit.Match("052").RemainingText() == "52");
 
         }
 
         [Fact]
-        public void ValidatesCorrectlyMultipleCharsUsingRange()
+        public void ValidatesCorrectlyCharsUsingRange()
         {
             var digit = new Choice(
-             new Character('1'),
+             new Character('5'),
              new Range('0', '9')
                   );
             Assert.True(digit.Match("102").Success());
-            Assert.True(digit.Match("102").RemainingText() == "2");
+            Assert.True(digit.Match("102").RemainingText() == "02");
         }
 
         [Fact]
-        public void ValidatesCorretHexNumber()
+        public void ValidatesCorretHexCharacter()
         {
             var hex = new Choice(
                 new Range('0', '9'),
@@ -85,11 +84,11 @@ namespace IPatternFacts
                 );
             
             Assert.True(hex.Match("5bA").Success());
-            Assert.True(hex.Match("5bA").RemainingText() == "");
+            Assert.True(hex.Match("5bA").RemainingText() == "bA");
         }
 
         [Fact]
-        public void InvalidatesIncorrectHexNumber()
+        public void InvalidatesIncorrectHexChar()
         {
             var hex = new Choice(
                 new Character('0'),
@@ -97,16 +96,17 @@ namespace IPatternFacts
             new Range('a', 'f'),
              new Range('A', 'F')
                 );
-            Assert.False(hex.Match("03G1").Success());
-            Assert.True(hex.Match("03G1").RemainingText() == "G1");
+            
+            Assert.False(hex.Match("G301").Success());
+            Assert.True(hex.Match("G301").RemainingText() == "G301");
         }
 
         [Theory]
-        [InlineData("09aB", true, "")]
-        [InlineData("02bFH", true, "H")]
-        [InlineData("05eE4", true, "4")]
-        [InlineData("04X", false, "X")]
-        [InlineData("01G", false, "G")]
+        [InlineData("09aB", true, "9aB")]
+        [InlineData("02bFH", true, "2bFH")]
+        [InlineData("05eE4", true, "5eE4")]
+        [InlineData("H4X", false, "H4X")]
+        [InlineData("/1G", false, "/1G")]
         public void WorksBothWithLiteralsAndDigits(string input, bool expected, string expectedText)
         {
             var digit = new Character('0');

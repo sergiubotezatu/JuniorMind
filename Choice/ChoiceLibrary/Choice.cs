@@ -4,10 +4,10 @@ using System.Text;
 
 namespace InterFace
 {
-
     public class Choice : IPattern
     {
-        IPattern[] patterns;
+        private readonly IPattern[] patterns;
+
         public Choice(params IPattern[] patterns)
         {
            this.patterns = patterns;
@@ -15,20 +15,16 @@ namespace InterFace
 
         public IMatch Match(string text)
         {
-            bool correctMAtch = true;
-            foreach (IPattern pattern in patterns)
+            foreach (IPattern pattern in this.patterns)
             {
-                if (!pattern.Match(text).Success())
+                Match result = (Match)pattern.Match(text);
+                if (result.Success())
                 {
-                    correctMAtch = false;
-                    text = pattern.Match(text).RemainingText();
-                    return new Match(correctMAtch, pattern.Match(text).RemainingText());
+                    return result;
                 }
-
-                text = pattern.Match(text).RemainingText();
             }
 
-            return new Match(correctMAtch, text);
+            return new Match(false, text);
         }
-    }    
+    }
 }

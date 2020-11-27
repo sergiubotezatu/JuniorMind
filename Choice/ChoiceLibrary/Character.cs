@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace InterFace
+﻿namespace InterFace
 {
     public class Character : IPattern
     {
-        readonly char pattern;
+        private readonly char pattern;
 
         public Character(char pattern)
         {
@@ -20,8 +16,8 @@ namespace InterFace
                 return new Match(false, text);
             }
 
-            string remainder = text[0] == pattern ? text.Substring(1) : text;
-            return new Match(text[0] == pattern, remainder);
+            string remainder = text[0] == this.pattern ? text.Substring(1) : text;
+            return new Match(text[0] == this.pattern, remainder);
         }
     }
 }

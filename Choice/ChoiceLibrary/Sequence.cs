@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using InterFace;
+﻿using InterFace;
 
 namespace ChoiceLibrary
 {
     public class Sequence : IPattern
     {
-        IPattern[] patterns;
+        private IPattern[] patterns;
 
         public Sequence(params IPattern[] patterns)
         {
@@ -16,15 +13,16 @@ namespace ChoiceLibrary
 
         public IMatch Match(string text)
         {
-            
-            foreach (IPattern pattern in patterns)
+            Match result = new Match(true, text);
+            foreach (IPattern pattern in this.patterns)
             {
-                if (!pattern.Match(text).Success())
+                result = (Match)pattern.Match(text);
+                if (!result.Success())
                 {
-                    return pattern.Match(text);
+                    return result;
                 }
 
-                text = text.Substring(1);
+                text = result.RemainingText();
             }
 
             return new Match(true, text);
