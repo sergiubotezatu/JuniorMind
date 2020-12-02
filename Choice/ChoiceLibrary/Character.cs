@@ -11,13 +11,9 @@
 
         public IMatch Match(string text)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                return new Match(false, text);
-            }
-
-            string remainder = text[0] == this.pattern ? text.Substring(1) : text;
-            return new Match(text[0] == this.pattern, remainder);
+            return !string.IsNullOrEmpty(text) && text[0] == this.pattern
+            ? new Match(true, text.Substring(1))
+            : new Match(false, text);
         }
     }
 }

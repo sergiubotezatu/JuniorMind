@@ -7,6 +7,7 @@ namespace InterFace
    public interface IMatch
     {
         bool Success();
+
         string RemainingText();
     }
 }

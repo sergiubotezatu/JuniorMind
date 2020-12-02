@@ -17,7 +17,7 @@ namespace InterFace
         {
             foreach (IPattern pattern in this.patterns)
             {
-                Match result = (Match)pattern.Match(text);
+                var result = pattern.Match(text);
                 if (result.Success())
                 {
                     return result;

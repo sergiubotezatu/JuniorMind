@@ -17,13 +17,9 @@ namespace InterFace
 
         public IMatch Match(string text)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                return new Match(false, text);
-            }
-
-            string remainder = IsInRange(text[0]) ? text.Substring(1) : text;
-            return new Match(IsInRange(text[0]), remainder);
+            return !string.IsNullOrEmpty(text) && this.IsInRange(text[0])
+             ? new Match(true, text.Substring(1))
+             : new Match(false, text);
         }
 
         private bool IsInRange(char firstChar)

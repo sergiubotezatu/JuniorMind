@@ -12,8 +12,7 @@ namespace IPatternFacts
         {
             var digit = new Choice(
              new Character('0'),
-             new Range('1', '9')
-                                  );
+             new Range('1', '9'));
             Assert.False(digit.Match(null).Success());
             Assert.True(digit.Match(null).RemainingText() == null);
         }
@@ -23,10 +22,9 @@ namespace IPatternFacts
         {
             var digit = new Choice(
              new Character('0'),
-             new Range('1', '9')
-                                  );
-            Assert.False(digit.Match("").Success());
-            Assert.True(digit.Match("").RemainingText() == "");
+             new Range('1', '9'));
+            Assert.False(digit.Match(string.Empty).Success());
+            Assert.True(digit.Match(string.Empty).RemainingText() == string.Empty);
         }
 
         [Fact]
@@ -34,8 +32,7 @@ namespace IPatternFacts
         {
             var digit = new Choice(
             new Character('0'),
-            new Range('1', '9')
-                                 );
+            new Range('1', '9'));
             Assert.False(digit.Match("a").Success());
             Assert.True(digit.Match("a").RemainingText() == "a");
         }
@@ -45,8 +42,7 @@ namespace IPatternFacts
         {
             var digit = new Choice(
              new Character('0'),
-             new Range('1', '9')
-                                  );
+             new Range('1', '9'));
             Assert.True(digit.Match("02").Success());
             Assert.True(digit.Match("02").RemainingText() == "2");
         }
@@ -56,8 +52,7 @@ namespace IPatternFacts
         {
             var digit = new Choice(
              new Character('0'),
-             new Range('1', '9')
-                                  );
+             new Range('1', '9'));
             Assert.True(digit.Match("052").Success());
             Assert.True(digit.Match("052").RemainingText() == "52");
 
@@ -68,8 +63,7 @@ namespace IPatternFacts
         {
             var digit = new Choice(
              new Character('5'),
-             new Range('0', '9')
-                  );
+             new Range('0', '9'));
             Assert.True(digit.Match("102").Success());
             Assert.True(digit.Match("102").RemainingText() == "02");
         }
@@ -79,10 +73,8 @@ namespace IPatternFacts
         {
             var hex = new Choice(
                 new Range('0', '9'),
-            new Range('a', 'f'),
-             new Range('A', 'F')
-                );
-            
+                new Range('a', 'f'),
+                new Range('A', 'F'));
             Assert.True(hex.Match("5bA").Success());
             Assert.True(hex.Match("5bA").RemainingText() == "bA");
         }
@@ -92,11 +84,9 @@ namespace IPatternFacts
         {
             var hex = new Choice(
                 new Character('0'),
-             new Range('1', '9'),
-            new Range('a', 'f'),
-             new Range('A', 'F')
-                );
-            
+                new Range('1', '9'),
+                new Range('a', 'f'),
+                new Range('A', 'F'));
             Assert.False(hex.Match("G301").Success());
             Assert.True(hex.Match("G301").RemainingText() == "G301");
         }

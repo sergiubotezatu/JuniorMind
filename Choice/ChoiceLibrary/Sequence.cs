@@ -16,16 +16,14 @@ namespace ChoiceLibrary
             Match result = new Match(true, text);
             foreach (IPattern pattern in this.patterns)
             {
-                result = (Match)pattern.Match(text);
+                result = (Match)pattern.Match(result.RemainingText());
                 if (!result.Success())
                 {
                     return result;
                 }
-
-                text = result.RemainingText();
             }
 
-            return new Match(true, text);
+            return result;
         }
     }
 }
