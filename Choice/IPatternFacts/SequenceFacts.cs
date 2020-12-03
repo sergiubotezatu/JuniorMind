@@ -101,7 +101,7 @@ namespace ChoiceFacts
         {
             var hex = new Choice(
              new Range('0', '9'),
-            new Range('a', 'f'),
+             new Range('a', 'f'),
              new Range('A', 'F')
                  );
 

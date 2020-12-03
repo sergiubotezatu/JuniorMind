@@ -17,21 +17,8 @@ namespace ChoiceLibrary
         public IMatch Match(string text)
         {
             return !string.IsNullOrEmpty(text) &&
-                this.IsOneOfAny(text) ? new Match(true, text.Substring(1)) :
+                this.accepted.Contains(text[0].ToString()) ? new Match(true, text.Substring(1)) :
                 new Match(false, text);
-        }
-
-        private bool IsOneOfAny(string text)
-        {
-            foreach (char element in this.accepted)
-            {
-                if (element == text[0])
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }
