@@ -7,7 +7,7 @@ namespace InterFace
     public class Match : IMatch
     {
         bool match;
-        string text;        
+        string text;
 
         public Match(bool match, string text)
         {

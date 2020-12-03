@@ -7,16 +7,16 @@ namespace ChoiceLibrary
 {
     public class Optional : IPattern
     {
-        IPattern pattern;
+        readonly IPattern pattern;
 
         public Optional(IPattern Pattern)
         {
-            this.pattern = pattern;
+            this.pattern = Pattern;
         }
 
         public IMatch Match(string text)
         {
-            return new Match(true, text);
+            return new Match(true, this.pattern.Match(text).RemainingText());
         }
     }
 }

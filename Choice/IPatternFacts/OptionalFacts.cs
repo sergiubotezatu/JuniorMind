@@ -57,7 +57,7 @@ namespace ChoiceFacts
         [Fact]
         public void ReturnsInputExceptFirstIdentifiedPattern()
         {
-            var a = new Many(new Character('a'));
+            var a = new Optional(new Character('a'));
 
             Assert.True(a.Match("aaabc").Success());
             Assert.True(a.Match("aaabc").RemainingText() == "aabc");
