@@ -16,9 +16,9 @@ namespace ChoiceLibrary
 
         public IMatch Match(string text)
         {
-            return !string.IsNullOrEmpty(text) &&
-                this.accepted.Contains(text[0].ToString()) ? new Match(true, text.Substring(1)) :
-                new Match(false, text);
+            return !string.IsNullOrEmpty(text) && this.accepted.Contains(text[0].ToString()) 
+                ? new Match(true, text.Substring(1))
+                : new Match(false, text);
         }
     }
 }

@@ -18,19 +18,9 @@ namespace ChoiceLibrary
         public IMatch Match(string text)
         {
             int prefixEnd = this.prefix.Length;
-            return !string.IsNullOrEmpty(text) && IsSameAsPrefix(text, prefixEnd) ?
-                new Match(true, text.Substring(prefixEnd)) : new Match(false, text);
-        }
-
-        private bool IsSameAsPrefix(string text, int prefixEnd)
-        {
-            if (prefixEnd > text.Length)
-            {
-                return false;
-            }
-
-            string toCheck = text.Substring(0, prefixEnd);
-            return this.prefix == toCheck;
+            return !string.IsNullOrEmpty(text) && text.StartsWith(this.prefix, StringComparison.CurrentCulture)
+                ? new Match(true, text.Substring(prefixEnd))
+                : new Match(false, text);
         }
     }
 }
