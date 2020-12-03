@@ -24,16 +24,12 @@ namespace ChoiceLibrary
         private Match GetRedundantText(string text)
         {
             IMatch result = new Match(true, text);
-            foreach (char element in text)
+            while (result.Success())
             {
                 result = this.pattern.Match(result.RemainingText());
-                if (!result.Success())
-                {
-                    return new Match(true, result.RemainingText());
-                }
             }
 
-            return new Match(true, string.Empty);
+            return new Match(true, result.RemainingText());
         }
     }
 }
