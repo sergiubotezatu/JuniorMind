@@ -12,8 +12,8 @@
         public IMatch Match(string text)
         {
             return !string.IsNullOrEmpty(text) && text[0] == this.pattern
-            ? new Match(true, text.Substring(1))
-            : new Match(false, text);
+                ? new Match(true, text.Substring(1))
+                : new Match(false, text);
         }
     }
 }

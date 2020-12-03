@@ -18,8 +18,8 @@ namespace InterFace
         public IMatch Match(string text)
         {
             return !string.IsNullOrEmpty(text) && this.IsInRange(text[0])
-             ? new Match(true, text.Substring(1))
-             : new Match(false, text);
+                ? new Match(true, text.Substring(1))
+                : new Match(false, text);
         }
 
         private bool IsInRange(char firstChar)

@@ -13,10 +13,10 @@ namespace ChoiceLibrary
 
         public IMatch Match(string text)
         {
-            Match result = new Match(true, text);
+            IMatch result = new Match(true, text);
             foreach (IPattern pattern in this.patterns)
             {
-                result = (Match)pattern.Match(result.RemainingText());
+                result = pattern.Match(result.RemainingText());
                 if (!result.Success())
                 {
                     return result;

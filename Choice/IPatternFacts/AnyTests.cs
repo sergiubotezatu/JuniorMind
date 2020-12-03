@@ -30,7 +30,7 @@ namespace ChoiceFacts
         {
             var a = new Any("aA");
             Assert.True(a.Match("ab").Success());
-            Assert.True(a.Match("").RemainingText() == "b");
+            Assert.True(a.Match("ab").RemainingText() == "b");
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace ChoiceFacts
         {
             var a = new Any("aA");
             Assert.True(a.Match("Ab").Success());
-            Assert.True(a.Match("").RemainingText() == "b");
+            Assert.True(a.Match("Ab").RemainingText() == "b");
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace ChoiceFacts
         {
             var a = new Any("aA");
             Assert.False(a.Match("bA").Success());
-            Assert.True(a.Match("").RemainingText() == "bA");
+            Assert.True(a.Match("bA").RemainingText() == "bA");
         }
     }
 }
