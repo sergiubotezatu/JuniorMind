@@ -18,10 +18,10 @@ namespace ChoiceLibrary
         {
             return string.IsNullOrEmpty(text)
                 ? new Match(true, text)
-                : GetRedundantText(text);
+                : this.GetRedundantText(text);
         }
 
-        private Match GetRedundantText(string text)
+        private IMatch GetRedundantText(string text)
         {
             IMatch result = new Match(true, text);
             while (result.Success())

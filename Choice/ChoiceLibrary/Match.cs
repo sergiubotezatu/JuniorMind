@@ -15,10 +15,6 @@ namespace InterFace
             this.text = text;
         }
 
-        public Match()
-        {
-        }
-
         public bool Success()
         {
             return this.match;
