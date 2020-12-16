@@ -94,7 +94,7 @@ namespace ChoiceFacts
         [Theory]
         [InlineData("uabcdef", true, "ef")]
         [InlineData("uB005 ab", true, " ab")]
-        [InlineData("u12g4", false, "g4")]
+        [InlineData("u12g4", false, "u12g4")]
         [InlineData("abc", false, "abc")]
         [InlineData("u51Af", true, "")]
         public void WorksWithMultipleData(string input, bool expected, string expectedRemainder)

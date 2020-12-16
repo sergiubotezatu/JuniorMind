@@ -4,12 +4,13 @@ using System.Text;
 using Xunit;
 using Range = InterFace.Range;
 using ChoiceLibrary;
+using InterFace;
 
 namespace ChoiceFacts
 {
     public class OneOrMoreFacts
     {
-        [Fact]
+       [Fact]
         public void InvalidatesNullInputReturnsNull()
         {
             var test = new OneOrMore(new Range('0', '9'));

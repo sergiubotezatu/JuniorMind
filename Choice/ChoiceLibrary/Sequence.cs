@@ -19,7 +19,7 @@ namespace ChoiceLibrary
                 result = pattern.Match(result.RemainingText());
                 if (!result.Success())
                 {
-                    return result;
+                    return new Match(false, text);
                 }
             }
 
