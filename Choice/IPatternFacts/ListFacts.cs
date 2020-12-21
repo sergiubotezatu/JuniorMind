@@ -10,7 +10,7 @@ namespace ChoiceFacts
 {
     public class ListFacts
     {
-        [Fact]
+       [Fact]
         public void NullStringReturnsNullString()
         {
             var a = new List(new Range('0', '9'), new Character(','));
@@ -61,6 +61,7 @@ namespace ChoiceFacts
         [Theory]
         [InlineData("1; 22  ;\n 333 \t; 22", true, "")]
         [InlineData("1 \n;", true, " \n;")]
+        [InlineData("1 22  \n 333 \t 22", true, " 22  \n 333 \t 22")]
         [InlineData("abc", true, "abc")]
         public void WorksWithMultipleData(string input, bool expected, string expectedRemainder)
         {
