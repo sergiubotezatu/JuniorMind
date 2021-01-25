@@ -12,20 +12,18 @@ namespace ChoiceLibrary
 
         public Number()
         {
-            var digit = new Range('0', '9');
-            var nonZeroDigit = new Range('1', '9');
+            var digits = new OneOrMore(new Range('1', '9'));
             var zero = new Character('0');
-            var decimalPoint = new Character('.');
             var minus = new Optional(new Character('-'));
-            var exponential = new Any("eE");
+            var decimalDot = new Character('.');
             var signs = new Optional(new Any("+-"));
-            var decimals = new Sequence(new Many(zero), new List(new OneOrMore(nonZeroDigit), new OneOrMore(zero)));
-            var leadingZero = new Choice(new Sequence(zero, decimalPoint, digit, decimals), zero);
-            var integer = new Sequence(nonZeroDigit, new Many(digit));
-            var rational = new Sequence(integer, decimalPoint, digit, decimals);
-            var number = new Choice(leadingZero, rational, integer);
-            var exponent = new Sequence(exponential, signs, nonZeroDigit, new Many(digit));
-            this.pattern = new Sequence(minus, number, new Optional(exponent));
+            var exponential = new Any("eE");
+            var minusZero = new Sequence(minus, zero);
+            var integer = new Sequence(minus, digits, new Many(new Choice(zero, digits)));
+            var decimalPart = new Sequence(new Range('0', '9'), new Many(zero), new List(digits, new Many(zero)));
+            var fractional = new Sequence(decimalDot, decimalPart);
+            var exponent = new Sequence(exponential, signs, digits, new Many(new Choice(digits, zero)));
+            this.pattern = new Sequence(new Choice(integer, minusZero), new Optional(fractional), new Optional(exponent));
         }
 
         public IMatch Match(string text)

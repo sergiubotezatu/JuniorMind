@@ -4,6 +4,7 @@ using System.Text;
 using Xunit;
 using InterFace;
 using ChoiceLibrary;
+using String = ChoiceLibrary.String;
 
 namespace ChoiceFacts
 {
