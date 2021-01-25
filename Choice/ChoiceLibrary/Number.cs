@@ -20,7 +20,7 @@ namespace ChoiceLibrary
             var exponential = new Any("eE");
             var integer = new Sequence(minus, new Choice(zero, digits));
             var fractional = new Sequence(decimalDot, digits);
-            var exponent = new Sequence(exponential, signs, new Range('1','9'), new Optional(digits));
+            var exponent = new Sequence(exponential, signs, digits);
             this.pattern = new Sequence(integer, new Optional(fractional), new Optional(exponent));
         }
 
