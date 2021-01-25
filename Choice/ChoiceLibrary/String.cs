@@ -11,10 +11,10 @@ namespace ChoiceLibrary
 
         public String()
         {
-            var greaterThanEscape = new Range((char)35, '\uFFFF');
-            var exclamationMark = new Character('!');
-            var acceptedChars = new Choice(exclamationMark, greaterThanEscape);
-            var quotedEmpty = new Text("\"\"");
+            var greaterThanEscape = new Range(']', '\uFFFF');
+            var lessThanEscape = new Range((char)35, '[');
+            var SpaceExclamationMark = new Range((char)32, '!');
+            var acceptedChars = new Choice(SpaceExclamationMark, greaterThanEscape, lessThanEscape);
             var escapedChars = new Any("/\"\\bfnrt");
             var quote = new Character('\"');
             var escape = new Text("\\");
@@ -25,8 +25,7 @@ namespace ChoiceLibrary
             var correctEscape = new Sequence(escape, escapedChars);
             var hexNumber = new Sequence(escape, new Character('u'), hex, hex, hex, hex);
             var actualString = new Many(new Choice(correctEscape, hexNumber, acceptedChars));
-            var firstSequence = new Sequence(quote, actualString);
-            this.pattern = new Choice(new Sequence(firstSequence, quote), firstSequence);
+            this.pattern = new Sequence(quote, actualString, quote);
         }
 
         public IMatch Match(string text)
