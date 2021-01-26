@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ChoiceLibrary;
 
 namespace InterFace
 {
     public class Choice : IPattern
     {
-        private readonly IPattern[] patterns;
+        private IPattern[] patterns;
 
         public Choice(params IPattern[] patterns)
         {
@@ -25,6 +26,12 @@ namespace InterFace
             }
 
             return new Match(false, text);
+        }
+
+        public void Add(IPattern patternToAdd)
+        {
+            Array.Resize(ref this.patterns, this.patterns.Length + 1);
+            this.patterns[this.patterns.Length - 1] = patternToAdd;
         }
     }
 }
