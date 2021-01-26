@@ -24,8 +24,8 @@ namespace ChoiceLibrary
             var hex = new Choice(digit, lowerCase, upperCase);
             var correctEscape = new Sequence(escape, escapedChars);
             var hexNumber = new Sequence(escape, new Character('u'), hex, hex, hex, hex);
-            var actualString = new Many(new Choice(correctEscape, hexNumber, acceptedChars));
-            this.pattern = new Sequence(quote, actualString, quote);
+            var correctCharacter = new Choice(correctEscape, hexNumber, acceptedChars);
+            this.pattern = new Sequence(quote, new Many(correctCharacter), quote);
         }
 
         public IMatch Match(string text)
