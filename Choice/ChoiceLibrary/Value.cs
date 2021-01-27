@@ -18,17 +18,22 @@ namespace ChoiceLibrary
                     new Text("true"),
                     new Text("false"),
                     new Text("null"));
-            var anotherObject = new OneOrMore(new Sequence(new Text(", "), new String(), new Text(" :"), value));
-            var objectStart = new Sequence(new Character('{'), new Character(' '));
-            var objectEnd = new Sequence(new Character(' '), new Character('}'));
+            var whiteSpace = new Any("\n\r\t ");
+            var objectEnd = new Sequence(whiteSpace, new Character('}'));
+            var objectStart = new Sequence(new Character('{'), whiteSpace);
+            var stringKey = new Sequence(new Character(','), whiteSpace, new String(), whiteSpace, new Text(":"));
             var filledObject = new Sequence(
-                objectStart,
-                new String(),
-                new Text(" :"),
-                new Optional(value),
-                new Optional(anotherObject),
-                objectEnd);
-            var Object = new Choice(filledObject, new Sequence(objectStart, new Character('}')));
+                            objectStart,
+                            new String(),
+                            whiteSpace,
+                            new Text(":"),
+                            new List(value, stringKey),
+                            objectEnd);
+            var Object = new Choice(
+                    filledObject,
+                    new Sequence(
+                    new Character('{'),
+                    objectEnd));
             value.Add(Object);
             var emptyOrFilledArray = new Choice(new Character(' '), new List(value, new Text(", ")));
             var array = new Sequence(new Character('['), emptyOrFilledArray, new Character(']'));
@@ -37,7 +42,7 @@ namespace ChoiceLibrary
             this.pattern = value;
         }
 
-            public IMatch Match(string text)
+        public IMatch Match(string text)
             {
                 return this.pattern.Match(text);
             }
