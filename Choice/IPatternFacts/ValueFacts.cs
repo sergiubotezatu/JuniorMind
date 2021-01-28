@@ -43,7 +43,7 @@ namespace ChoiceFacts
         public void HasSpaceAfterTheFirstBraces()
         {
             var value = new Value();
-            string test = "{\"name\" }";
+            string test = "{\"name\" :\"Andrew\" }";
             var result = value.Match(test);
             Assert.False(result.Success());
             Assert.True(result.RemainingText() == "{\"name\" }");
