@@ -23,10 +23,10 @@ namespace ChoiceFacts
         public void ObjectStartsWithLeftBraces()
         {
             var value = new Value();
-            string test = " \"name\" }";
+            string test = " \"name\" :\"Andrew\" }";
             var result = value.Match(test);
-            Assert.False(result.Success());
-            Assert.True(result.RemainingText() == " \"name\" }");
+            Assert.True(result.Success());
+            Assert.True(result.RemainingText() == ":\"Andrew\" }");
         }
 
         [Fact]
@@ -103,10 +103,10 @@ namespace ChoiceFacts
         public void ArraysStartWithLeftBracket()
         {
             var value = new Value();
-            string test = " \"name\"]";
+            string test = " \"name\" :\"Andrew\"]";
             var result = value.Match(test);
-            Assert.False(result.Success());
-            Assert.True(result.RemainingText() == " \"name\"]");
+            Assert.True(result.Success());
+            Assert.True(result.RemainingText() == ":\"Andrew\"]");
         }
 
         [Fact]

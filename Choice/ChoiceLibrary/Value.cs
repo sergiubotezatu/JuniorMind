@@ -19,19 +19,15 @@ namespace ChoiceLibrary
                     new Text("false"),
                     new Text("null"));
             var whiteSpace = new Many(new Any("\n\r\t "));
-            var member = new Sequence(whiteSpace, new String(), whiteSpace, new Character(':'), value);
+            var element = new Sequence(whiteSpace, value, whiteSpace);
+            var member = new Sequence(whiteSpace, new String(), whiteSpace, new Character(':'), element);
             var members = new List(member, new Character(','));
-            var objectEnd = new Sequence(whiteSpace, new Character('}'));
-            var emptyObject = new Sequence(new Character('{'), whiteSpace, new Character('}'));
-            var filledObject = new Sequence(new Character('{'), members, objectEnd);
-            var Object = new Choice(emptyObject, filledObject);
+            var Object = new Sequence(new Character('{'), whiteSpace, members, whiteSpace, new Character('}'));
             value.Add(Object);
-            var emptyArray = new Sequence(new Character('['), whiteSpace, new Character(']'));
-            var comma = new Sequence(new Character(','), whiteSpace);
-            var filledArray = new Sequence(new Character('['), new List(value, comma), new Character(']'));
-            var array = new Choice(emptyArray, filledArray);
+            var elements = new List(element, new Character(','));
+            var array = new Sequence(new Character('['), whiteSpace, elements, whiteSpace, new Character(']'));
             value.Add(array);
-            this.pattern = value;
+            this.pattern = element;
         }
 
         public IMatch Match(string text)
