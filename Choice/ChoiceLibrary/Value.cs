@@ -20,12 +20,27 @@ namespace ChoiceLibrary
                     new Text("null"));
             var whiteSpace = new Many(new Any("\n\r\t "));
             var element = new Sequence(whiteSpace, value, whiteSpace);
-            var member = new Sequence(whiteSpace, new String(), whiteSpace, new Character(':'), element);
+            var member = new Sequence(
+                whiteSpace,
+                new String(),
+                whiteSpace,
+                new Character(':'),
+                element);
             var members = new List(member, new Character(','));
-            var Object = new Sequence(new Character('{'), whiteSpace, members, whiteSpace, new Character('}'));
-            value.Add(Object);
+            var jsonObject = new Sequence(
+                new Character('{'),
+                whiteSpace,
+                members,
+                whiteSpace,
+                new Character('}'));
+            value.Add(jsonObject);
             var elements = new List(element, new Character(','));
-            var array = new Sequence(new Character('['), whiteSpace, elements, whiteSpace, new Character(']'));
+            var array = new Sequence(
+                new Character('['),
+                whiteSpace,
+                elements,
+                whiteSpace,
+                new Character(']'));
             value.Add(array);
             this.pattern = element;
         }

@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChoiceFacts", "IPatternFact
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChoiceLibrary", "ChoiceLibrary\ChoiceLibrary.csproj", "{D70051AC-299D-4518-A4B4-7B5A62F1764F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonValidator", "JsonValidator\JsonValidator.csproj", "{BB51BBC3-A7A9-4B1F-9FCC-6584C6CFBC5A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D70051AC-299D-4518-A4B4-7B5A62F1764F} = {D70051AC-299D-4518-A4B4-7B5A62F1764F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +26,10 @@ Global
 		{D70051AC-299D-4518-A4B4-7B5A62F1764F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D70051AC-299D-4518-A4B4-7B5A62F1764F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D70051AC-299D-4518-A4B4-7B5A62F1764F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB51BBC3-A7A9-4B1F-9FCC-6584C6CFBC5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB51BBC3-A7A9-4B1F-9FCC-6584C6CFBC5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB51BBC3-A7A9-4B1F-9FCC-6584C6CFBC5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB51BBC3-A7A9-4B1F-9FCC-6584C6CFBC5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
