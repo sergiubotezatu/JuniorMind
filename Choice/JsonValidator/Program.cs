@@ -8,12 +8,22 @@ namespace JsonValidator
     {
         static void Main()
         {
-                string text = System.IO.File.ReadAllText(@"C:\Users\Sergiu95\Desktop\curs.IT\JUNIORMINDGIT\Choice\JsonValidator\bin\Debug\netcoreapp3.1\JsonExample5.txt");
+                Console.WriteLine("Enter Json text path:");
+                string text = System.IO.File.ReadAllText(Console.ReadLine());
                 var validator = new Value();
                 var result = validator.Match(text);
-                string isValidJson = result.Success().ToString();
-                string incorrectFormat = result.RemainingText();
-                Console.WriteLine(isValidJson + '\n' + incorrectFormat);
+                string output = "Your text respects Json format entirely";
+                if (result.RemainingText().Length < text.Length && result.RemainingText().Length > 0)
+                {
+                    output = "Part of your text respects Json format. This is not valid Json: \n" + result.RemainingText();
+                }
+
+                if (!result.Success())
+                {
+                    output = "Your text does not respect Json format \n" + result.RemainingText();
+                }
+
+                Console.WriteLine(output);
                 Console.Read();            
         }
     }
