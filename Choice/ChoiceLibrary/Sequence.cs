@@ -21,7 +21,7 @@ namespace ChoiceLibrary
                 {
                     return new Match(false, text);
                 }
-            }
+             }
 
             return result;
         }

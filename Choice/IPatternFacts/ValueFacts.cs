@@ -40,26 +40,6 @@ namespace ChoiceFacts
         }
 
         [Fact]
-        public void HasSpaceAfterTheFirstBraces()
-        {
-            var value = new Value();
-            string test = "{\"name\" :\"Andrew\" }";
-            var result = value.Match(test);
-            Assert.False(result.Success());
-            Assert.True(result.RemainingText() == "{\"name\" }");
-        }
-
-        [Fact]
-        public void HasSpaceAfterTheFirstString()
-        {
-            var value = new Value();
-            string test = "{ \"age\":30 }";
-            var result = value.Match(test);
-            Assert.False(result.Success());
-            Assert.True(result.RemainingText() == "{ \"age\":30 }");
-        }
-
-        [Fact]
         public void HasColonBetweenStringAndValues()
         {
             var value = new Value();
@@ -127,16 +107,6 @@ namespace ChoiceFacts
             var result = value.Match(test);
             Assert.False(result.Success());
             Assert.True(result.RemainingText() == "[\"name\" \"address\"]");
-        }
-
-        [Fact]
-        public void ArrayHasSpaceAfterComma()
-        {
-            var value = new Value();
-            string test = "[\"name\",\"address\"]";
-            var result = value.Match(test);
-            Assert.False(result.Success());
-            Assert.True(result.RemainingText() == "[\"name\",\"address\"]");
         }
 
         [Fact]
