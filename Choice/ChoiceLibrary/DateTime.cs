@@ -13,11 +13,19 @@ namespace ChoiceLibrary
         public DateTime()
         {
             var whiteSpace = new Many(new Any("\n\r\t "));
+            var doubleQuotes = new Character('\"');
+            var escapedCharacters = new Sequence(
+                doubleQuotes,
+                new Choice(new Character('\\'), new Character(')'),
+                new Character('(')),
+                doubleQuotes);
             var commentIntervals = new Choice(
                 new Range((char)33, (char)39),
                 new Range((char)42, (char)91),
-                new Range((char)93, (char)126));
-            var comment = new Sequence(new Character('('),
+                new Range((char)93, (char)126),
+                escapedCharacters);
+            var comment = new Sequence(
+                new Character('('),
                 whiteSpace,
                 new OneOrMore(commentIntervals),
                 whiteSpace,
@@ -55,9 +63,7 @@ namespace ChoiceLibrary
             var timeOfDay = new Sequence(twoDigits, colon, twoDigits, new Optional(new Sequence(colon, twoDigits)));
             var zone = new Sequence(whiteSpace, signGreenwich, twoDigits, twoDigits);
             var time = new Sequence(timeOfDay, zone);
-            this.pattern = new Sequence(day, date, time, commentWhiteSpace)
-
-
+            this.pattern = new Sequence(day, date, time, commentWhiteSpace);
         }
 
         public IMatch Match(string text)
