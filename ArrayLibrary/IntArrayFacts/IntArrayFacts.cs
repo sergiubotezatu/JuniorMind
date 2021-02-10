@@ -10,6 +10,10 @@ namespace IntArrayFacts
         public void ArrayHasFourElements()
         {
             var test = new IntArray();
+            test.Add(1);
+            test.Add(2);
+            test.Add(3);
+            test.Add(4);
             Assert.True(test.Count() == 4);
         }
 
@@ -21,6 +25,15 @@ namespace IntArrayFacts
             test.Add(-1);
             Assert.True(test.Element(0) == 3);
             Assert.True(test.Element(1) == -1);
+        }
+
+        [Fact]
+        public void CountsOnlyFilledPositions()
+        {
+            var test = new IntArray();
+            test.Add(3);
+            test.Add(-1);
+            Assert.True(test.Count() == 2);
         }
 
         [Fact]
@@ -36,16 +49,7 @@ namespace IntArrayFacts
             Assert.True(test.Element(1) == -1);
             Assert.True(test.Element(4) == 6);
             Assert.True(test.GetLength() == 8);
-        }
-
-        [Fact]
-        public void CountsOnlyFilledPositions()
-        {
-            var test = new IntArray();
-            test.Add(3);
-            test.Add(-1);
-            Assert.True(test.Count() == 2);
-        }
+        }        
 
         [Fact]
         public void ReplacesCorrectlyOldValues()
@@ -146,7 +150,7 @@ namespace IntArrayFacts
             test.Add(4);
             test.Add(0);
             test.Insert(2, 10);
-            Assert.True(test.GetLength() == 5);
+            Assert.True(test.GetLength() == 8);
         }
 
         [Fact]

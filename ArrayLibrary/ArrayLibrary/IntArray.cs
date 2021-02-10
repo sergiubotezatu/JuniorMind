@@ -4,12 +4,12 @@ namespace ArrayLibrary
 {
     public class IntArray
     {
-        private string[] array;
+        private IntNumber[] array;
 
         public IntArray()
         {
             int initialCapacity = 4;
-            this.array = new string[initialCapacity];
+            this.array = new IntNumber[initialCapacity];
         }
 
         public void Add(int element)
@@ -18,9 +18,9 @@ namespace ArrayLibrary
             int filledPositions = 0;
             for (int i = 0; i < initialCapacity; i++)
             {
-                if (!int.TryParse(array[i], out int value))
+                if (array[i] == null)
                 {
-                    this.array[i] = element.ToString();
+                    this.array[i] = new IntNumber(element);
                     break;
                 }
                 else
@@ -32,16 +32,16 @@ namespace ArrayLibrary
             if (filledPositions == initialCapacity)
             {
                 Array.Resize(ref this.array, this.array.Length + initialCapacity);
-                this.array[initialCapacity] = element.ToString();
+                this.array[initialCapacity] = new IntNumber(element);
             }
         }
 
         public int Count()
         {
             int counter = 0;
-            foreach (string element in this.array)
+            foreach (IntNumber element in this.array)
             {
-                if (int.TryParse(element, out int value))
+                if (element != null)
                 {
                     counter++;
                 }
@@ -52,20 +52,20 @@ namespace ArrayLibrary
 
         public int Element(int index)
         {
-            return Convert.ToInt32(array[index]);
+            return array[index].GetValue();
         }
 
         public void SetElement(int index, int element)
         {
-            array[index] = element.ToString();
+            array[index] = new IntNumber(element);
         }
 
         public bool Contains(int element)
         {
-            string searched = element.ToString();
-            foreach (string digit in this.array)
+            IntNumber searched = new IntNumber(element);
+            foreach (IntNumber digit in this.array)
             {
-                if (searched == digit)
+                if (searched.IsEqualTo(digit))
                 {
                     return true;
                 }
@@ -76,10 +76,10 @@ namespace ArrayLibrary
 
         public int IndexOf(int element)
         {
-            string searched = element.ToString();
+            IntNumber searched = new IntNumber(element);
             for (int i = 0; i < this.array.Length; i++)
             {
-                if (searched == this.array[i])
+                if (searched.IsEqualTo(this.array[i]))
                 {
                      return i;
                 }
@@ -90,7 +90,7 @@ namespace ArrayLibrary
 
         public void Insert(int index, int element)
         {
-            if (string.IsNullOrEmpty(this.array[index]))
+            if (this.array[index] == null)
             {
                 SetElement(index, element);
             }
@@ -110,12 +110,12 @@ namespace ArrayLibrary
         public void Remove(int element)
         {
             int searched = IndexOf(element);
-            this.array[searched] = "";
+            this.array[searched] = null;
         }
 
         public void RemoveAt(int index)
         {
-            this.array[index] = "";
+            this.array[index] = null;
         }
 
         public int GetLength()
@@ -125,16 +125,43 @@ namespace ArrayLibrary
 
         private void InsertInFilledPosition(int index, int element)
         {
-            Array.Resize(ref this.array, this.array.Length + 1);
-            int newPosition = this.array.Length;
-            int nextDigit = 2;
-            while (newPosition > index)
+            int posNotUsed = IndexOfFirstNull(index);
+            if (posNotUsed != -1)
             {
-                array[newPosition - 1] = array[newPosition - nextDigit];
-                newPosition--;
+                MoveElementsToRight(posNotUsed, index);
+            }
+            else
+            {
+                int initialCapacity = this.array.Length;
+                Array.Resize(ref this.array, this.array.Length + initialCapacity);
+                MoveElementsToRight(initialCapacity, index);
             }
 
-            SetElement(index, element);
+            this.array[index] = new IntNumber(element);
+        }
+
+        private int IndexOfFirstNull(int index)
+        {
+            while (index < this.array.Length)
+            {
+                if (array[index] == null)
+                {
+                    return index;
+                }
+
+                index++;
+            }
+
+            return -1;
+        }
+
+        private void MoveElementsToRight(int farRight, int lastElement)
+        {
+            while (farRight > lastElement)
+            {
+                this.array[farRight] = this.array[farRight - 1];
+                farRight--;
+            }
         }
     }
 }
