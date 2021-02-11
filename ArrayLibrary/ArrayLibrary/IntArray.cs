@@ -4,68 +4,50 @@ namespace ArrayLibrary
 {
     public class IntArray
     {
-        private IntNumber[] array;
+        private int occupiedPos;
+        private int[] array;
 
         public IntArray()
         {
             int initialCapacity = 4;
-            this.array = new IntNumber[initialCapacity];
+            this.occupiedPos = 0;
+            this.array = new int[initialCapacity];
         }
 
         public void Add(int element)
         {
-            int initialCapacity = this.array.Length;
-            int filledPositions = 0;
-            for (int i = 0; i < initialCapacity; i++)
+            if (occupiedPos == this.array.Length)
             {
-                if (array[i] == null)
-                {
-                    this.array[i] = new IntNumber(element);
-                    break;
-                }
-                else
-                {
-                    filledPositions++;
-                }
+                Array.Resize(ref this.array, this.array.Length + this.array.Length);
             }
 
-            if (filledPositions == initialCapacity)
-            {
-                Array.Resize(ref this.array, this.array.Length + initialCapacity);
-                this.array[initialCapacity] = new IntNumber(element);
-            }
+            this.array[this.occupiedPos] = element;
+            this.occupiedPos++;
         }
 
         public int Count()
         {
-            int counter = 0;
-            foreach (IntNumber element in this.array)
-            {
-                if (element != null)
-                {
-                    counter++;
-                }
-            }
-
-            return counter;
+            return occupiedPos;
         }
 
         public int Element(int index)
         {
-            return array[index].GetValue();
+            return array[index];
         }
 
         public void SetElement(int index, int element)
         {
-            array[index] = new IntNumber(element);
+            if (index <= this.occupiedPos)
+            {
+                this.array[index] = element;
+            }
         }
 
         public bool Contains(int element)
         {
-            IntNumber searched = new IntNumber(element);
-            foreach (IntNumber digit in this.array)
+            foreach (int digit in this.array)
             {
-                if (searched.IsEqualTo(digit))
+                if (digit == element)
                 {
                     return true;
                 }
@@ -79,9 +61,9 @@ namespace ArrayLibrary
             IntNumber searched = new IntNumber(element);
             for (int i = 0; i < this.array.Length; i++)
             {
-                if (searched.IsEqualTo(this.array[i]))
+                if (this.array[i] == element)
                 {
-                     return i;
+                    return i;
                 }
             }
 
@@ -90,11 +72,12 @@ namespace ArrayLibrary
 
         public void Insert(int index, int element)
         {
-            if (this.array[index] == null)
+            if (index == this.occupiedPos)
             {
-                SetElement(index, element);
+                Add(element);
             }
-            else
+
+            if (index < this.occupiedPos)
             {
                 InsertInFilledPosition(index, element);
             }
@@ -102,20 +85,29 @@ namespace ArrayLibrary
 
         public void Clear()
         {
-            int capacity = this.array.Length;
-            Array.Resize(ref this.array, 0);
-            Array.Resize(ref this.array, capacity);
+            this.occupiedPos = 0;
         }
 
         public void Remove(int element)
         {
-            int searched = IndexOf(element);
-            this.array[searched] = null;
+            int toRemove = IndexOf(element);
+            for (int i = toRemove; i < occupiedPos - 1; i++)
+            {
+                this.array[i] = this.array[i + 1];
+            }
+
+            occupiedPos--;
         }
 
         public void RemoveAt(int index)
         {
-            this.array[index] = null;
+            while (index < occupiedPos - 1)
+            {
+                this.array[index] = this.array[index + 1];
+                index++;
+            }
+
+            occupiedPos--;
         }
 
         public int GetLength()
@@ -125,19 +117,13 @@ namespace ArrayLibrary
 
         private void InsertInFilledPosition(int index, int element)
         {
-            int posNotUsed = IndexOfFirstNull(index);
-            if (posNotUsed != -1)
+            if (this.occupiedPos == this.array.Length)
             {
-                MoveElementsToRight(posNotUsed, index);
-            }
-            else
-            {
-                int initialCapacity = this.array.Length;
-                Array.Resize(ref this.array, this.array.Length + initialCapacity);
-                MoveElementsToRight(initialCapacity, index);
+                Array.Resize(ref this.array, this.array.Length + this.array.Length);
             }
 
-            this.array[index] = new IntNumber(element);
+            MoveElementsToRight(index);
+            this.array[index] = element;
         }
 
         private int IndexOfFirstNull(int index)
@@ -155,8 +141,9 @@ namespace ArrayLibrary
             return -1;
         }
 
-        private void MoveElementsToRight(int farRight, int lastElement)
+        private void MoveElementsToRight(int lastElement)
         {
+            int farRight = this.occupiedPos;
             while (farRight > lastElement)
             {
                 this.array[farRight] = this.array[farRight - 1];

@@ -1,3 +1,4 @@
+
 using System;
 using ArrayLibrary;
 using Xunit;
@@ -49,7 +50,7 @@ namespace IntArrayFacts
             Assert.True(test.Element(1) == -1);
             Assert.True(test.Element(4) == 6);
             Assert.True(test.GetLength() == 8);
-        }        
+        }
 
         [Fact]
         public void ReplacesCorrectlyOldValues()
@@ -80,7 +81,7 @@ namespace IntArrayFacts
             test.Add(-1);
             test.Add(2);
             test.Add(5);
-             Assert.True(test.Contains(2));
+            Assert.True(test.Contains(2));
         }
 
         [Fact]
@@ -125,8 +126,8 @@ namespace IntArrayFacts
             test.Add(4);
             test.Add(0);
             test.Add(6);
-            test.Insert(6, 10);
-            Assert.True(test.Element(6) == 10);
+            test.Insert(5 , 10);
+            Assert.True(test.Element(5) == 10);
         }
 
         [Fact]
@@ -159,13 +160,11 @@ namespace IntArrayFacts
             var test = new IntArray();
             test.Add(3);
             test.Add(-1);
+            test.Clear();
             test.Add(4);
             test.Add(0);
-            test.Clear();
-            Assert.True(test.IndexOf(3) == -1);
-            Assert.True(test.IndexOf(-1) == -1);
-            Assert.True(test.IndexOf(4) == -1);
-            Assert.True(test.IndexOf(0) == -1);
+            Assert.True(test.IndexOf(4) == 0);
+            Assert.True(test.IndexOf(0) == 1);
         }
 
         [Fact]
@@ -177,7 +176,10 @@ namespace IntArrayFacts
             test.Add(4);
             test.Add(0);
             test.Remove(4);
-            Assert.True(test.IndexOf(4) == -1);
+            Assert.True(test.IndexOf(3) == 0);
+            Assert.True(test.IndexOf(-1) == 1);
+            Assert.True(test.IndexOf(0) == 2);
+            Assert.True(test.GetLength() == 4);
         }
 
         [Fact]
@@ -188,8 +190,8 @@ namespace IntArrayFacts
             test.Add(-1);
             test.Add(4);
             test.Add(0);
-            test.RemoveAt(3);
-            Assert.True(test.IndexOf(0) == -1);
+            test.RemoveAt(0);
+            Assert.True(test.IndexOf(3) == -1);
         }
     }
 }
