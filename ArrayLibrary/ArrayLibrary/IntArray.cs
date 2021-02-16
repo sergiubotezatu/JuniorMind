@@ -4,30 +4,26 @@ namespace ArrayLibrary
 {
     public class IntArray
     {
-        private int occupiedPos;
+        private int count;
         private int[] array;
 
         public IntArray()
         {
             int initialCapacity = 4;
-            this.occupiedPos = 0;
+            this.count = 0;
             this.array = new int[initialCapacity];
         }
 
         public void Add(int element)
         {
-            if (occupiedPos == this.array.Length)
-            {
-                Array.Resize(ref this.array, this.array.Length + this.array.Length);
-            }
-
-            this.array[this.occupiedPos] = element;
-            this.occupiedPos++;
+            EnsureCapacity();
+            this.array[this.count] = element;
+            this.count++;
         }
 
         public int Count()
         {
-            return occupiedPos;
+            return count;
         }
 
         public int Element(int index)
@@ -37,7 +33,7 @@ namespace ArrayLibrary
 
         public void SetElement(int index, int element)
         {
-            if (index <= this.occupiedPos)
+            if (index <= this.count)
             {
                 this.array[index] = element;
             }
@@ -45,21 +41,12 @@ namespace ArrayLibrary
 
         public bool Contains(int element)
         {
-            foreach (int digit in this.array)
-            {
-                if (digit == element)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return IndexOf(element) != -1;
         }
 
         public int IndexOf(int element)
         {
-            IntNumber searched = new IntNumber(element);
-            for (int i = 0; i < this.array.Length; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (this.array[i] == element)
                 {
@@ -72,82 +59,51 @@ namespace ArrayLibrary
 
         public void Insert(int index, int element)
         {
-            if (index == this.occupiedPos)
-            {
-                Add(element);
-            }
-
-            if (index < this.occupiedPos)
-            {
-                InsertInFilledPosition(index, element);
-            }
-        }
-
-        public void Clear()
-        {
-            this.occupiedPos = 0;
-        }
-
-        public void Remove(int element)
-        {
-            int toRemove = IndexOf(element);
-            for (int i = toRemove; i < occupiedPos - 1; i++)
-            {
-                this.array[i] = this.array[i + 1];
-            }
-
-            occupiedPos--;
-        }
-
-        public void RemoveAt(int index)
-        {
-            while (index < occupiedPos - 1)
-            {
-                this.array[index] = this.array[index + 1];
-                index++;
-            }
-
-            occupiedPos--;
-        }
-
-        public int GetLength()
-        {
-            return this.array.Length;
-        }
-
-        private void InsertInFilledPosition(int index, int element)
-        {
-            if (this.occupiedPos == this.array.Length)
-            {
-                Array.Resize(ref this.array, this.array.Length + this.array.Length);
-            }
-
+            EnsureCapacity();
             MoveElementsToRight(index);
             this.array[index] = element;
         }
 
-        private int IndexOfFirstNull(int index)
+        public void Clear()
         {
-            while (index < this.array.Length)
-            {
-                if (array[index] == null)
-                {
-                    return index;
-                }
+            this.count = 0;
+        }
 
-                index++;
-            }
+        public void Remove(int element)
+        {
+            RemoveAt(IndexOf(element));
+        }
 
-            return -1;
+        public void RemoveAt(int index)
+        {
+            MoveElementsToLeft(index);
+            count--;
         }
 
         private void MoveElementsToRight(int lastElement)
         {
-            int farRight = this.occupiedPos;
+            int farRight = this.count;
             while (farRight > lastElement)
             {
                 this.array[farRight] = this.array[farRight - 1];
                 farRight--;
+            }
+        }
+
+        private void MoveElementsToLeft(int index)
+        {
+            while (index < count - 1)
+            {
+                this.array[index] = this.array[index + 1];
+                index++;
+            }
+        }
+
+        private void EnsureCapacity()
+        {
+            if (this.count == this.array.Length)
+            {
+                Array.Resize(ref this.array, this.array.Length + this.array.Length);
             }
         }
     }

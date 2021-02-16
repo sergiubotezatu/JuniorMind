@@ -49,7 +49,6 @@ namespace IntArrayFacts
             Assert.True(test.Element(0) == 3);
             Assert.True(test.Element(1) == -1);
             Assert.True(test.Element(4) == 6);
-            Assert.True(test.GetLength() == 8);
         }
 
         [Fact]
@@ -150,8 +149,7 @@ namespace IntArrayFacts
             test.Add(-1);
             test.Add(4);
             test.Add(0);
-            test.Insert(2, 10);
-            Assert.True(test.GetLength() == 8);
+            test.Insert(2, 10);            
         }
 
         [Fact]
@@ -179,7 +177,6 @@ namespace IntArrayFacts
             Assert.True(test.IndexOf(3) == 0);
             Assert.True(test.IndexOf(-1) == 1);
             Assert.True(test.IndexOf(0) == 2);
-            Assert.True(test.GetLength() == 4);
         }
 
         [Fact]
