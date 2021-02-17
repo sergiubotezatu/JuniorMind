@@ -15,7 +15,8 @@ namespace IntArrayFacts
             test.Add(2);
             test.Add(3);
             test.Add(4);
-            Assert.True(test.Count() == 4);
+            int result = test.Count;
+            Assert.True(result == 4);
         }
 
         [Fact]
@@ -24,8 +25,8 @@ namespace IntArrayFacts
             var test = new IntArray();
             test.Add(3);
             test.Add(-1);
-            Assert.True(test.Element(0) == 3);
-            Assert.True(test.Element(1) == -1);
+            Assert.True(test[0] == 3);
+            Assert.True(test[1] == -1);
         }
 
         [Fact]
@@ -34,7 +35,8 @@ namespace IntArrayFacts
             var test = new IntArray();
             test.Add(3);
             test.Add(-1);
-            Assert.True(test.Count() == 2);
+            int result = test.Count;
+            Assert.True(result == 2);
         }
 
         [Fact]
@@ -46,9 +48,9 @@ namespace IntArrayFacts
             test.Add(4);
             test.Add(0);
             test.Add(6);
-            Assert.True(test.Element(0) == 3);
-            Assert.True(test.Element(1) == -1);
-            Assert.True(test.Element(4) == 6);
+            Assert.True(test[0] == 3);
+            Assert.True(test[1] == -1);
+            Assert.True(test[4] == 6);
         }
 
         [Fact]
@@ -57,8 +59,8 @@ namespace IntArrayFacts
             var test = new IntArray();
             test.Add(3);
             test.Add(-1);
-            test.SetElement(0, -5);
-            Assert.True(test.Element(0) == -5);
+            test[0]= -5;
+            Assert.True(test[0] == -5);
         }
 
         [Fact]
@@ -126,7 +128,7 @@ namespace IntArrayFacts
             test.Add(0);
             test.Add(6);
             test.Insert(5 , 10);
-            Assert.True(test.Element(5) == 10);
+            Assert.True(test[5] == 10);
         }
 
         [Fact]
@@ -138,7 +140,7 @@ namespace IntArrayFacts
             test.Add(4);
             test.Add(0);
             test.Insert(2, 10);
-            Assert.True(test.Element(2) == 10);
+            Assert.True(test[2] == 10);
         }
 
         [Fact]
