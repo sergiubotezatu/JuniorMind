@@ -4,7 +4,7 @@ namespace ArrayLibrary
 {
     public class IntArray
     {
-        private int[] array;
+        protected int[] array;
 
         public IntArray()
         {
@@ -21,7 +21,7 @@ namespace ArrayLibrary
             set => this.array[index] = value;
         }
 
-        public void Add(int element)
+        public virtual void Add(int element)
         {
             EnsureCapacity();
             this.array[this.Count] = element;
