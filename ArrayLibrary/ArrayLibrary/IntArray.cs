@@ -46,7 +46,7 @@ namespace ArrayLibrary
             return -1;
         }
 
-        public void Insert(int index, int element)
+        public virtual void Insert(int index, int element)
         {
             EnsureCapacity();
             MoveElementsToRight(index);

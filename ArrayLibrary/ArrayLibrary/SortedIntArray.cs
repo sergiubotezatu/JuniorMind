@@ -14,25 +14,47 @@ namespace ArrayLibrary
         public override void Add(int element)
         {
             base.Add(element);
-            SortWhileAdding(element);
+            if (Count > 1)
+            {
+                SortWhileAdding(element);
+            }
+        }
+
+        public override void Insert(int index, int element)
+        {
+            if (IsInBetween(element, index))
+            {
+                base.Insert(index, element);
+            }
         }
 
         private void SortWhileAdding(int element)
         {
-            int prevIndex = IndexOf(element) - 1;
+            int prevIndex = Count - 2;
+            int elementIndex = Count - 1;
             while (prevIndex >= 0 && element < array[prevIndex])
             {
-                Swap(element);
+                Swap(element, elementIndex);
+                elementIndex--;
                 prevIndex--;
             }
         }
 
-        private void Swap(int element)
+        private void Swap(int element, int index)
         {
-            int index = IndexOf(element);
             int temp = element;
             array[index] = array[index - 1];
             array[index - 1] = temp;
+        }
+
+        private bool IsInBetween(int element, int index)
+        {
+            if (index != 0)
+            {
+                return element <= array[index] && element >= array[index - 1];
+            }
+
+            return element <= array[index];
         }
     }
 }
