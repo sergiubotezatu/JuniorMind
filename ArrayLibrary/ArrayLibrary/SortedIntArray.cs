@@ -11,6 +11,12 @@ namespace ArrayLibrary
         {
         }
 
+        public override int this[int index]
+        {
+            get => array[index];
+            set => array[index] = IsInBetween(value, index) ? value : array[index];
+        }
+
         public override void Add(int element)
         {
             base.Add(element);

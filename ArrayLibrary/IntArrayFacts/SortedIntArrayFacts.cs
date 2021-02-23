@@ -30,6 +30,7 @@ namespace IntArrayFacts
             sorted.Add(3);
             sorted.Add(2);
             sorted.Add(2);
+            sorted[0] = 5;
             Assert.True(sorted[0] == 2);
             Assert.True(sorted[1] == 2);
             Assert.True(sorted[2] == 3);

@@ -2,26 +2,26 @@
 
 namespace ArrayLibrary
 {
-    public class IntArray
+    public class ObjectArray
     {
-        protected int[] array;
+        protected object[] array;
 
-        public IntArray()
+        public ObjectArray()
         {
             int initialCapacity = 4;
             this.Count = 0;
-            this.array = new int[initialCapacity];
+            this.array = new object[initialCapacity];
         }
 
-        public int Count { get; private set; }
+        public int Count { get; protected set; }
 
-        public virtual int this[int index]
+        public object this[int index]
         {
             get => this.array[index];
             set => this.array[index] = value;
         }
 
-        public virtual void Add(int element)
+        public void Add(object element)
         {
             EnsureCapacity();
             this.array[this.Count] = element;
@@ -33,7 +33,7 @@ namespace ArrayLibrary
             return IndexOf(element) != -1;
         }
 
-        public int IndexOf(int element)
+        public int IndexOf(object element)
         {
             for (int i = 0; i < Count; i++)
             {
@@ -46,7 +46,7 @@ namespace ArrayLibrary
             return -1;
         }
 
-        public virtual void Insert(int index, int element)
+        public void Insert(int index, int element)
         {
             EnsureCapacity();
             MoveElementsToRight(index);
