@@ -13,7 +13,7 @@ namespace ArrayLibrary
 
         public override int this[int index]
         {
-            set => array[index] = IsInBetween(value, index) ? value : array[index];
+            set => array[index] = IsInBetween(value, index - 1, index + 1) ? value : array[index];
         }
 
         public override void Add(int element)
@@ -60,6 +60,21 @@ namespace ArrayLibrary
             }
 
             return element <= array[index];
+        }
+
+        private bool IsInBetween(int element, int firstIndex, int secondIndex)
+        {
+            if (firstIndex == -1)
+            {
+                return element <= array[secondIndex];
+            }
+
+            if (secondIndex == array.Length)
+            {
+                return element >= array[firstIndex];
+            }
+
+            return element <= array[secondIndex] && element >= array[firstIndex];
         }
     }
 }
