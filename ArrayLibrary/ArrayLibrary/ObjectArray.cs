@@ -30,14 +30,14 @@ namespace ArrayLibrary
 
         public bool Contains(int element)
         {
-            return IndexOf(element) != -1;
+            return !IndexOf(element).Equals(-1);
         }
 
         public int IndexOf(object element)
         {
             for (int i = 0; i < Count; i++)
             {
-                if (this.array[i] == element)
+                if (this.array[i].Equals(element))
                 {
                     return i;
                 }
@@ -77,6 +77,8 @@ namespace ArrayLibrary
                 this.array[farRight] = this.array[farRight - 1];
                 farRight--;
             }
+
+            this.Count++;
         }
 
         private void MoveElementsToLeft(int index)

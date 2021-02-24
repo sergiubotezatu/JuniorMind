@@ -77,6 +77,8 @@ namespace ArrayLibrary
                 this.array[farRight] = this.array[farRight - 1];
                 farRight--;
             }
+
+            this.Count++;
         }
 
         private void MoveElementsToLeft(int index)

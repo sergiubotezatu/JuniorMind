@@ -13,7 +13,7 @@ namespace ArrayLibrary
 
         public override int this[int index]
         {
-            set => array[index] = IsInBetween(value, index - 1, index + 1) ? value : array[index];
+            set => array[index] = NewlySetFits(value, index) ? value : array[index];
         }
 
         public override void Add(int element)
@@ -62,19 +62,16 @@ namespace ArrayLibrary
             return element <= array[index];
         }
 
-        private bool IsInBetween(int element, int firstIndex, int secondIndex)
+        private bool NewlySetFits(int element, int index)
         {
-            if (firstIndex == -1)
-            {
-                return element <= array[secondIndex];
-            }
+            int previous = GetComparer(index - 1, element);
+            int next = GetComparer(index + 1, element);
+            return element >= previous && element <= next;
+        }
 
-            if (secondIndex == array.Length)
-            {
-                return element >= array[firstIndex];
-            }
-
-            return element <= array[secondIndex] && element >= array[firstIndex];
+        private int GetComparer(int checkedIndex, int element)
+        {
+            return checkedIndex != -1 && checkedIndex != array.Length ? array[checkedIndex] : element;
         }
     }
 }
