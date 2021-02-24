@@ -13,7 +13,7 @@ namespace ArrayLibrary
 
         public override int this[int index]
         {
-            set => array[index] = NewlySetFits(value, index) ? value : array[index];
+            set => array[index] = SetIfFits(value, index);
         }
 
         public override void Add(int element)
@@ -62,11 +62,16 @@ namespace ArrayLibrary
             return element <= array[index];
         }
 
-        private bool NewlySetFits(int element, int index)
+        private int SetIfFits(int element, int index)
         {
             int previous = GetComparer(index - 1, element);
             int next = GetComparer(index + 1, element);
-            return element >= previous && element <= next;
+            if (element >= previous && element <= next)
+            {
+                return element;
+            }
+
+            return array[index];
         }
 
         private int GetComparer(int checkedIndex, int element)
