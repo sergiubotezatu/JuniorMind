@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections;
 
 namespace ArrayLibrary
 {
-    public class ObjectArray
+    public class ObjectCollection : IEnumerable
     {
         protected object[] array;
 
-        public ObjectArray()
+        public ObjectCollection()
         {
             int initialCapacity = 4;
             this.Count = 0;
@@ -19,6 +20,11 @@ namespace ArrayLibrary
         {
             get => this.array[index];
             set => this.array[index] = value;
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return new Enumerator();
         }
 
         public void Add(object element)

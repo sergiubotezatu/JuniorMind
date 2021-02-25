@@ -13,7 +13,10 @@ namespace ArrayLibrary
 
         public override int this[int index]
         {
-            set => array[index] = SetIfFits(value, index);
+            set => array[index] =
+                GetElement(index - 1, value) <= value && value <= GetElement(index + 1, value) ?
+                 value :
+                array[index];
         }
 
         public override void Add(int element)
@@ -62,21 +65,9 @@ namespace ArrayLibrary
             return element <= array[index];
         }
 
-        private int SetIfFits(int element, int index)
+        private int GetElement(int checkedIndex, int defaultValue)
         {
-            int previous = GetComparer(index - 1, element);
-            int next = GetComparer(index + 1, element);
-            if (element >= previous && element <= next)
-            {
-                return element;
-            }
-
-            return array[index];
-        }
-
-        private int GetComparer(int checkedIndex, int element)
-        {
-            return checkedIndex != -1 && checkedIndex != array.Length ? array[checkedIndex] : element;
+            return checkedIndex != -1 && checkedIndex != array.Length ? array[checkedIndex] : defaultValue;
         }
     }
 }
