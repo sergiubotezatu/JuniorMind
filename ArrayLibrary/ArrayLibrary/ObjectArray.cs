@@ -24,7 +24,7 @@ namespace ArrayLibrary
 
         public IEnumerator GetEnumerator()
         {
-            return new Enumerator(this.array, Count);
+            return new Enumerator(this);
         }
 
         public void Add(object element)

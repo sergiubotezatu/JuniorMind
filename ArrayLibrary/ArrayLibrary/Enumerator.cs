@@ -6,31 +6,33 @@ namespace ArrayLibrary
 {
     public class Enumerator : IEnumerator
     {
-        private readonly object[] array;
-        private readonly int count;
+        private readonly ObjectCollection array;
+        private int index;
 
-        public Enumerator(object[] arr, int count)
+        public Enumerator(ObjectCollection objectArray)
         {
-            this.array = arr;
-            this.count = count;
+            this.array = objectArray;
+            this.index = -1;
         }
-
-        public int Index { get; private set; } = -1;
 
         public object Current
         {
-            get => MoveNext() ? array[Index] : null;
+            get => MoveNext() ? array[index] : null;
         }
 
         public bool MoveNext()
         {
-            this.Index++;
-            return Index < count;
+            if (index <= this.array.Count)
+            {
+                this.index++;
+            }
+
+            return index < this.array.Count;
         }
 
         public void Reset()
         {
-            this.Index = -1;
+            this.index = -1;
         }
     }
 }
