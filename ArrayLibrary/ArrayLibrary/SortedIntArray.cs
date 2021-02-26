@@ -13,10 +13,13 @@ namespace ArrayLibrary
 
         public override int this[int index]
         {
-            set => array[index] =
-                GetElement(index - 1, value) <= value && value <= GetElement(index + 1, value) ?
-                 value :
-                array[index];
+            set
+            {
+                if (GetElement(index - 1, value) <= value && value <= GetElement(index + 1, value))
+                {
+                    array[index] = value;
+                }
+            }
         }
 
         public override void Add(int element)

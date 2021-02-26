@@ -4,8 +4,17 @@ using System.Text;
 
 namespace ArrayLibrary
 {
-    public class Enumerator : ObjectArray, IEnumerator
+    public class Enumerator : IEnumerator
     {
+        private readonly object[] array;
+        private readonly int count;
+
+        public Enumerator(object[] arr, int count)
+        {
+            this.array = arr;
+            this.count = count;
+        }
+
         public int Index { get; private set; } = -1;
 
         public object Current
@@ -16,7 +25,7 @@ namespace ArrayLibrary
         public bool MoveNext()
         {
             this.Index++;
-            return Index < array.Length && Index >= 0;
+            return Index < count;
         }
 
         public void Reset()

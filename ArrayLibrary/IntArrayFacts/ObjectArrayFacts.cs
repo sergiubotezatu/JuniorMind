@@ -11,7 +11,7 @@ namespace IntArrayFacts
         [Fact]
         public void ArrayHasFourElements()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(1);
             test.Add(2);
             test.Add(3);
@@ -23,7 +23,7 @@ namespace IntArrayFacts
         [Fact]
         public void AddsElementOnFirstEmptyPositions()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             Assert.True(test[0].Equals(3));
@@ -33,7 +33,7 @@ namespace IntArrayFacts
         [Fact]
         public void CountsOnlyFilledPositions()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             int result = test.Count;
@@ -43,7 +43,7 @@ namespace IntArrayFacts
         [Fact]
         public void DoublesArrayCapacityAddingElementInExtraPos()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Add(4);
@@ -57,7 +57,7 @@ namespace IntArrayFacts
         [Fact]
         public void ReplacesCorrectlyOldValues()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test[0] = -5;
@@ -67,7 +67,7 @@ namespace IntArrayFacts
         [Fact]
         public void ReturnsFalseIfElementIsNotInArray()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Add(2);
@@ -78,7 +78,7 @@ namespace IntArrayFacts
         [Fact]
         public void ReturnsTrueIfElementIsFounInArray()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Add(2);
@@ -89,7 +89,7 @@ namespace IntArrayFacts
         [Fact]
         public void ReturnsIndexOfElementFirstAppearance()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(2);
             test.Add(2);
@@ -100,7 +100,7 @@ namespace IntArrayFacts
         [Fact]
         public void ReturnsMinusOneIfElementIsNotInArray()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(2);
             test.Add(-4);
@@ -111,7 +111,7 @@ namespace IntArrayFacts
         [Fact]
         public void ReturnsMinusOneIfElemtIsNotInArray()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(2);
             test.Add(-4);
@@ -122,7 +122,7 @@ namespace IntArrayFacts
         [Fact]
         public void InsertsCorrectlyNewElementInEmptyPos()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Add(4);
@@ -135,7 +135,7 @@ namespace IntArrayFacts
         [Fact]
         public void InsertsCorrectlyNewElementInFilledPos()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Add(4);
@@ -147,7 +147,7 @@ namespace IntArrayFacts
         [Fact]
         public void InsertsNewElementWhileAddingNewPos()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Add(4);
@@ -159,7 +159,7 @@ namespace IntArrayFacts
         [Fact]
         public void RemovesCorrectlyAllElements()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Clear();
@@ -172,7 +172,7 @@ namespace IntArrayFacts
         [Fact]
         public void RemovesCorrectlyRequestedElement()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Add(4);
@@ -186,7 +186,7 @@ namespace IntArrayFacts
         [Fact]
         public void RemovesCorrectlyElementFromIndicatedIndex()
         {
-            var test = new ObjectArray();
+            var test = new ObjectCollection();
             test.Add(3);
             test.Add(-1);
             test.Add(4);

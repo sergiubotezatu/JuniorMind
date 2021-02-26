@@ -5,7 +5,7 @@ namespace ArrayLibrary
 {
     public class ObjectCollection : IEnumerable
     {
-        protected object[] array;
+        private object[] array;
 
         public ObjectCollection()
         {
@@ -14,7 +14,7 @@ namespace ArrayLibrary
             this.array = new object[initialCapacity];
         }
 
-        public int Count { get; protected set; }
+        public int Count { get; private set; }
 
         public object this[int index]
         {
@@ -24,7 +24,7 @@ namespace ArrayLibrary
 
         public IEnumerator GetEnumerator()
         {
-            return new Enumerator();
+            return new Enumerator(this.array, Count);
         }
 
         public void Add(object element)
