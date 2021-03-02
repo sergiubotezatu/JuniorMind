@@ -9,38 +9,51 @@ namespace IntArrayFacts
     public class EnumeratorFacts
     {
         [Fact]
-        public void Test1()
+        public void MoveNExtIsTrueIfElementsStillNotEnumerated()
         {
-            var test = new ObjectCollection();
+            var test = new ObjectArray();
             test.Add(1);
             test.Add(2);
-            var enumerator = test.GetEnumerator();
+            test.Add(3);
+            var enumerator = test.Enumerate().GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+            bool checkValue = enumerator.MoveNext();
+            Assert.True(checkValue);
+        }
+
+        [Fact]
+        public void EnumerateReturnsFirstElementAfterFirstMoveNext()
+        {
+            var test = new ObjectArray();
+            test.Add(1);
+            test.Add(2);
+            var enumerator = test.Enumerate().GetEnumerator();
+            enumerator.MoveNext();
             Assert.True(enumerator.Current.Equals(1));
         }
 
         [Fact]
-        public void Test3()
+        public void EnumerateMovesCurrentEnumeratedElemCorrectly()
         {
-            var test = new ObjectCollection();
+            var test = new ObjectArray();
             test.Add(1);
             test.Add(2);
-            var enumerator = test.GetEnumerator();
+            var enumerator = test.Enumerate().GetEnumerator();
             enumerator.MoveNext();
             enumerator.MoveNext();
-            enumerator.Reset();
-            Assert.True(enumerator.Current.Equals(1));
+            Assert.True(enumerator.Current.Equals(2));
         }
 
         [Fact]
-        public void Test4()
+        public void EnumerateReturnsFalseIfRunsOutOfMovesNext()
         {
-            var test = new ObjectCollection();
-            var enumerator = test.GetEnumerator();
+            var test = new ObjectArray();
+            test.Add(1);
+            var enumerator = test.Enumerate().GetEnumerator();
             enumerator.MoveNext();
-            enumerator.MoveNext();
-            enumerator.MoveNext();
-            enumerator.MoveNext();
-            Assert.False(enumerator.MoveNext());
-        }        
+            bool checkValue = enumerator.MoveNext();
+            Assert.False(checkValue);
+        }
     }
 }

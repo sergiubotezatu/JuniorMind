@@ -6,10 +6,10 @@ namespace ArrayLibrary
 {
     public class Enumerator : IEnumerator
     {
-        private readonly ObjectCollection array;
+        private readonly ObjectArray array;
         private int index;
 
-        public Enumerator(ObjectCollection objectArray)
+        public Enumerator(ObjectArray objectArray)
         {
             this.array = objectArray;
             this.index = -1;

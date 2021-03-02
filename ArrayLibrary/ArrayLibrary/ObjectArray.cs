@@ -3,11 +3,11 @@ using System.Collections;
 
 namespace ArrayLibrary
 {
-    public class ObjectCollection : IEnumerable
+    public class ObjectArray
     {
         private object[] array;
 
-        public ObjectCollection()
+        public ObjectArray()
         {
             int initialCapacity = 4;
             this.Count = 0;
@@ -22,9 +22,12 @@ namespace ArrayLibrary
             set => this.array[index] = value;
         }
 
-        public IEnumerator GetEnumerator()
+        public IEnumerable Enumerate()
         {
-            return new Enumerator(this);
+            for (int i = 0; i < this.Count; i++)
+            {
+                yield return this.array[i];
+            }
         }
 
         public void Add(object element)
