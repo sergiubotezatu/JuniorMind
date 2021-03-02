@@ -73,17 +73,5 @@ namespace IntArrayFacts
             Assert.True(sorted[0] == 1);
             Assert.True(sorted[1] == 1);
         }
-
-        [Fact]
-        public void AllowsOnlyComparableTypes()
-        {
-            var sorted = new SortedList<string>();
-            sorted.Add("4");
-            sorted.Add("3");
-            sorted.Add("1");
-            sorted.Add("2");
-            sorted.Insert(1, "1");
-            Assert.True(sorted[0] == "1");
-         }
     }
 }
