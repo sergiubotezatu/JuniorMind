@@ -7,7 +7,7 @@ namespace ArrayLibrary
 {
     public class List<T>
     {
-        protected T[] array;
+        private T[] array;
 
         public List()
         {
@@ -18,7 +18,9 @@ namespace ArrayLibrary
 
         public int Count { get; private set; }
 
-        public virtual T this[int index]
+        public int Length { get => this.array.Length; }
+
+        public T this[int index]
         {
             get => this.array[index];
             set => this.array[index] = value;
@@ -32,7 +34,7 @@ namespace ArrayLibrary
             }
         }
 
-        public virtual void Add(T element)
+        public void Add(T element)
         {
             EnsureCapacity();
             this.array[this.Count] = element;
@@ -57,7 +59,7 @@ namespace ArrayLibrary
             return -1;
         }
 
-        public virtual void Insert(int index, T element)
+        public void Insert(int index, T element)
         {
             EnsureCapacity();
             MoveElementsToRight(index);

@@ -12,7 +12,7 @@ namespace IntArrayFacts
         [Fact]
         public void SortsCorrectlyWhileAdding()
         {
-            var sorted = new SortedList<int>();
+            var sorted = new SortedList<int>(new ArrayLibrary.List<int>());
             sorted.Add(4);
             sorted.Add(3);
             sorted.Add(1);
@@ -26,7 +26,7 @@ namespace IntArrayFacts
         [Fact]
         public void SortsCorrectlyWhileAddingSameElement()
         {
-            var sorted = new SortedList<int>();
+            var sorted = new SortedList<int>(new ArrayLibrary.List<int>());
             sorted.Add(4);
             sorted.Add(3);
             sorted.Add(2);
@@ -40,7 +40,7 @@ namespace IntArrayFacts
         [Fact]
         public void RejectsInsertIfElementIsNotInCorrectPos()
         {
-            var sorted = new SortedList<int>();
+            var sorted = new SortedList<int>(new ArrayLibrary.List<int>());
             sorted.Add(4);
             sorted.Add(3);
             sorted.Add(1);
@@ -52,7 +52,7 @@ namespace IntArrayFacts
         [Fact]
         public void WorksOnlyIfElementIsInCorrectPos()
         {
-            var sorted = new SortedList<int>();
+            var sorted = new SortedList<int>(new ArrayLibrary.List<int>());
             sorted.Add(4);
             sorted.Add(3);
             sorted.Add(0);
@@ -64,7 +64,7 @@ namespace IntArrayFacts
         [Fact]
         public void WorksIfAlreadyExistingElemIsInserted()
         {
-            var sorted = new SortedList<int>();
+            var sorted = new SortedList<int>(new ArrayLibrary.List<int>());
             sorted.Add(4);
             sorted.Add(3);
             sorted.Add(1);
