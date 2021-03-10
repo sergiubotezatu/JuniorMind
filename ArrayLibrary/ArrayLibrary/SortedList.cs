@@ -105,11 +105,11 @@ namespace ArrayLibrary
 
             if (this.Count == 1)
             {
-                Remove(item);
+                Delete(item);
                 return this.Count == 0;
             }
 
-            Remove(item);
+            Delete(item);
             T replacer = GetReplacer(itemPos);
             return this.Count == newCount && this.initList[itemPos].Equals(replacer);
         }
