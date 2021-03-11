@@ -66,7 +66,7 @@ namespace ArrayLibrary
             this.initList.Clear();
         }
 
-       public void RemoveAt(int index)
+        public void RemoveAt(int index)
         {
             this.initList.RemoveAt(index);
         }

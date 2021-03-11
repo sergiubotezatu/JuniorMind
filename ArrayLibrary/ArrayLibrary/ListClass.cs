@@ -107,6 +107,7 @@ namespace ArrayLibrary
         {
             int itemPos = IndexOf(element);
             int newCount = this.Count - 1;
+            T replacer;
             if (itemPos == -1)
             {
                 return false;
@@ -118,8 +119,17 @@ namespace ArrayLibrary
                 return this.Count == 0;
             }
 
-            T replacer = itemPos == this.Count - 1 ? this.array[itemPos - 1] : this.array[itemPos + 1];
-            RemoveAt(itemPos);
+            if (itemPos == this.Count - 1)
+            {
+                 itemPos -= 1;
+                 replacer = array[itemPos - 1];
+            }
+            else
+            {
+                replacer = this.array[itemPos + 1];
+            }
+
+            RemoveAt(IndexOf(element));
             return this.Count == newCount && this.array[itemPos].Equals(replacer);
         }
 
