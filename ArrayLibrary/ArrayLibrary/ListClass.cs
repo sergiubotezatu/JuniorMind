@@ -79,11 +79,6 @@ namespace ArrayLibrary
             this.Count = 0;
         }
 
-        public void Delete(T element)
-        {
-            RemoveAt(IndexOf(element));
-        }
-
         public void RemoveAt(int index)
         {
             MoveElementsToLeft(index);
@@ -119,12 +114,12 @@ namespace ArrayLibrary
 
             if (this.Count == 1)
             {
-                Delete(element);
+                RemoveAt(itemPos);
                 return this.Count == 0;
             }
 
-            Delete(element);
-            T replacer = GetReplacer(itemPos);
+            T replacer = itemPos == this.Count - 1 ? this.array[itemPos - 1] : this.array[itemPos + 1];
+            RemoveAt(itemPos);
             return this.Count == newCount && this.array[itemPos].Equals(replacer);
         }
 
@@ -155,16 +150,6 @@ namespace ArrayLibrary
             {
                 Array.Resize(ref this.array, this.array.Length + this.array.Length);
             }
-        }
-
-        private T GetReplacer(int itemPos)
-        {
-            if (itemPos + 1 < this.Count)
-            {
-                return this.array[itemPos + 1];
-            }
-
-            return this.array[itemPos - 1];
         }
     }
 }
