@@ -34,6 +34,14 @@ namespace ArrayLibrary
             }
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < this.Count; i++)
+            {
+                yield return this.array[i];
+            }
+        }
+
         public void Add(T element)
         {
             EnsureCapacity();
@@ -71,7 +79,7 @@ namespace ArrayLibrary
             this.Count = 0;
         }
 
-        public void Remove(T element)
+        public void Delete(T element)
         {
             RemoveAt(IndexOf(element));
         }
@@ -80,6 +88,44 @@ namespace ArrayLibrary
         {
             MoveElementsToLeft(index);
             Count--;
+        }
+
+        public void CopyTo(T[] array, int index)
+        {
+            if (array == null)
+            {
+                return;
+            }
+
+            int minimumLength = array.Length + this.Count;
+            if (array.Length >= minimumLength)
+            {
+                for (int i = 0; i < this.Count; i++)
+                {
+                    array[index] = this.array[i];
+                    index++;
+                }
+            }
+        }
+
+        public bool Remove(T element)
+        {
+            int itemPos = IndexOf(element);
+            int newCount = this.Count - 1;
+            if (itemPos == -1)
+            {
+                return false;
+            }
+
+            if (this.Count == 1)
+            {
+                Delete(element);
+                return this.Count == 0;
+            }
+
+            Delete(element);
+            T replacer = GetReplacer(itemPos);
+            return this.Count == newCount && this.array[itemPos].Equals(replacer);
         }
 
         private void MoveElementsToRight(int lastElement)
@@ -109,6 +155,16 @@ namespace ArrayLibrary
             {
                 Array.Resize(ref this.array, this.array.Length + this.array.Length);
             }
+        }
+
+        private T GetReplacer(int itemPos)
+        {
+            if (itemPos + 1 < this.Count)
+            {
+                return this.array[itemPos + 1];
+            }
+
+            return this.array[itemPos - 1];
         }
     }
 }

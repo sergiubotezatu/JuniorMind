@@ -78,56 +78,22 @@ namespace ArrayLibrary
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            if (array == null)
-            {
-                return;
-            }
-
-            int minimumLength = array.Length + this.Count;
-            if (array.Length >= minimumLength)
-           {
-                for (int i = 0; i < this.Count; i++)
-                {
-                    array[arrayIndex] = this.initList[i];
-                    arrayIndex++;
-                }
-           }
+            this.initList.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(T item)
         {
-            int itemPos = IndexOf(item);
-            int newCount = this.Count - 1;
-            if (itemPos == -1)
-            {
-                return false;
-            }
-
-            if (this.Count == 1)
-            {
-                Delete(item);
-                return this.Count == 0;
-            }
-
-            Delete(item);
-            T replacer = GetReplacer(itemPos);
-            return this.Count == newCount && this.initList[itemPos].Equals(replacer);
+            return this.initList.Remove(item);
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (int i = 0; i < this.Count; i++)
-            {
-                yield return this.initList[i];
-            }
+            return this.initList.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (int i = 0; i < this.Count; i++)
-            {
-                yield return this.initList[i];
-            }
+            return this.initList.Enumerate().GetEnumerator();
         }
 
         private void SortWhileAdding(T element)
