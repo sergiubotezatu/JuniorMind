@@ -13,6 +13,7 @@ namespace IntArrayFacts
         public void SortsCorrectlyWhileAdding()
         {
             var sorted = new SortedList<int>(new ArrayLibrary.List<int>());
+            var exception = new Exception();
             sorted.Add(4);
             sorted.Add(3);
             sorted.Add(1);

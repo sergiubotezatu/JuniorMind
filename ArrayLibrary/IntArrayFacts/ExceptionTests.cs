@@ -9,6 +9,27 @@ namespace IntArrayFacts
     public class ExceptionTests
     {
         [Fact]
+        public void TestCatchException()
+        {
+            var test = new SortedList<int>(new ArrayLibrary.List<int>());
+            test.Add(4);
+            test.Add(3);
+            test.Add(2);
+            test.Add(2);
+            string expectedMess = "Parameter can not be greater than list capacity (Parameter 'index')";
+            var exception = new Exception();
+            try
+            {
+                test.Insert(5, 0);
+            }
+            catch(ArgumentOutOfRangeException e)
+            {
+                exception = e;
+            }
+            Assert.Equal(expectedMess, exception.Message);
+        }
+
+        [Fact]
         public void InsertThrowsArgOutOfRangeIfIndexGreaterThanCapacity()
         {
             var test = new SortedList<int>(new ArrayLibrary.List<int>());
