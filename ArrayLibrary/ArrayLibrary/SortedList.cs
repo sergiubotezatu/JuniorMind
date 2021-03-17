@@ -9,7 +9,7 @@ namespace ArrayLibrary
     public class SortedList<T> : IList<T>
         where T : IComparable<T>
     {
-        private readonly ArrayLibrary.List<T> initList;
+        protected readonly ArrayLibrary.List<T> initList;
 
         public SortedList(ArrayLibrary.List<T> objects)
         {
@@ -18,7 +18,7 @@ namespace ArrayLibrary
 
         public int Count { get => this.initList.Count; }
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly { get; } = true;
 
         public T this[int index]
         {

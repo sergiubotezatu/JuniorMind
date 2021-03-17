@@ -110,5 +110,29 @@ namespace IntArrayFacts
             var exception = Assert.Throws<ArgumentException>(() => test.CopyTo(copyTo, 2));
             Assert.True(expectedMess.Equals(exception.Message));
         }
+
+        [Fact]
+        public void ThrowsNotSupportedExceptionIfReadOnlySortedList()
+        {
+            var editable = new SortedList<int>(new ArrayLibrary.List<int>())
+            {
+                4,
+                3,
+                2,
+                1
+            };
+            var test = new OrderedList<int>(editable);
+            string expectedMess =
+                "Updating items or capacity of this collection is not allowed." +
+                    "It is readOnly";
+            var exception1 = Assert.Throws<NotSupportedException>(() => test.Add(2));
+            Assert.True(expectedMess.Equals(exception1.Message));
+            var exception2 = Assert.Throws<NotSupportedException>(() => test.Insert(1, 2));
+            Assert.True(expectedMess.Equals(exception2.Message));
+            var exception3 = Assert.Throws<NotSupportedException>(() => test.Remove(2));
+            Assert.True(expectedMess.Equals(exception3.Message));
+            var exception4 = Assert.Throws<NotSupportedException>(() => test.RemoveAt(1));
+            Assert.True(expectedMess.Equals(exception4.Message));
+        }
     }
 }
