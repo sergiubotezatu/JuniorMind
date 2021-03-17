@@ -45,9 +45,10 @@ namespace ArrayLibrary
 
         public void Insert(int index, T item)
         {
+            this.initList.CheckForInvalidIndex(index);
             if (IsInBetween(item, index))
-            {
-                this.initList.Insert(index, item);
+                {
+                    this.initList.Insert(index, item);
             }
         }
 

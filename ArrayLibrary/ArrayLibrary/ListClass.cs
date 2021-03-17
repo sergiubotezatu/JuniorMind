@@ -22,8 +22,13 @@ namespace ArrayLibrary
 
         public T this[int index]
         {
-            get => this.array[index];
-            set => this.array[index] = value;
+            get => this[index] = this.array[index];
+
+            set
+            {
+                CheckForInvalidIndex(index);
+                this.array[index] = value;
+            }
         }
 
         public IEnumerable Enumerate()
@@ -69,6 +74,7 @@ namespace ArrayLibrary
 
         public void Insert(int index, T element)
         {
+            CheckForInvalidIndex(index);
             EnsureCapacity();
             MoveElementsToRight(index);
             this.array[index] = element;
@@ -81,6 +87,7 @@ namespace ArrayLibrary
 
         public void RemoveAt(int index)
         {
+            CheckForInvalidIndex(index);
             MoveElementsToLeft(index);
             Count--;
         }
@@ -89,17 +96,28 @@ namespace ArrayLibrary
         {
             if (array == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(array));
             }
 
-            int minimumLength = array.Length + this.Count;
-            if (array.Length >= minimumLength)
+            if (index < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), "Parameter can not be less than 0");
+            }
+
+            int availableSpace = array.Length - index;
+            if (availableSpace >= this.Count)
             {
                 for (int i = 0; i < this.Count; i++)
                 {
                     array[index] = this.array[i];
                     index++;
                 }
+            }
+            else
+            {
+                throw new ArgumentException(
+                    "Available space in destination array starting from index is smaller than the source list capacity" +
+                    $"You need minimum {this.Count - 1} more positions after your index");
             }
         }
 
@@ -121,6 +139,17 @@ namespace ArrayLibrary
             T replacer = array[itemPos + 1];
             RemoveAt(IndexOf(element));
             return this.Count == newCount && this.array[itemPos].Equals(replacer);
+        }
+
+        public void CheckForInvalidIndex(int index)
+        {
+            if (index < 0 || index >= this.Count)
+            {
+                string reason =
+                    index < 0 ? "Parameter can not be less than 0" :
+                    "Parameter can not be greater than list capacity";
+                throw new ArgumentOutOfRangeException(nameof(index), reason);
+            }
         }
 
         private void MoveElementsToRight(int lastElement)
