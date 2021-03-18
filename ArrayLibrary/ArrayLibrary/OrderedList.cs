@@ -16,7 +16,7 @@ namespace ArrayLibrary
 
         public int Count { get => this.imutable.Count; }
 
-        public bool IsReadOnly => imutable.IsReadOnly;
+        public bool IsReadOnly => true;
 
         public T this[int index]
         {
@@ -24,15 +24,14 @@ namespace ArrayLibrary
 
             set
             {
-                IfReadOnlyThrowException();
-                this.imutable[index] = value;
+                throw new NotSupportedException("Setting values to items of this list is not allowed." +
+                    "List is readonly");
             }
         }
 
         public void Insert(int index, T item)
         {
-            IfReadOnlyThrowException();
-            this.imutable.Insert(index, item);
+            ThrowNotSupportedException();
         }
 
         public bool Contains(T item)
@@ -47,8 +46,7 @@ namespace ArrayLibrary
 
         public void RemoveAt(int index)
         {
-            IfReadOnlyThrowException();
-            this.imutable.RemoveAt(index);
+            ThrowNotSupportedException();
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -63,24 +61,17 @@ namespace ArrayLibrary
 
         public void Add(T item)
         {
-            IfReadOnlyThrowException();
-            this.imutable.Add(item);
+            ThrowNotSupportedException();
         }
 
         public void Clear()
         {
-            IfReadOnlyThrowException();
-            this.imutable.Clear();
+            ThrowNotSupportedException();
         }
 
-        public void Remove(T item)
+        public bool Remove(T item)
         {
-            IfReadOnlyThrowException();
-            this.imutable.Remove(item);
-        }
-
-        bool ICollection<T>.Remove(T item)
-        {
+            ThrowNotSupportedException();
             return imutable.Remove(item);
         }
 
@@ -89,13 +80,10 @@ namespace ArrayLibrary
             return ((IEnumerable)imutable).GetEnumerator();
         }
 
-        private void IfReadOnlyThrowException()
+        private void ThrowNotSupportedException()
         {
-            if (imutable.IsReadOnly)
-            {
-                throw new NotSupportedException("Updating items or capacity of this collection is not allowed." +
+            throw new NotSupportedException("Updating items or capacity of this collection is not allowed." +
                     "It is readOnly");
-            }
         }
     }
 }
