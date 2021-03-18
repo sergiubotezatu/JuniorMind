@@ -1,20 +1,22 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ArrayLibrary
 {
-    public class OrderedList<T>
-        where T : IComparable<T>
+    public class ReadOnlyList<T> : IList<T>
     {
-        private readonly SortedList<T> imutable;
+        private readonly IList<T> imutable;
 
-        public OrderedList(SortedList<T> mutable)
+        public ReadOnlyList(IList<T> mutable)
         {
             this.imutable = mutable;
         }
 
         public int Count { get => this.imutable.Count; }
+
+        public bool IsReadOnly => imutable.IsReadOnly;
 
         public T this[int index]
         {
@@ -75,6 +77,16 @@ namespace ArrayLibrary
         {
             IfReadOnlyThrowException();
             this.imutable.Remove(item);
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            return imutable.Remove(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)imutable).GetEnumerator();
         }
 
         private void IfReadOnlyThrowException()

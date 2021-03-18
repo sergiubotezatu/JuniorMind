@@ -121,7 +121,7 @@ namespace IntArrayFacts
                 2,
                 1
             };
-            var test = new OrderedList<int>(editable);
+            var test = new ReadOnlyList<int>(editable);
             string expectedMess =
                 "Updating items or capacity of this collection is not allowed." +
                     "It is readOnly";
