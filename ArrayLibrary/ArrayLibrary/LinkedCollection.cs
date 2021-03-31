@@ -27,11 +27,7 @@ namespace ArrayLibrary
 
         public void Add(Node<T> newNode)
         {
-            if (newNode == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(newNode)} was null. Inserting null node is not allowed.");
-            }
-
+            ThrowNodeIsNull(newNode);
             Add(newNode.Value);
         }
 
@@ -42,11 +38,7 @@ namespace ArrayLibrary
 
         public void AddLast(Node<T> newNode)
         {
-            if (newNode == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(newNode)} was null. Inserting null node is not allowed.");
-            }
-
+            ThrowNodeIsNull(newNode);
             AddLast(newNode.Value);
         }
 
@@ -58,38 +50,21 @@ namespace ArrayLibrary
 
         public void AddFirst(Node<T> newNode)
         {
-            if (newNode == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(newNode)} was null. Inserting null node is not allowed.");
-            }
-
+            ThrowNodeIsNull(newNode);
             AddFirst(newNode.Value);
         }
 
         public void AddBefore(Node<T> after, Node<T> newNode)
         {
-            if (newNode == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(newNode)} was null. Inserting null node is not allowed.");
-            }
-
-            if (after == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(after)} was null. You are trying to " +
-                    $"insert a node before a null value.");
-            }
-
+            ThrowNodeIsNull(newNode);
+            ThrowNodeIsNull(after);
+            ThrowNodeBelongsToADifferentList(newNode);
             AddBefore(after, newNode.Value);
         }
 
         public void AddBefore(Node<T> after, T item)
         {
-            if (after == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(after)} was null. You are trying to " +
-                    $"insert a node before a null value.");
-            }
-
+            ThrowNodeIsNull(after);
             Node<T> newNode = new Node<T>(item)
             {
                 NextNode = after,
@@ -102,26 +77,15 @@ namespace ArrayLibrary
 
         public void AddAfter(Node<T> before, Node<T> newNode)
         {
-            if (newNode == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(newNode)} was null. Inserting null node is not allowed.");
-            }
-
-            if (before == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(before)} can not be null");
-            }
-
+            ThrowNodeIsNull(newNode);
+            ThrowNodeIsNull(before);
+            ThrowNodeBelongsToADifferentList(newNode);
             AddAfter(before, newNode.Value);
         }
 
         public void AddAfter(Node<T> before, T item)
         {
-            if (before == null)
-            {
-                throw new ArgumentNullException($"Node {nameof(before)} can not be null");
-            }
-
+            ThrowNodeIsNull(before);
             Node<T> toAdd = new Node<T>(item)
             {
                 NextNode = before.NextNode,
@@ -186,11 +150,7 @@ namespace ArrayLibrary
 
         public bool Remove(Node<T> selected)
         {
-            if (selected == null)
-            {
-                throw new InvalidOperationException("You are trying to find a null node which is not allowed");
-            }
-
+            ThrowNodeIsNull(selected);
             ThrowNodeDoesNotExist(selected.Value);
             return Remove(selected.Value);
         }
@@ -198,22 +158,14 @@ namespace ArrayLibrary
         public void RemoveLast()
         {
             T toBeRemoved = this.sentinel.PrevNode.Value;
-            if (this.Count == 0)
-            {
-                throw new InvalidOperationException("List is empty. There is no node that can be removed.");
-            }
-
+            ThrowListIsEmpty();
             Remove(toBeRemoved);
         }
 
         public void RemoveFirst()
         {
             T toBeRemoved = this.sentinel.NextNode.Value;
-            if (this.Count == 0)
-            {
-                throw new InvalidOperationException("List is empty. There is no node that can be removed.");
-            }
-
+            ThrowListIsEmpty();
             Remove(toBeRemoved);
         }
 
@@ -243,6 +195,7 @@ namespace ArrayLibrary
         public Node<T> FindLast(T item)
         {
             Node<T> toReturn = this.sentinel.PrevNode;
+            ThrowNodeDoesNotExist(item);
             while (toReturn != this.sentinel)
             {
                 if (toReturn.Value.Equals(item))
@@ -276,6 +229,30 @@ namespace ArrayLibrary
             if (!TryFind(item, out _))
             {
                 throw new InvalidOperationException("Node is not in the current linked list");
+            }
+        }
+
+        private void ThrowNodeBelongsToADifferentList(Node<T> toCheck)
+        {
+            if (toCheck.NextNode != null || toCheck.PrevNode != null)
+            {
+                throw new InvalidOperationException("Node you are trying to insert belongs to a different list.");
+            }
+        }
+
+        private void ThrowNodeIsNull(Node<T> toCheck)
+        {
+            if (toCheck == null)
+            {
+                throw new ArgumentNullException($"Node {nameof(toCheck)} can not be null");
+            }
+        }
+
+        private void ThrowListIsEmpty()
+        {
+            if (this.Count == 0)
+            {
+                throw new InvalidOperationException("List is empty. There is no node that can be removed.");
             }
         }
 
