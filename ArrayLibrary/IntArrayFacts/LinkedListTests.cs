@@ -43,7 +43,7 @@ namespace IntArrayFacts
             var testing = new ArrayLibrary.LinkedCollection<int>();
             testing.Add(1);
             testing.Add(2);
-            testing.AddBefore(3, 2);
+            testing.AddBefore(testing.Find(2), 3);
             Assert.True(testing.Find(3).NextNode.Value == 2);
             Assert.True(testing.Find(3).PrevNode.Value == 1);
         }
@@ -54,7 +54,7 @@ namespace IntArrayFacts
             var testing = new ArrayLibrary.LinkedCollection<int>();
             testing.Add(1);
             testing.Add(2);
-            testing.AddAfter(3, 1);
+            testing.AddAfter(testing.Find(1), 3);
             Assert.True(testing.Find(3).NextNode.Value == 2);
             Assert.True(testing.Find(3).PrevNode.Value == 1);
         }
