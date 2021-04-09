@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ArrayLibrary
 {
-    public class Node<T>
+    public sealed class Node<T>
     {
         public Node<T> NextNode;
         public Node<T> PrevNode;
@@ -15,6 +15,23 @@ namespace ArrayLibrary
             this.Value = value;
         }
 
+        public LinkedCollection<T> List
+        {
+            get
+            {
+                if (IsLinked())
+                {
+                    LinkedCollection<T> reference = new LinkedCollection<T>
+                    {
+                        this
+                    };
+                    return reference;
+                }
+
+                return null;
+            }
+        }
+
         public void AddNewNode(T item)
         {
             Node<T> inserted = new Node<T>(item);
@@ -22,6 +39,11 @@ namespace ArrayLibrary
             inserted.PrevNode = this.PrevNode;
             this.PrevNode.NextNode = inserted;
             this.PrevNode = inserted;
+        }
+
+        private bool IsLinked()
+        {
+            return this.NextNode != null || this.PrevNode != null;
         }
     }
 }

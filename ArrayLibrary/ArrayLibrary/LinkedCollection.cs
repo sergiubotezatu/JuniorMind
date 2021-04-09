@@ -22,36 +22,43 @@ namespace ArrayLibrary
 
         public void Add(T item)
         {
-            AddLast(item);
+            Node<T> newNode = new Node<T>(item);
+            Add(newNode);
         }
 
         public void Add(Node<T> newNode)
         {
-            ThrowNodeIsNull(newNode);
-            Add(newNode.Value);
+            if (this.Count == 0)
+            {
+                AddFirst(newNode);
+            }
+            else
+            {
+                AddLast(newNode);
+            }
         }
 
         public void AddLast(T item)
         {
-             AddBefore(this.sentinel, item);
+            AddLast(new Node<T>(item));
         }
 
         public void AddLast(Node<T> newNode)
         {
-            ThrowNodeIsNull(newNode);
-            AddLast(newNode.Value);
+            AddBefore(this.sentinel, newNode);
         }
 
         public void AddFirst(T item)
         {
-            Node<T> toBeAdded = new Node<T>(item);
-            AddBefore(this.sentinel.NextNode, toBeAdded);
+            Node<T> newNode = new Node<T>(item);
+            AddFirst(newNode);
         }
 
         public void AddFirst(Node<T> newNode)
         {
             ThrowNodeIsNull(newNode);
-            AddFirst(newNode.Value);
+            ThrowNodeBelongsToADifferentList(newNode);
+            AddAfter(this.sentinel, newNode);
         }
 
         public void AddBefore(Node<T> after, Node<T> newNode)
@@ -59,20 +66,17 @@ namespace ArrayLibrary
             ThrowNodeIsNull(newNode);
             ThrowNodeIsNull(after);
             ThrowNodeBelongsToADifferentList(newNode);
-            AddBefore(after, newNode.Value);
+            ThrowNodeDoesNotExist(after);
+            newNode.NextNode = after;
+            newNode.PrevNode = after.PrevNode;
+            after.PrevNode.NextNode = newNode;
+            after.PrevNode = newNode;
+            this.Count++;
         }
 
         public void AddBefore(Node<T> after, T item)
         {
-            ThrowNodeIsNull(after);
-            Node<T> newNode = new Node<T>(item)
-            {
-                NextNode = after,
-                PrevNode = after.PrevNode
-            };
-            after.PrevNode.NextNode = newNode;
-            after.PrevNode = newNode;
-            this.Count++;
+            AddBefore(after, new Node<T>(item));
         }
 
         public void AddAfter(Node<T> before, Node<T> newNode)
@@ -80,20 +84,18 @@ namespace ArrayLibrary
             ThrowNodeIsNull(newNode);
             ThrowNodeIsNull(before);
             ThrowNodeBelongsToADifferentList(newNode);
-            AddAfter(before, newNode.Value);
+            newNode.PrevNode = before;
+            newNode.NextNode = before.NextNode;
+            before.NextNode.PrevNode = newNode;
+            before.NextNode = newNode;
+            this.Count++;
         }
 
         public void AddAfter(Node<T> before, T item)
         {
             ThrowNodeIsNull(before);
-            Node<T> toAdd = new Node<T>(item)
-            {
-                NextNode = before.NextNode,
-                PrevNode = before
-            };
-            before.NextNode.PrevNode = toAdd;
-            before.NextNode = toAdd;
-            ThrowNodeDoesNotExist(before.Value);
+            ThrowNodeDoesNotExist(before);
+            AddAfter(before, new Node<T>(item));
         }
 
         public void Clear()
@@ -151,7 +153,7 @@ namespace ArrayLibrary
         public bool Remove(Node<T> selected)
         {
             ThrowNodeIsNull(selected);
-            ThrowNodeDoesNotExist(selected.Value);
+            ThrowNodeDoesNotExist(selected);
             return Remove(selected.Value);
         }
 
@@ -169,17 +171,20 @@ namespace ArrayLibrary
             Remove(toBeRemoved);
         }
 
-        public Node<T> Find(T value)
+        public Node<T> Find(T item)
         {
-            if (!TryFind(value, out Node<T> toBeFound))
+            Node<T> toBeFound = this.sentinel.NextNode;
+            foreach (T element in this)
             {
-                string message = this.Count == 0 ?
-                    "This list is Empty. Please add a node before trying to access elements."
-                    : "The node you are searching for does not exist in this list.";
-                throw new InvalidOperationException(message);
+                if (element.Equals(item))
+                {
+                    return toBeFound;
+                }
+
+                GoNext(ref toBeFound);
             }
 
-            return toBeFound;
+            return null;
         }
 
         public bool Contains(T item)
@@ -189,33 +194,27 @@ namespace ArrayLibrary
                 return false;
             }
 
-            return TryFind(item, out _);
+            return Find(item) != null;
         }
 
         public Node<T> FindLast(T item)
         {
-            Node<T> toReturn = this.sentinel.PrevNode;
-            ThrowNodeDoesNotExist(item);
-            while (toReturn != this.sentinel)
+            for (Node<T> toReturn = this.sentinel.PrevNode; !toReturn.Equals(this.sentinel); GetPrev(ref toReturn))
             {
                 if (toReturn.Value.Equals(item))
                 {
                     return toReturn;
                 }
-
-                toReturn = toReturn.PrevNode;
             }
 
-            return toReturn;
+            return null;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            Node<T> element = this.sentinel.NextNode;
-            while (element != this.sentinel)
+            for (Node<T> element = this.sentinel.NextNode; !element.Equals(this.sentinel); GoNext(ref element))
             {
                 yield return element.Value;
-                element = element.NextNode;
             }
         }
 
@@ -224,9 +223,9 @@ namespace ArrayLibrary
             return GetEnumerator();
         }
 
-        private void ThrowNodeDoesNotExist(T item)
+        private void ThrowNodeDoesNotExist(Node<T> node)
         {
-            if (!TryFind(item, out _))
+            if (!TryFind(node))
             {
                 throw new InvalidOperationException("Node is not in the current linked list");
             }
@@ -234,7 +233,7 @@ namespace ArrayLibrary
 
         private void ThrowNodeBelongsToADifferentList(Node<T> toCheck)
         {
-            if (toCheck.NextNode != null || toCheck.PrevNode != null)
+            if (toCheck.List != null)
             {
                 throw new InvalidOperationException("Node you are trying to insert belongs to a different list.");
             }
@@ -256,20 +255,43 @@ namespace ArrayLibrary
             }
         }
 
-        private bool TryFind(T item, out Node<T> toBeFound)
+        private bool TryFind(Node<T> toBeFound)
         {
-            toBeFound = this.sentinel.NextNode;
-            for (int i = 0; i <= this.Count; i++)
+            T searched = toBeFound.Value;
+            Node<T> first = Find(searched);
+            Node<T> last = FindLast(searched);
+            Node<T> guide = first;
+            if (first == null)
             {
-                if (toBeFound.Value.Equals(item))
+                return false;
+            }
+
+            if (first == last)
+            {
+                return toBeFound.Equals(guide);
+            }
+
+            while (!guide.Equals(last))
+            {
+                if (toBeFound.Equals(guide))
                 {
                     return true;
                 }
 
-                toBeFound = toBeFound.NextNode;
+                GoNext(ref guide);
             }
 
-            return false;
+            return toBeFound.Equals(guide);
+        }
+
+        private void GoNext(ref Node<T> next)
+        {
+            next = next.NextNode;
+        }
+
+        private void GetPrev(ref Node<T> previous)
+        {
+            previous = previous.PrevNode;
         }
     }
 }
