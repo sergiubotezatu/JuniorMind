@@ -66,7 +66,11 @@ namespace ArrayLibrary
             ThrowNodeIsNull(newNode);
             ThrowNodeIsNull(after);
             ThrowNodeBelongsToADifferentList(newNode);
-            ThrowNodeDoesNotExist(after);
+            if (!after.Equals(this.sentinel))
+            {
+                ThrowNodeDoesNotExist(after);
+            }
+
             newNode.NextNode = after;
             newNode.PrevNode = after.PrevNode;
             after.PrevNode.NextNode = newNode;
@@ -84,6 +88,11 @@ namespace ArrayLibrary
             ThrowNodeIsNull(newNode);
             ThrowNodeIsNull(before);
             ThrowNodeBelongsToADifferentList(newNode);
+            if (!before.Equals(this.sentinel))
+            {
+                ThrowNodeDoesNotExist(before);
+            }
+
             newNode.PrevNode = before;
             newNode.NextNode = before.NextNode;
             before.NextNode.PrevNode = newNode;

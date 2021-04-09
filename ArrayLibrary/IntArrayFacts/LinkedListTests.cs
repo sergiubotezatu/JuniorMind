@@ -90,8 +90,7 @@ namespace IntArrayFacts
             testing.Add(3);
             testing.Remove(2);
             Assert.True(testing.Count == 2);
-            var exception = Assert.Throws<InvalidOperationException>(() => testing.Find(2));
-            Assert.True(exception.Message == "The node you are searching for does not exist in this list.");
+            Assert.True(testing.Find(2) == null);
         }
 
         [Fact]
@@ -103,8 +102,7 @@ namespace IntArrayFacts
             testing.Add(3);
             testing.RemoveLast();
             Assert.True(testing.Count == 2);
-            var exception = Assert.Throws<InvalidOperationException>(() => testing.Find(3));
-            Assert.True(exception.Message == "The node you are searching for does not exist in this list.");
+            Assert.True(testing.Find(3) == null);
         }
 
         [Fact]
@@ -116,8 +114,7 @@ namespace IntArrayFacts
             testing.Add(3);
             testing.RemoveFirst();
             Assert.True(testing.Count == 2);
-            var exception = Assert.Throws<InvalidOperationException>(() => testing.Find(1));
-            Assert.True(exception.Message == "The node you are searching for does not exist in this list.");
+            Assert.True(testing.Find(1) == null);
         }        
     }
 }
