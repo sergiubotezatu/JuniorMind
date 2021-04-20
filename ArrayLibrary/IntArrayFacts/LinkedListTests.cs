@@ -115,6 +115,20 @@ namespace IntArrayFacts
             testing.RemoveFirst();
             Assert.True(testing.Count == 2);
             Assert.True(testing.Find(1) == null);
-        }        
+        }
+
+        [Fact]
+        public void RemovesCorrectstElement()
+        {
+            var testing = new ArrayLibrary.LinkedCollection<int>();
+            testing.Add(1);
+            testing.Add(2);
+            testing.Add(3);
+            Node<int> test = new Node<int>(2);
+            test.NextNode = new Node<int>(3);
+            string expectedMess = "Node is not in the current linked list";
+            var exception = Assert.Throws<InvalidOperationException>(() => testing.AddAfter(test, 0));
+            Assert.True(expectedMess.Equals(exception.Message));
+        }
     }
 }
