@@ -22,12 +22,19 @@ namespace ArrayLibrary
             {
                 if (IsLinked())
                 {
-                    return CreateList(this);
+                    if (this.IsSentinel && this.NextNode.IsSentinel)
+                    {
+                        return new LinkedCollection<T>();
+                    }
+
+                    return CreateList();
                 }
 
                 return null;
             }
         }
+
+        internal bool IsSentinel { get; set; }
 
         public void AddPrevious(Node<T> newNode)
         {
@@ -59,70 +66,48 @@ namespace ArrayLibrary
             }
         }
 
-        public Node<T> Start()
-        {
-            Node<T> head = this;
-            while (head.PrevNode != null)
-            {
-                head = head.PrevNode;
-            }
-
-            return head;
-        }
-
-        public Node<T> End()
-        {
-            Node<T> end = this;
-            while (end.NextNode != null)
-            {
-                end = end.NextNode;
-            }
-
-            return end;
-        }
-
         private bool IsLinked()
         {
             return PrevNode != null || NextNode != null;
         }
 
-        private LinkedCollection<T> CreateList(Node<T> node)
+        private LinkedCollection<T> CreateList()
         {
             LinkedCollection<T> toReturn = new LinkedCollection<T>();
-            Node<T> temp = node.PrevNode;
-            if (IsCircular(node))
+            if (IsCircular(out Node<T> toAdd))
             {
-                return new LinkedCollection<T> { this };
+                while (!toAdd.IsSentinel)
+                {
+                    toReturn.Add(toAdd.Value);
+                    toAdd = toAdd.NextNode;
+                }
+
+                return toReturn;
             }
 
-            while (node != null)
-            {
-                toReturn.AddLast(node.Value);
-                node = node.NextNode;
-            }
-
-            while (temp != null)
-            {
-                toReturn.AddFirst(temp.Value);
-                temp = temp.PrevNode;
-            }
+            while (toAdd != null)
+                {
+                    toReturn.Add(toAdd.Value);
+                    toAdd = toAdd.NextNode;
+                }
 
             return toReturn;
         }
 
-        private bool IsCircular(Node<T> toCheck)
+        private bool IsCircular(out Node<T> toCheck)
         {
-            Node<T> cycle = toCheck.PrevNode;
-            while (!toCheck.Equals(cycle))
+            toCheck = this;
+            while (!toCheck.IsSentinel)
             {
-                if (toCheck.NextNode == null)
+                if (toCheck.PrevNode == null)
                 {
                     return false;
                 }
 
-                toCheck = toCheck.NextNode;
+                toCheck = toCheck.PrevNode;
             }
 
+            toCheck = toCheck.NextNode;
             return true;
         }
     }

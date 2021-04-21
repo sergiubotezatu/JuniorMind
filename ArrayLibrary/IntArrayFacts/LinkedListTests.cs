@@ -118,14 +118,16 @@ namespace IntArrayFacts
         }
 
         [Fact]
-        public void RemovesCorrectstElement()
+        public void ThrowsCorrectlyNodeNotInCurrentList()
         {
             var testing = new ArrayLibrary.LinkedCollection<int>();
             testing.Add(1);
             testing.Add(2);
             testing.Add(3);
             Node<int> test = new Node<int>(2);
-            test.NextNode = new Node<int>(3);
+            Node<int> testNext = new Node<int>(3);
+            test.NextNode = testNext;
+            testNext.PrevNode = test;
             string expectedMess = "Node is not in the current linked list";
             var exception = Assert.Throws<InvalidOperationException>(() => testing.AddAfter(test, 0));
             Assert.True(expectedMess.Equals(exception.Message));
