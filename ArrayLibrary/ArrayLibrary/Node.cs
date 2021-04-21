@@ -76,6 +76,11 @@ namespace ArrayLibrary
             LinkedCollection<T> toReturn = new LinkedCollection<T>();
             if (IsCircular(out Node<T> toAdd))
             {
+                if (toAdd == null)
+                {
+                    return null;
+                }
+
                 while (!toAdd.IsSentinel)
                 {
                     toReturn.Add(toAdd.Value);
@@ -97,11 +102,18 @@ namespace ArrayLibrary
         private bool IsCircular(out Node<T> toCheck)
         {
             toCheck = this;
+            Node<T> temp = toCheck.NextNode;
             while (!toCheck.IsSentinel)
             {
                 if (toCheck.PrevNode == null)
                 {
                     return false;
+                }
+
+                if (toCheck.Equals(temp))
+                {
+                    toCheck = null;
+                    return true;
                 }
 
                 toCheck = toCheck.PrevNode;
