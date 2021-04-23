@@ -25,12 +25,7 @@ namespace ArrayLibrary
 
         public void Add(T item)
         {
-            Node<T> newNode = new Node<T>(item);
-            newNode.NextNode = this.sentinel;
-            newNode.PrevNode = this.sentinel.PrevNode;
-            this.sentinel.PrevNode.NextNode = newNode;
-            this.sentinel.PrevNode = newNode;
-            this.Count++;
+            AddLast(item);
         }
 
         public void Add(Node<T> newNode)
@@ -40,7 +35,12 @@ namespace ArrayLibrary
 
         public void AddLast(T item)
         {
-            AddLast(new Node<T>(item));
+            Node<T> newNode = new Node<T>(item);
+            newNode.NextNode = this.sentinel;
+            newNode.PrevNode = this.sentinel.PrevNode;
+            this.sentinel.PrevNode.NextNode = newNode;
+            this.sentinel.PrevNode = newNode;
+            this.Count++;
         }
 
         public void AddLast(Node<T> newNode)
@@ -68,7 +68,6 @@ namespace ArrayLibrary
             newNode.PrevNode = after.PrevNode;
             after.PrevNode.NextNode = newNode;
             after.PrevNode = newNode;
-            IncludeInList(after);
             this.Count++;
         }
 
@@ -108,42 +107,40 @@ namespace ArrayLibrary
             }
 
             int availableSpace = array.Length - arrayIndex;
-            if (availableSpace >= this.Count)
-            {
-                foreach (T element in this)
-                {
-                    array[arrayIndex] = element;
-                    arrayIndex++;
-                }
-            }
-            else
+            if (availableSpace < this.Count)
             {
                 throw new ArgumentException(
                     "Available space in destination array starting from index is smaller than the source list capacity" +
                     $"You need minimum {this.Count - 1} more positions after your index");
             }
+
+            foreach (T element in this)
+            {
+                array[arrayIndex] = element;
+                arrayIndex++;
+            }
         }
 
         public bool Remove(T item)
         {
-            if (!Contains(item))
+            try
+            {
+                return Remove(Find(item));
+            }
+            catch (InvalidOperationException)
             {
                 return false;
             }
-
-            Node<T> toBeRemoved = Find(item);
-            toBeRemoved.PrevNode.NextNode = toBeRemoved.NextNode;
-            toBeRemoved.NextNode.PrevNode = toBeRemoved.PrevNode;
-            IncludeInList(toBeRemoved);
-            this.Count--;
-            return !Contains(item);
         }
 
         public bool Remove(Node<T> selected)
         {
             ThrowNodeIsNull(selected);
             ThrowNodeDoesNotExist(selected);
-            return Remove(selected.Value);
+            selected.PrevNode.NextNode = selected.NextNode;
+            selected.NextNode.PrevNode = selected.PrevNode;
+            this.Count--;
+            return true;
         }
 
         public void RemoveLast()
@@ -173,15 +170,7 @@ namespace ArrayLibrary
 
         public bool Contains(T item)
         {
-            foreach (T element in this)
-            {
-                if (element.Equals(item))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return Find(item) != null;
         }
 
         public Node<T> FindLast(T item)
@@ -208,17 +197,6 @@ namespace ArrayLibrary
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        private void IncludeInList(Node<T> toAdd)
-        {
-            LinkedCollection<T> newConfig = toAdd.List;
-            Node<T> start = newConfig.Start();
-            Node<T> end = newConfig.End();
-            this.sentinel.NextNode = start;
-            this.sentinel.PrevNode = end;
-            start.PrevNode = this.sentinel;
-            end.NextNode = this.sentinel;
         }
 
         private void ThrowNodeDoesNotExist(Node<T> node)
@@ -255,7 +233,7 @@ namespace ArrayLibrary
 
         private void GoNext(ref Node<T> next)
         {
-            if (next != null)
+            if (next != this.sentinel)
             {
                 next = next.NextNode;
             }
@@ -263,7 +241,7 @@ namespace ArrayLibrary
 
         private void GetPrev(ref Node<T> previous)
         {
-            if (previous != null)
+            if (previous != this.sentinel)
             {
                 previous = previous.PrevNode;
             }
