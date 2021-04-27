@@ -75,7 +75,6 @@ namespace ArrayLibrary
         public void AddAfter(Node<T> before, Node<T> newNode)
         {
             ThrowNodeIsNull(before);
-            ThrowNodeDoesNotExist(before);
             AddBefore(before.NextNode, newNode);
         }
 

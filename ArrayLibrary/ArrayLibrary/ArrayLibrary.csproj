@@ -7,6 +7,10 @@
 	<PropertyGroup>
     <CodeAnalysisRuleSet>juniormind.ruleset</CodeAnalysisRuleSet>
 </PropertyGroup>
+	
+	<ItemGroup>
+	  <None Include="..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
