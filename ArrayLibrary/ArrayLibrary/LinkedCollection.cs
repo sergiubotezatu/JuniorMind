@@ -13,7 +13,7 @@ namespace ArrayLibrary
         {
             this.sentinel = new Node<T>(default)
             {
-                IsSentinel = true
+                List = this
             };
             this.sentinel.NextNode = this.sentinel;
             this.sentinel.PrevNode = this.sentinel;
@@ -35,12 +35,7 @@ namespace ArrayLibrary
 
         public void AddLast(T item)
         {
-            Node<T> newNode = new Node<T>(item);
-            newNode.NextNode = this.sentinel;
-            newNode.PrevNode = this.sentinel.PrevNode;
-            this.sentinel.PrevNode.NextNode = newNode;
-            this.sentinel.PrevNode = newNode;
-            this.Count++;
+            AddLast(new Node<T>(item));
         }
 
         public void AddLast(Node<T> newNode)
@@ -69,6 +64,7 @@ namespace ArrayLibrary
             after.PrevNode.NextNode = newNode;
             after.PrevNode = newNode;
             this.Count++;
+            after.PrevNode.List = this;
         }
 
         public void AddBefore(Node<T> after, T item)
@@ -79,6 +75,7 @@ namespace ArrayLibrary
         public void AddAfter(Node<T> before, Node<T> newNode)
         {
             ThrowNodeIsNull(before);
+            ThrowNodeDoesNotExist(before);
             AddBefore(before.NextNode, newNode);
         }
 
@@ -157,7 +154,7 @@ namespace ArrayLibrary
 
         public Node<T> Find(T item)
         {
-            for (var current = sentinel.NextNode; current != sentinel; GoNext(ref current))
+            for (var current = sentinel.NextNode; !current.Equals(this.sentinel); GoNext(ref current))
             {
                 if (current.Value.Equals(item))
                 {
@@ -175,7 +172,7 @@ namespace ArrayLibrary
 
         public Node<T> FindLast(T item)
         {
-            for (Node<T> current = this.sentinel.PrevNode; !current.Equals(this.sentinel); GetPrev(ref current))
+            for (var current = this.sentinel.PrevNode; !current.Equals(this.sentinel); GetPrev(ref current))
             {
                 if (current.Value.Equals(item))
                 {
@@ -201,7 +198,7 @@ namespace ArrayLibrary
 
         private void ThrowNodeDoesNotExist(Node<T> node)
         {
-            if (!node.List.IsEqualTo(this))
+            if (node.List == null || !this.Equals(node.List))
             {
                 throw new InvalidOperationException("Node is not in the current linked list");
             }
@@ -245,37 +242,6 @@ namespace ArrayLibrary
             {
                 previous = previous.PrevNode;
             }
-        }
-
-        private bool IsEqualTo(LinkedCollection<T> list)
-        {
-            Node<T> comparer = this.sentinel.NextNode;
-            if (list.Count != this.Count)
-            {
-                return false;
-            }
-
-            foreach (T element in list)
-            {
-                if (!comparer.Value.Equals(element))
-                {
-                    return false;
-                }
-
-                comparer = comparer.NextNode;
-            }
-
-            return true;
-        }
-
-        private Node<T> Start()
-        {
-            return this.sentinel.NextNode;
-        }
-
-        private Node<T> End()
-        {
-            return this.sentinel.PrevNode;
         }
     }
 }

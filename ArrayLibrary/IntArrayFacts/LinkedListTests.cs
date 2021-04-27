@@ -28,6 +28,17 @@ namespace IntArrayFacts
         }
 
         [Fact]
+        public void AddsCorrectlyExtraLastNode()
+        {
+            var testing = new ArrayLibrary.LinkedCollection<int>();
+            testing.Add(1);
+            testing.Add(2);
+            Node<int> test = new Node<int>(4);
+            testing.AddLast(test);
+            Assert.True(testing.Find(4).PrevNode.Value == 2);
+        }
+
+        [Fact]
         public void AddsCorrectlyExtraFirstElement()
         {
             var testing = new ArrayLibrary.LinkedCollection<int>();
@@ -82,7 +93,7 @@ namespace IntArrayFacts
         }        
 
         [Fact]
-        public void RemovesCorrectlyRequestedItem()
+        public void RemovesCorrectlyRequestedItem()        
         {
             var testing = new ArrayLibrary.LinkedCollection<int>();
             testing.Add(1);
@@ -124,12 +135,9 @@ namespace IntArrayFacts
             testing.Add(1);
             testing.Add(2);
             testing.Add(3);
-            Node<int> test = new Node<int>(2);
-            Node<int> testNext = new Node<int>(3);
-            test.NextNode = testNext;
-            testNext.PrevNode = test;
+            Node<int> test = new Node<int>(4);
             string expectedMess = "Node is not in the current linked list";
-            var exception = Assert.Throws<InvalidOperationException>(() => testing.AddAfter(test, 0));
+            var exception = Assert.Throws<InvalidOperationException>(() =>testing.AddAfter(test, 0));
             Assert.True(expectedMess.Equals(exception.Message));
         }
     }
