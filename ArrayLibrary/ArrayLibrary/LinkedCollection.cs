@@ -50,7 +50,7 @@ namespace ArrayLibrary
 
         public void AddFirst(Node<T> newNode)
         {
-            AddBefore(this.sentinel.NextNode, newNode);
+            AddAfter(this.sentinel, newNode);
         }
 
         public void AddBefore(Node<T> after, Node<T> newNode)
@@ -64,7 +64,7 @@ namespace ArrayLibrary
             after.PrevNode.NextNode = newNode;
             after.PrevNode = newNode;
             this.Count++;
-            after.PrevNode.List = this;
+            newNode.List = this;
         }
 
         public void AddBefore(Node<T> after, T item)
@@ -153,7 +153,7 @@ namespace ArrayLibrary
 
         public Node<T> Find(T item)
         {
-            for (var current = sentinel.NextNode; !current.Equals(this.sentinel); GoNext(ref current))
+            for (var current = sentinel.NextNode; !current.Equals(this.sentinel); current = current.NextNode)
             {
                 if (current.Value.Equals(item))
                 {
@@ -171,7 +171,7 @@ namespace ArrayLibrary
 
         public Node<T> FindLast(T item)
         {
-            for (var current = this.sentinel.PrevNode; !current.Equals(this.sentinel); GetPrev(ref current))
+            for (var current = this.sentinel.PrevNode; !current.Equals(this.sentinel); current = current.PrevNode)
             {
                 if (current.Value.Equals(item))
                 {
@@ -184,7 +184,7 @@ namespace ArrayLibrary
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (Node<T> element = this.sentinel.NextNode; !element.Equals(this.sentinel); GoNext(ref element))
+            for (Node<T> element = this.sentinel.NextNode; !element.Equals(this.sentinel); element = element.NextNode)
             {
                 yield return element.Value;
             }
@@ -224,22 +224,6 @@ namespace ArrayLibrary
             if (this.Count == 0)
             {
                 throw new InvalidOperationException("List is empty. There is no node that can be removed.");
-            }
-        }
-
-        private void GoNext(ref Node<T> next)
-        {
-            if (next != this.sentinel)
-            {
-                next = next.NextNode;
-            }
-        }
-
-        private void GetPrev(ref Node<T> previous)
-        {
-            if (previous != this.sentinel)
-            {
-                previous = previous.PrevNode;
             }
         }
     }
