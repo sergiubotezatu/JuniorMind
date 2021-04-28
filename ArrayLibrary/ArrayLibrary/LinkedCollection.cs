@@ -119,14 +119,13 @@ namespace ArrayLibrary
 
         public bool Remove(T item)
         {
-            try
-            {
-                return Remove(Find(item));
-            }
-            catch (InvalidOperationException)
+            Node<T> toFind = Find(item);
+            if (toFind == null)
             {
                 return false;
             }
+
+            return Remove(toFind);
         }
 
         public bool Remove(Node<T> selected)
