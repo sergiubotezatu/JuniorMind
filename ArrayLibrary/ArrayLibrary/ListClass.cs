@@ -5,13 +5,13 @@ using System.Text;
 
 namespace ArrayLibrary
 {
-    public class List<T>
+    public class ListCollection<T> : ICollection<T>
     {
         private T[] array;
 
-        public List()
+        public ListCollection()
         {
-            int initialCapacity = 4;
+            int initialCapacity = 1;
             this.Count = 0;
             this.array = new T[initialCapacity];
         }
@@ -19,6 +19,8 @@ namespace ArrayLibrary
         public int Count { get; private set; }
 
         public int Length { get => this.array.Length; }
+
+        public bool IsReadOnly => false;
 
         public T this[int index]
         {
@@ -47,16 +49,21 @@ namespace ArrayLibrary
             }
         }
 
-        public void Add(T element)
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Add(T item)
         {
             EnsureCapacity();
-            this.array[this.Count] = element;
+            this.array[this.Count] = item;
             this.Count++;
         }
 
-        public bool Contains(T element)
+        public bool Contains(T item)
         {
-            return !IndexOf(element).Equals(-1);
+            return !IndexOf(item).Equals(-1);
         }
 
         public int IndexOf(T element)
@@ -92,25 +99,25 @@ namespace ArrayLibrary
             Count--;
         }
 
-        public void CopyTo(T[] array, int index)
+        public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
 
-            if (index < 0)
+            if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), "Parameter can not be less than 0");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Parameter can not be less than 0");
             }
 
-            int availableSpace = array.Length - index;
+            int availableSpace = array.Length - arrayIndex;
             if (availableSpace >= this.Count)
             {
                 for (int i = 0; i < this.Count; i++)
                 {
-                    array[index] = this.array[i];
-                    index++;
+                    array[arrayIndex] = this.array[i];
+                    arrayIndex++;
                 }
             }
             else
@@ -121,9 +128,9 @@ namespace ArrayLibrary
             }
         }
 
-        public bool Remove(T element)
+        public bool Remove(T item)
         {
-            int itemPos = IndexOf(element);
+            int itemPos = IndexOf(item);
             int newCount = this.Count - 1;
             if (itemPos == -1)
             {
@@ -137,7 +144,7 @@ namespace ArrayLibrary
             }
 
             T replacer = array[itemPos + 1];
-            RemoveAt(IndexOf(element));
+            RemoveAt(IndexOf(item));
             return this.Count == newCount && this.array[itemPos].Equals(replacer);
         }
 

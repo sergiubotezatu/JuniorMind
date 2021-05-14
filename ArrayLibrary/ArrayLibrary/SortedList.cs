@@ -9,9 +9,9 @@ namespace ArrayLibrary
     public class SortedList<T> : IList<T>
         where T : IComparable<T>
     {
-        protected readonly ArrayLibrary.List<T> initList;
+        protected readonly ArrayLibrary.ListCollection<T> initList;
 
-        public SortedList(ArrayLibrary.List<T> objects)
+        public SortedList(ArrayLibrary.ListCollection<T> objects)
         {
             this.initList = objects;
         }

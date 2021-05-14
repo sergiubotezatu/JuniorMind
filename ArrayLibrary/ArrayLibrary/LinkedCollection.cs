@@ -194,6 +194,11 @@ namespace ArrayLibrary
             return GetEnumerator();
         }
 
+        internal Node<T> GetFirstElement()
+        {
+            return this.sentinel.NextNode;
+        }
+
         private void ThrowNodeDoesNotExist(Node<T> node)
         {
             if (node.List == null || !this.Equals(node.List))
