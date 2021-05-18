@@ -7,8 +7,8 @@ namespace ArrayLibrary
 {
     public struct KeyValuePair<TKey, TValue>
     {
-        public readonly TKey Key;
-        public readonly TValue Value;
+        public TKey Key;
+        public TValue Value;
 
         public KeyValuePair(TKey key, TValue value)
         {
@@ -53,18 +53,6 @@ namespace ArrayLibrary
             set => this.Bucket[index] = value;
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            this.Bucket[this.Count - 1] = item;
-            this.Count++;
-        }
-
-        public void AddFirst(KeyValuePair<TKey, TValue> item)
-        {
-            this.Bucket[0] = item;
-            this.Count++;
-        }
-
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
             foreach (KeyValuePair<TKey, TValue> element in this)
@@ -76,12 +64,6 @@ namespace ArrayLibrary
             }
 
             return false;
-        }
-
-        public void Clear()
-        {
-            this.Count = 0;
-            this.FreePositions = new ListCollection<int> { -1 };
         }
 
         public void CopyTo(Array array, int index)
@@ -119,6 +101,56 @@ namespace ArrayLibrary
             {
                 yield return Bucket[i];
             }
+        }
+
+        internal void Add(KeyValuePair<TKey, TValue> item)
+        {
+            this.Bucket[this.Count] = item;
+            this.Count++;
+        }
+
+        internal void Remove(KeyValuePair<TKey, TValue> item)
+        {
+            int index = -1;
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this.Bucket[i].Equals(item))
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            RemoveAt(index);
+        }
+
+        internal void RemoveAt(int index)
+        {
+            if (index < 0 || index >= this.Count)
+            {
+                return;
+            }
+
+            AddNewEmptyPos(index);
+            while (index < this.Count - 1)
+            {
+                this.Bucket[index] = this.Bucket[index + 1];
+                index++;
+            }
+
+            this.Count--;
+        }
+
+        internal void Clear()
+        {
+            this.Count = 0;
+            this.FreePositions = new ListCollection<int> { -1 };
+        }
+
+        private void AddNewEmptyPos(int newEmpty)
+        {
+            FreePositions[FreePositions.Count - 1] = newEmpty;
+            FreePositions.Add(-1);
         }
     }
 }
