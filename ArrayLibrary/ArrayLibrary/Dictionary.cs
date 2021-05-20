@@ -8,84 +8,63 @@ namespace ArrayLibrary
     public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey : IEquatable<TKey>
     {
-        private readonly Buckets<TKey, TValue>[] listOFBuckets;
+        private readonly int[] indexes;
+        private Bucket<TKey, TValue>[] buckets;
 
-        public Dictionary(int horisontalLength)
+        public Dictionary(int horizontalLength)
         {
-            this.listOFBuckets = new Buckets<TKey, TValue>[horisontalLength];
+            int initLength = 5;
+            this.indexes = new int[horizontalLength];
+            PopulateArr(indexes);
+            this.buckets = new Bucket<TKey, TValue>[initLength];
         }
 
-        public ICollection<TKey> Keys => GetKeysCollection();
+        public ICollection<TKey> Keys => throw new NotImplementedException();
 
-        public ICollection<TValue> Values => GetValuesCollection();
+        public ICollection<TValue> Values => throw new NotImplementedException();
 
         public int Count { get; private set; }
 
-        public bool IsReadOnly => false;
+        public bool IsReadOnly => throw new NotImplementedException();
 
-        public TValue this[TKey key]
-        {
-            get => GetValue(key);
-            set
-            {
-                EditSpecifiedValue(key, value);
-            }
-        }
+        private SLinkedList FreePositions { get; set; } = new SLinkedList();
+
+        public TValue this[TKey key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void Add(TKey key, TValue value)
         {
-            KeyValuePair<TKey, TValue> newItem = new KeyValuePair<TKey, TValue>(key, value);
-            Add(newItem);
+            Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            int arrayPos = HashIndex(item);
-            if (ContainsKey(item.Key))
-            {
-                throw new InvalidOperationException("This key is already used in this collection");
-            }
-
-            if (this.listOFBuckets[arrayPos].FreePositions[0] == -1)
-            {
-                Buckets<TKey, TValue> toAdd = new Buckets<TKey, TValue>();
-                toAdd.Add(item);
-                this.listOFBuckets[arrayPos] = toAdd;
-            }
-            else
-            {
-                this.listOFBuckets[arrayPos][this.listOFBuckets[arrayPos].FreePositions[0]] = item;
-                this.listOFBuckets[arrayPos].FreePositions.Remove(this.listOFBuckets[arrayPos].FreePositions[0]);
-            }
-
+            int bucketPos = item.GetHash(this.indexes.Length);
+            int empty = FreePositions.FirstEmpty;
+            this.buckets[this.Count] = new Bucket<TKey, TValue>(item);
+            this.buckets[this.Count].Next = empty != -1 ? empty : this.indexes[bucketPos];
+            this.indexes[bucketPos] = this.Count;
             this.Count++;
+            EnsureCapacity();
         }
 
         public void Add(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
-            KeyValuePair<TKey, TValue> newItem = new KeyValuePair<TKey, TValue>(item.Key, item.Value);
-            Add(newItem);
+            Add(new KeyValuePair<TKey, TValue>(item.Key, item.Value));
         }
 
         public void Clear()
         {
-            foreach (Buckets<TKey, TValue> bucket in this.listOFBuckets)
-            {
-                bucket.FreePositions = new ListCollection<int> { -1 };
-            }
-
             this.Count = 0;
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            int index = item.GetHash(this.listOFBuckets.Length);
-            return this.listOFBuckets[index].Contains(item);
-        }
+            if (!TryGetValue(item.Key, out TValue value))
+            {
+                return false;
+            }
 
-        public bool ContainsKey(TKey key)
-        {
-            return TryFindKey(key, out _);
+            return item.Value.Equals(value);
         }
 
         public bool Contains(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
@@ -93,172 +72,178 @@ namespace ArrayLibrary
             return Contains(new KeyValuePair<TKey, TValue>(item.Key, item.Value));
         }
 
+        public bool ContainsKey(TKey key)
+        {
+            return TryGetValue(key, out _);
+        }
+
         public void CopyTo(System.Collections.Generic.KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Parameter can not be less than 0");
-            }
-
-            int availableSpace = array.Length - arrayIndex;
-            if (availableSpace < this.Count)
-            {
-                throw new ArgumentException(
-                    "Available space in destination array starting from index is smaller than the source list capacity" +
-                    $"You need minimum {this.Count - 1} more positions after your index");
-            }
-
-            int arrayPositions = 0;
-            for (int i = 0; i < this.Count; i++)
-            {
-                foreach (KeyValuePair<TKey, TValue> pair in this.listOFBuckets[i])
-                {
-                    array[arrayPositions] = new System.Collections.Generic.KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
-                }
-            }
-        }
-
-        IEnumerator<System.Collections.Generic.KeyValuePair<TKey, TValue>> IEnumerable<System.Collections.Generic.KeyValuePair<TKey, TValue>>.GetEnumerator()
-        {
-            return (IEnumerator<System.Collections.Generic.KeyValuePair<TKey, TValue>>)GetEnumerator();
-        }
-
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            for (int i = 0; i < this.Count; i++)
-            {
-                foreach (KeyValuePair<TKey, TValue> pair in this.listOFBuckets[i])
-                {
-                    yield return pair;
-                }
-            }
+            throw new NotImplementedException();
         }
 
         public bool Remove(TKey key)
         {
-            if (!TryFindKey(key, out int index))
-            {
-                return false;
-            }
-
-            this.listOFBuckets[GetKeyPosition(key)].RemoveAt(index);
-            this.Count--;
-            return true;
+            throw new NotImplementedException();
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            if (!Contains(item))
+            int bucketPos = item.GetHash(this.indexes.Length);
+            if (indexes[bucketPos] == -1)
             {
                 return false;
             }
 
-            return Remove(item.Key);
+            if (this.buckets[bucketPos].Next != -1)
+            {
+                return RemoveFromHashBucket(item, bucketPos);
+            }
+
+            if (!this.buckets[bucketPos].Pair.Equals(item))
+            {
+                return false;
+            }
+
+            this.indexes[bucketPos] = -1;
+            this.Count--;
+            return true;
         }
 
         public bool Remove(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
-            return Remove(item.Key);
+            throw new NotImplementedException();
         }
 
         public bool TryGetValue(TKey key, out TValue value)
         {
+            int bucketPos = GetKeyBucket(key);
             value = default;
-            Buckets<TKey, TValue> searchedBucket = listOFBuckets[GetKeyPosition(key)];
-            if (!TryFindKey(key, out int index))
+            if (this.indexes[bucketPos] == -1)
             {
                 return false;
             }
 
-            value = searchedBucket[index].Value;
-            return true;
+            int bucketIndex = this.indexes[bucketPos];
+            Bucket<TKey, TValue> toCheck = this.buckets[bucketIndex];
+            while (toCheck.Next != -1)
+            {
+                if (toCheck.Pair.Key.Equals(key))
+                {
+                    value = toCheck.Pair.Value;
+                    return true;
+                }
+
+                toCheck = this.buckets[toCheck.Next];
+            }
+
+            return toCheck.Pair.Key.Equals(key);
+        }
+
+        public IEnumerator<System.Collections.Generic.KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            for (int i = 0; i < this.indexes.Length; i++)
+            {
+                Bucket<TKey, TValue> toEnum = this.buckets[indexes[i]];
+                while (toEnum.Next != -1)
+                {
+                    yield return toEnum.Pair.ToCollectionsGeneric();
+                    toEnum = this.buckets[toEnum.Next];
+                }
+
+                yield return toEnum.Pair.ToCollectionsGeneric();
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
-        }
-
-        private int HashIndex(KeyValuePair<TKey, TValue> bucket)
-        {
-            return bucket.GetHash(this.listOFBuckets.Length);
-        }
-
-        private int GetKeyPosition(TKey key)
-        {
-            int index = key.GetHashCode();
-            while (index >= this.listOFBuckets.Length)
+            for (int i = 0; i < this.indexes.Length; i++)
             {
-                index %= this.listOFBuckets.Length;
-            }
-
-            return index;
-        }
-
-        private bool TryFindKey(TKey key, out int keyPos)
-        {
-            Buckets<TKey, TValue> container = listOFBuckets[GetKeyPosition(key)];
-            keyPos = -1;
-            for (int i = 0; i < container.Count; i++)
-            {
-                if (container[i].Key.Equals(key))
+                Bucket<TKey, TValue> toEnum = this.buckets[indexes[i]];
+                while (toEnum.Next != -1)
                 {
-                    keyPos = i;
-                    return true;
+                    yield return toEnum.Pair;
+                    toEnum = this.buckets[toEnum.Next];
                 }
-            }
 
-            return false;
+                yield return toEnum.Pair;
+            }
         }
 
-        private TValue GetValue(TKey key)
+        private void PopulateArr(int[] buckets)
         {
-            if (!TryGetValue(key, out TValue value))
+            for (int i = 0; i < buckets.Length; i++)
             {
-                throw new InvalidOperationException("The searched key is not used in this collection");
+                buckets[i] = -1;
             }
-
-            return value;
         }
 
-        private void EditSpecifiedValue(TKey key, TValue value)
+        private void EnsureCapacity()
         {
-            int position = GetKeyPosition(key);
-            if (TryFindKey(key, out int index))
+            if (this.Count >= this.buckets.Length)
             {
-                this.listOFBuckets[position][index] = new KeyValuePair<TKey, TValue>(key, value);
+                Array.Resize(ref this.buckets, this.buckets.Length + this.buckets.Length);
+            }
+        }
+
+        private int GetKeyBucket(TKey key)
+        {
+            int output = key.GetHashCode();
+            while (output > this.indexes.Length)
+            {
+                output %= this.indexes.Length;
+            }
+
+            return output;
+        }
+
+        private bool RemoveFromHashBucket(KeyValuePair<TKey, TValue> item, int bucketPos)
+        {
+            int bucketIndex = this.indexes[bucketPos];
+            int next = this.buckets[bucketIndex].Next;
+            int current = bucketIndex;
+            if (this.buckets[bucketIndex].Pair.Equals(item))
+            {
+                AddFreePosition(bucketIndex);
+                this.indexes[bucketPos] = this.buckets[bucketIndex].Next;
             }
             else
             {
-                Add(new KeyValuePair<TKey, TValue>(key, value));
+                if (!SetCurrentAndNext(ref current, ref next, item))
+                {
+                    return false;
+                }
+
+                AddFreePosition(next);
+                this.buckets[current].Next = this.buckets[next].Next;
             }
+
+            this.Count--;
+            return true;
         }
 
-        private ICollection<TKey> GetKeysCollection()
+        private bool SetCurrentAndNext(ref int current, ref int next, KeyValuePair<TKey, TValue> item)
         {
-            ListCollection<TKey> keys = new ListCollection<TKey>();
-            foreach (var item in this)
+            while (!this.buckets[next].Equals(item))
             {
-                keys.Add(item.Key);
+                Bucket<TKey, TValue> toCheck = this.buckets[next];
+                current = next;
+                next = toCheck.Next;
+                if (next == -1)
+                {
+                    return false;
+                }
             }
 
-            return keys;
+            return true;
         }
 
-        private ICollection<TValue> GetValuesCollection()
+        private void AddFreePosition(int index)
         {
-            ListCollection<TValue> values = new ListCollection<TValue>();
-            foreach (var item in this)
+            if (this.buckets[index].Next != -1)
             {
-                values.Add(item.Value);
+                FreePositions.Add(index);
             }
-
-            return values;
         }
     }
 }
