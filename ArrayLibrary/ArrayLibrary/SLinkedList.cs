@@ -31,7 +31,10 @@ namespace ArrayLibrary
 
         public void Remove()
         {
-            this.pointer.Next = this.pointer.Next.Next;
+            if (this.pointer.Next.Value != -1)
+            {
+                this.pointer.Next = this.pointer.Next.Next;
+            }
         }
     }
 }

@@ -40,11 +40,14 @@ namespace ArrayLibrary
         {
             int bucketPos = item.GetHash(this.indexes.Length);
             int empty = FreePositions.FirstEmpty;
-            this.buckets[this.Count] = new Bucket<TKey, TValue>(item);
-            this.buckets[this.Count].Next = empty != -1 ? empty : this.indexes[bucketPos];
+            this.buckets[this.Count] = new Bucket<TKey, TValue>(item)
+            {
+                Next = empty != -1 ? empty : this.indexes[bucketPos]
+            };
             this.indexes[bucketPos] = this.Count;
             this.Count++;
             EnsureCapacity();
+            FreePositions.Remove();
         }
 
         public void Add(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
