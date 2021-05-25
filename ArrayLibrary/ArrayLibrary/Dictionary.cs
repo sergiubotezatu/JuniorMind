@@ -8,15 +8,14 @@ namespace ArrayLibrary
     public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey : IEquatable<TKey>
     {
-        private readonly int[] indexes;
-        private Bucket<TKey, TValue>[] buckets;
+        private readonly int[] buckets;
+        private Element<TKey, TValue>[] elements;
 
         public Dictionary(int horizontalLength)
         {
-            int initLength = 5;
-            this.indexes = new int[horizontalLength];
-            PopulateArr(indexes);
-            this.buckets = new Bucket<TKey, TValue>[initLength];
+            this.buckets = new int[horizontalLength];
+            PopulateArr(buckets);
+            this.elements = new Element<TKey, TValue>[horizontalLength];
         }
 
         public ICollection<TKey> Keys => throw new NotImplementedException();
@@ -36,23 +35,18 @@ namespace ArrayLibrary
             Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            int bucketPos = item.GetHash(this.indexes.Length);
-            int empty = FreePositions.FirstEmpty;
-            this.buckets[this.Count] = new Bucket<TKey, TValue>(item)
-            {
-                Next = empty != -1 ? empty : this.indexes[bucketPos]
-            };
-            this.indexes[bucketPos] = this.Count;
-            this.Count++;
-            EnsureCapacity();
-            FreePositions.Remove();
-        }
-
         public void Add(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
-            Add(new KeyValuePair<TKey, TValue>(item.Key, item.Value));
+            int bucketPos = GetKeyElement(item.Key);
+            int empty = FreePositions.FirstEmpty;
+            EnsureCapacity();
+            this.elements[this.Count] = new Element<TKey, TValue>(item)
+            {
+                Next = empty != -1 ? empty : this.buckets[bucketPos]
+            };
+            this.buckets[bucketPos] = this.Count;
+            this.Count++;
+            FreePositions.Remove();
         }
 
         public void Clear()
@@ -60,7 +54,7 @@ namespace ArrayLibrary
             this.Count = 0;
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item)
+        public bool Contains(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
             if (!TryGetValue(item.Key, out TValue value))
             {
@@ -68,11 +62,6 @@ namespace ArrayLibrary
             }
 
             return item.Value.Equals(value);
-        }
-
-        public bool Contains(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
-        {
-            return Contains(new KeyValuePair<TKey, TValue>(item.Key, item.Value));
         }
 
         public bool ContainsKey(TKey key)
@@ -90,45 +79,42 @@ namespace ArrayLibrary
             throw new NotImplementedException();
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        public bool Remove(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
-            int bucketPos = item.GetHash(this.indexes.Length);
-            if (indexes[bucketPos] == -1)
+            int bucketPos = GetKeyElement(item.Key);
+            if (buckets[bucketPos] == -1)
             {
                 return false;
             }
 
-            if (this.buckets[bucketPos].Next != -1)
+            int elementIndex = this.buckets[bucketPos];
+            if (this.elements[elementIndex].Next != -1)
             {
-                return RemoveFromHashBucket(item, bucketPos);
+                return RemoveFromHashElement(item, bucketPos);
             }
 
-            if (!this.buckets[bucketPos].Pair.Equals(item))
+            if (!this.elements[elementIndex].Pair.Equals(item))
             {
                 return false;
             }
 
-            this.indexes[bucketPos] = -1;
+            FreePositions.Add(buckets[bucketPos]);
+            this.buckets[bucketPos] = -1;
             this.Count--;
             return true;
         }
 
-        public bool Remove(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool TryGetValue(TKey key, out TValue value)
         {
-            int bucketPos = GetKeyBucket(key);
+            int bucketPos = GetKeyElement(key);
             value = default;
-            if (this.indexes[bucketPos] == -1)
+            if (this.buckets[bucketPos] == -1)
             {
                 return false;
             }
 
-            int bucketIndex = this.indexes[bucketPos];
-            Bucket<TKey, TValue> toCheck = this.buckets[bucketIndex];
+            int bucketIndex = this.buckets[bucketPos];
+            Element<TKey, TValue> toCheck = this.elements[bucketIndex];
             while (toCheck.Next != -1)
             {
                 if (toCheck.Pair.Key.Equals(key))
@@ -137,7 +123,7 @@ namespace ArrayLibrary
                     return true;
                 }
 
-                toCheck = this.buckets[toCheck.Next];
+                toCheck = this.elements[toCheck.Next];
             }
 
             return toCheck.Pair.Key.Equals(key);
@@ -145,32 +131,22 @@ namespace ArrayLibrary
 
         public IEnumerator<System.Collections.Generic.KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            for (int i = 0; i < this.indexes.Length; i++)
+            for (int i = 0; i < this.buckets.Length; i++)
             {
-                Bucket<TKey, TValue> toEnum = this.buckets[indexes[i]];
+                Element<TKey, TValue> toEnum = this.elements[buckets[i]];
                 while (toEnum.Next != -1)
                 {
-                    yield return toEnum.Pair.ToCollectionsGeneric();
-                    toEnum = this.buckets[toEnum.Next];
+                    yield return toEnum.Pair;
+                    toEnum = this.elements[toEnum.Next];
                 }
 
-                yield return toEnum.Pair.ToCollectionsGeneric();
+                yield return toEnum.Pair;
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (int i = 0; i < this.indexes.Length; i++)
-            {
-                Bucket<TKey, TValue> toEnum = this.buckets[indexes[i]];
-                while (toEnum.Next != -1)
-                {
-                    yield return toEnum.Pair;
-                    toEnum = this.buckets[toEnum.Next];
-                }
-
-                yield return toEnum.Pair;
-            }
+            return GetEnumerator();
         }
 
         private void PopulateArr(int[] buckets)
@@ -183,32 +159,32 @@ namespace ArrayLibrary
 
         private void EnsureCapacity()
         {
-            if (this.Count >= this.buckets.Length)
+            if (this.Count >= this.elements.Length)
             {
-                Array.Resize(ref this.buckets, this.buckets.Length + this.buckets.Length);
+                Array.Resize(ref this.elements, this.elements.Length + this.elements.Length);
             }
         }
 
-        private int GetKeyBucket(TKey key)
+        private int GetKeyElement(TKey key)
         {
             int output = key.GetHashCode();
-            while (output > this.indexes.Length)
+            while (output > this.buckets.Length)
             {
-                output %= this.indexes.Length;
+                output %= this.buckets.Length;
             }
 
             return output;
         }
 
-        private bool RemoveFromHashBucket(KeyValuePair<TKey, TValue> item, int bucketPos)
+        private bool RemoveFromHashElement(KeyValuePair<TKey, TValue> item, int bucketPos)
         {
-            int bucketIndex = this.indexes[bucketPos];
-            int next = this.buckets[bucketIndex].Next;
+            int bucketIndex = this.buckets[bucketPos];
+            int next = this.elements[bucketIndex].Next;
             int current = bucketIndex;
-            if (this.buckets[bucketIndex].Pair.Equals(item))
+            if (this.elements[bucketIndex].Pair.Equals(item))
             {
                 AddFreePosition(bucketIndex);
-                this.indexes[bucketPos] = this.buckets[bucketIndex].Next;
+                this.buckets[bucketPos] = this.elements[bucketIndex].Next;
             }
             else
             {
@@ -218,7 +194,7 @@ namespace ArrayLibrary
                 }
 
                 AddFreePosition(next);
-                this.buckets[current].Next = this.buckets[next].Next;
+                this.elements[current].Next = this.elements[next].Next;
             }
 
             this.Count--;
@@ -227,9 +203,9 @@ namespace ArrayLibrary
 
         private bool SetCurrentAndNext(ref int current, ref int next, KeyValuePair<TKey, TValue> item)
         {
-            while (!this.buckets[next].Equals(item))
+            while (!this.elements[next].Equals(item))
             {
-                Bucket<TKey, TValue> toCheck = this.buckets[next];
+                Element<TKey, TValue> toCheck = this.elements[next];
                 current = next;
                 next = toCheck.Next;
                 if (next == -1)
@@ -243,7 +219,7 @@ namespace ArrayLibrary
 
         private void AddFreePosition(int index)
         {
-            if (this.buckets[index].Next != -1)
+            if (this.elements[index].Next != -1)
             {
                 FreePositions.Add(index);
             }
