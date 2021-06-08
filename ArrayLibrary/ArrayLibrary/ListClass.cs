@@ -123,7 +123,7 @@ namespace ArrayLibrary
             else
             {
                 throw new ArgumentException(
-                    "Available space in destination array starting from index is smaller than the source list capacity" +
+                    "Available space in destination array starting from index is smaller than the source list capacity. " +
                     $"You need minimum {this.Count - 1} more positions after your index");
             }
         }

@@ -10,6 +10,7 @@ namespace ArrayLibrary
     {
         private readonly int[] buckets;
         private Element<TKey, TValue>[] elements;
+        private int freeIndex;
 
         public Dictionary(int horizontalLength)
         {
@@ -18,17 +19,21 @@ namespace ArrayLibrary
             this.elements = new Element<TKey, TValue>[horizontalLength];
         }
 
-        public ICollection<TKey> Keys => throw new NotImplementedException();
+        public ICollection<TKey> Keys => GetKeys();
 
-        public ICollection<TValue> Values => throw new NotImplementedException();
+        public ICollection<TValue> Values => GetValues();
 
         public int Count { get; private set; }
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly => false;
 
         private SLinkedList FreePositions { get; set; } = new SLinkedList();
 
-        public TValue this[TKey key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public TValue this[TKey key]
+        {
+            get => GetIndexerValue(key);
+            set => SetIndexerValue(key, value);
+        }
 
         public void Add(TKey key, TValue value)
         {
@@ -37,16 +42,11 @@ namespace ArrayLibrary
 
         public void Add(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
-            int bucketPos = GetKeyElement(item.Key);
-            int empty = FreePositions.FirstEmpty;
+            int actualPosition = freeIndex == -1 ? this.Count : freeIndex;
             EnsureCapacity();
-            this.elements[this.Count] = new Element<TKey, TValue>(item)
-            {
-                Next = empty != -1 ? empty : this.buckets[bucketPos]
-            };
-            this.buckets[bucketPos] = this.Count;
-            this.Count++;
+            AddOn(actualPosition, item);
             FreePositions.Remove();
+            this.Count++;
         }
 
         public void Clear()
@@ -71,17 +71,46 @@ namespace ArrayLibrary
 
         public void CopyTo(System.Collections.Generic.KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Parameter can not be less than 0");
+            }
+
+            int availableSpace = array.Length - arrayIndex;
+            if (availableSpace >= this.Count)
+            {
+                foreach (var item in this)
+                {
+                    array[arrayIndex] = item;
+                    arrayIndex++;
+                }
+            }
+            else
+            {
+                throw new ArgumentException(
+                    "Available space in destination array starting from index is smaller than the source list capacity. " +
+                    $"You need minimum {this.Count - 1} more positions after your index");
+            }
         }
 
         public bool Remove(TKey key)
         {
-            throw new NotImplementedException();
+            if (TryGetValue(key, out TValue value))
+            {
+                return Remove(new KeyValuePair<TKey, TValue>(key, value));
+            }
+
+            return false;
         }
 
         public bool Remove(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
-            int bucketPos = GetKeyElement(item.Key);
+            int bucketPos = GetKeyBucket(item.Key);
             if (buckets[bucketPos] == -1)
             {
                 return false;
@@ -99,6 +128,7 @@ namespace ArrayLibrary
             }
 
             FreePositions.Add(buckets[bucketPos]);
+            freeIndex = FreePositions.FirstEmpty;
             this.buckets[bucketPos] = -1;
             this.Count--;
             return true;
@@ -106,7 +136,7 @@ namespace ArrayLibrary
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            int bucketPos = GetKeyElement(key);
+            int bucketPos = GetKeyBucket(key);
             value = default;
             if (this.buckets[bucketPos] == -1)
             {
@@ -165,10 +195,10 @@ namespace ArrayLibrary
             }
         }
 
-        private int GetKeyElement(TKey key)
+        private int GetKeyBucket(TKey key)
         {
             int output = key.GetHashCode();
-            while (output > this.buckets.Length)
+            while (output >= this.buckets.Length)
             {
                 output %= this.buckets.Length;
             }
@@ -197,6 +227,7 @@ namespace ArrayLibrary
                 this.elements[current].Next = this.elements[next].Next;
             }
 
+            freeIndex = FreePositions.FirstEmpty;
             this.Count--;
             return true;
         }
@@ -223,6 +254,68 @@ namespace ArrayLibrary
             {
                 FreePositions.Add(index);
             }
+        }
+
+        private void AddOn(int position, System.Collections.Generic.KeyValuePair<TKey, TValue> item)
+        {
+            int bucketPos = GetKeyBucket(item.Key);
+            this.elements[position] = new Element<TKey, TValue>(item)
+            {
+                Next = this.buckets[bucketPos]
+            };
+
+            this.buckets[bucketPos] = position;
+        }
+
+        private ListCollection<TKey> GetKeys()
+        {
+            ListCollection<TKey> list = new ListCollection<TKey>();
+            foreach (var element in this)
+            {
+                list.Add(element.Key);
+            }
+
+            return list;
+        }
+
+        private ListCollection<TValue> GetValues()
+        {
+            ListCollection<TValue> list = new ListCollection<TValue>();
+            foreach (var element in this)
+            {
+                list.Add(element.Value);
+            }
+
+            return list;
+        }
+
+        private TValue GetIndexerValue(TKey key)
+        {
+            if (!TryGetValue(key, out TValue value))
+            {
+                throw new InvalidOperationException("The key used as index does not belong to this dictionary.");
+            }
+
+            return value;
+        }
+
+        private void SetIndexerValue(TKey key, TValue value)
+        {
+            int keyBucket = GetKeyBucket(key);
+            if (this.buckets[keyBucket] != -1)
+            {
+                Element<TKey, TValue> listHead = this.elements[keyBucket];
+                for (int i = this.buckets[keyBucket]; i != -1; i = listHead.Next)
+                {
+                    if (this.elements[i].Pair.Key.Equals(key))
+                    {
+                        this.elements[i] = new Element<TKey, TValue>(new KeyValuePair<TKey, TValue>(key, value));
+                        return;
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("The key of which value you are trying to set does not belong to this dictionary.");
         }
     }
 }
