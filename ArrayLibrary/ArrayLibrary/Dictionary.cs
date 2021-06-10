@@ -17,6 +17,7 @@ namespace ArrayLibrary
             this.buckets = new int[horizontalLength];
             PopulateArr(buckets);
             this.elements = new Element<TKey, TValue>[horizontalLength];
+            this.freeIndex = -1;
         }
 
         public ICollection<TKey> Keys => GetKeys();
@@ -26,8 +27,6 @@ namespace ArrayLibrary
         public int Count { get; private set; }
 
         public bool IsReadOnly => false;
-
-        private SLinkedList FreePositions { get; set; } = new SLinkedList();
 
         public TValue this[TKey key]
         {
@@ -42,10 +41,19 @@ namespace ArrayLibrary
 
         public void Add(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
-            int actualPosition = freeIndex == -1 ? this.Count : freeIndex;
+            int actualPosition;
+            if (freeIndex != -1)
+            {
+                actualPosition = freeIndex;
+                freeIndex = this.elements[freeIndex].Next;
+            }
+            else
+            {
+                actualPosition = this.Count;
+            }
+
             EnsureCapacity();
             AddOn(actualPosition, item);
-            FreePositions.Remove();
             this.Count++;
         }
 
@@ -82,7 +90,7 @@ namespace ArrayLibrary
             }
 
             int availableSpace = array.Length - arrayIndex;
-            if (availableSpace >= this.Count)
+            if (this.Count <= availableSpace)
             {
                 foreach (var item in this)
                 {
@@ -117,21 +125,21 @@ namespace ArrayLibrary
             }
 
             int elementIndex = this.buckets[bucketPos];
+            if (this.elements[elementIndex].Pair.Equals(item))
+            {
+                this.buckets[bucketPos] = this.elements[elementIndex].Next;
+                this.elements[elementIndex].Next = freeIndex;
+                freeIndex = elementIndex;
+                this.Count--;
+                return true;
+            }
+
             if (this.elements[elementIndex].Next != -1)
             {
-                return RemoveFromHashElement(item, bucketPos);
+                return RemoveFromBucket(item, bucketPos);
             }
 
-            if (!this.elements[elementIndex].Pair.Equals(item))
-            {
-                return false;
-            }
-
-            FreePositions.Add(buckets[bucketPos]);
-            freeIndex = FreePositions.FirstEmpty;
-            this.buckets[bucketPos] = -1;
-            this.Count--;
-            return true;
+            return false;
         }
 
         public bool TryGetValue(TKey key, out TValue value)
@@ -206,28 +214,23 @@ namespace ArrayLibrary
             return output;
         }
 
-        private bool RemoveFromHashElement(KeyValuePair<TKey, TValue> item, int bucketPos)
+        private bool RemoveFromBucket(KeyValuePair<TKey, TValue> item, int bucketPos)
         {
-            int bucketIndex = this.buckets[bucketPos];
-            int next = this.elements[bucketIndex].Next;
-            int current = bucketIndex;
-            if (this.elements[bucketIndex].Pair.Equals(item))
+            int current = this.buckets[bucketPos];
+            int next = this.elements[current].Next;
+            while (!this.elements[next].Equals(item))
             {
-                AddFreePosition(bucketIndex);
-                this.buckets[bucketPos] = this.elements[bucketIndex].Next;
-            }
-            else
-            {
-                if (!SetCurrentAndNext(ref current, ref next, item))
+                current = next;
+                next = this.elements[current].Next;
+                if (next == -1)
                 {
                     return false;
                 }
-
-                AddFreePosition(next);
-                this.elements[current].Next = this.elements[next].Next;
             }
 
-            freeIndex = FreePositions.FirstEmpty;
+            this.elements[current].Next = this.elements[next].Next;
+            this.elements[next].Next = freeIndex;
+            freeIndex = next;
             this.Count--;
             return true;
         }
@@ -246,14 +249,6 @@ namespace ArrayLibrary
             }
 
             return true;
-        }
-
-        private void AddFreePosition(int index)
-        {
-            if (this.elements[index].Next != -1)
-            {
-                FreePositions.Add(index);
-            }
         }
 
         private void AddOn(int position, System.Collections.Generic.KeyValuePair<TKey, TValue> item)
