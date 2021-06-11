@@ -69,12 +69,12 @@ namespace ArrayLibrary
                 return false;
             }
 
-            return item.Value.Equals(value);
+            return value.Equals(item.Value);
         }
 
         public bool ContainsKey(TKey key)
         {
-            return TryGetValue(key, out _);
+            return GetKeyIndex(key, out _) != -1;
         }
 
         public void CopyTo(System.Collections.Generic.KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -108,38 +108,24 @@ namespace ArrayLibrary
 
         public bool Remove(TKey key)
         {
-            if (TryGetValue(key, out TValue value))
-            {
-                return Remove(new KeyValuePair<TKey, TValue>(key, value));
-            }
-
-            return false;
-        }
-
-        public bool Remove(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
-        {
-            int bucketPos = GetKeyBucket(item.Key);
-            if (buckets[bucketPos] == -1)
+            int keyIndex = GetKeyIndex(key, out int previous);
+            if (keyIndex == -1)
             {
                 return false;
             }
 
-            int elementIndex = this.buckets[bucketPos];
-            if (this.elements[elementIndex].Pair.Equals(item))
+            return RemoveAt(keyIndex, previous);
+        }
+
+        public bool Remove(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
+        {
+            int itemIndex = GetKeyIndex(item.Key, out int previous);
+            if (itemIndex == -1 || !this.elements[itemIndex].Pair.Equals(item))
             {
-                this.buckets[bucketPos] = this.elements[elementIndex].Next;
-                this.elements[elementIndex].Next = freeIndex;
-                freeIndex = elementIndex;
-                this.Count--;
-                return true;
+                return false;
             }
 
-            if (this.elements[elementIndex].Next != -1)
-            {
-                return RemoveFromBucket(item, bucketPos);
-            }
-
-            return false;
+            return RemoveAt(itemIndex, previous);
         }
 
         public bool TryGetValue(TKey key, out TValue value)
@@ -214,43 +200,6 @@ namespace ArrayLibrary
             return output;
         }
 
-        private bool RemoveFromBucket(KeyValuePair<TKey, TValue> item, int bucketPos)
-        {
-            int current = this.buckets[bucketPos];
-            int next = this.elements[current].Next;
-            while (!this.elements[next].Equals(item))
-            {
-                current = next;
-                next = this.elements[current].Next;
-                if (next == -1)
-                {
-                    return false;
-                }
-            }
-
-            this.elements[current].Next = this.elements[next].Next;
-            this.elements[next].Next = freeIndex;
-            freeIndex = next;
-            this.Count--;
-            return true;
-        }
-
-        private bool SetCurrentAndNext(ref int current, ref int next, KeyValuePair<TKey, TValue> item)
-        {
-            while (!this.elements[next].Equals(item))
-            {
-                Element<TKey, TValue> toCheck = this.elements[next];
-                current = next;
-                next = toCheck.Next;
-                if (next == -1)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         private void AddOn(int position, System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
             int bucketPos = GetKeyBucket(item.Key);
@@ -296,21 +245,53 @@ namespace ArrayLibrary
 
         private void SetIndexerValue(TKey key, TValue value)
         {
-            int keyBucket = GetKeyBucket(key);
-            if (this.buckets[keyBucket] != -1)
+            int keyIndex = GetKeyIndex(key, out _);
+            if (keyIndex == -1)
             {
-                Element<TKey, TValue> listHead = this.elements[keyBucket];
-                for (int i = this.buckets[keyBucket]; i != -1; i = listHead.Next)
+                throw new InvalidOperationException("The key of which value you are trying to set does not belong to this dictionary.");
+            }
+
+            this.elements[keyIndex] = new Element<TKey, TValue>(new KeyValuePair<TKey, TValue>(key, value));
+        }
+
+        private int GetKeyIndex(TKey key, out int previous)
+        {
+            int current = this.buckets[GetKeyBucket(key)];
+            previous = -1;
+            if (current == -1)
+            {
+                return current;
+            }
+
+            while (!this.elements[current].Pair.Key.Equals(key))
+            {
+                previous = current;
+                current = this.elements[current].Next;
+                if (current == -1)
                 {
-                    if (this.elements[i].Pair.Key.Equals(key))
-                    {
-                        this.elements[i] = new Element<TKey, TValue>(new KeyValuePair<TKey, TValue>(key, value));
-                        return;
-                    }
+                    return current;
                 }
             }
 
-            throw new InvalidOperationException("The key of which value you are trying to set does not belong to this dictionary.");
+            return current;
+        }
+
+        private bool RemoveAt(int index, int prev)
+        {
+            int bucketPos = GetKeyBucket(this.elements[index].Pair.Key);
+            if (prev == -1)
+            {
+                this.buckets[bucketPos] = this.elements[index].Next;
+            }
+            else
+            {
+                this.elements[prev].Next = this.elements[index].Next;
+            }
+
+            this.elements[index].Next = freeIndex;
+            freeIndex = index;
+            this.Count--;
+            return true;
         }
     }
 }
