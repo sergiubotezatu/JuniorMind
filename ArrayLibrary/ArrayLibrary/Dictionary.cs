@@ -90,19 +90,17 @@ namespace ArrayLibrary
             }
 
             int availableSpace = array.Length - arrayIndex;
-            if (this.Count <= availableSpace)
-            {
-                foreach (var item in this)
-                {
-                    array[arrayIndex] = item;
-                    arrayIndex++;
-                }
-            }
-            else
+            if (this.Count > availableSpace)
             {
                 throw new ArgumentException(
                     "Available space in destination array starting from index is smaller than the source list capacity. " +
                     $"You need minimum {this.Count - 1} more positions after your index");
+            }
+
+            foreach (var item in this)
+            {
+                array[arrayIndex] = item;
+                arrayIndex++;
             }
         }
 
@@ -114,7 +112,8 @@ namespace ArrayLibrary
                 return false;
             }
 
-            return RemoveAt(keyIndex, previous);
+            RemoveAt(keyIndex, previous);
+            return true;
         }
 
         public bool Remove(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
@@ -125,46 +124,34 @@ namespace ArrayLibrary
                 return false;
             }
 
-            return RemoveAt(itemIndex, previous);
+            RemoveAt(itemIndex, previous);
+            return true;
         }
 
         public bool TryGetValue(TKey key, out TValue value)
         {
             int bucketPos = GetKeyBucket(key);
             value = default;
-            if (this.buckets[bucketPos] == -1)
+            for (int bucketIndex = this.buckets[bucketPos]; bucketIndex != -1; bucketIndex = this.elements[bucketIndex].Next)
             {
-                return false;
-            }
-
-            int bucketIndex = this.buckets[bucketPos];
-            Element<TKey, TValue> toCheck = this.elements[bucketIndex];
-            while (toCheck.Next != -1)
-            {
-                if (toCheck.Pair.Key.Equals(key))
+                if (this.elements[bucketIndex].Pair.Key.Equals(key))
                 {
-                    value = toCheck.Pair.Value;
+                    value = this.elements[bucketIndex].Pair.Value;
                     return true;
                 }
-
-                toCheck = this.elements[toCheck.Next];
             }
 
-            return toCheck.Pair.Key.Equals(key);
+            return false;
         }
 
         public IEnumerator<System.Collections.Generic.KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             for (int i = 0; i < this.buckets.Length; i++)
             {
-                Element<TKey, TValue> toEnum = this.elements[buckets[i]];
-                while (toEnum.Next != -1)
+                for (int index = this.buckets[i]; index != -1; index = this.elements[index].Next)
                 {
-                    yield return toEnum.Pair;
-                    toEnum = this.elements[toEnum.Next];
+                    yield return this.elements[index].Pair;
                 }
-
-                yield return toEnum.Pair;
             }
         }
 
@@ -251,32 +238,27 @@ namespace ArrayLibrary
                 throw new InvalidOperationException("The key of which value you are trying to set does not belong to this dictionary.");
             }
 
-            this.elements[keyIndex] = new Element<TKey, TValue>(new KeyValuePair<TKey, TValue>(key, value));
+            int next = this.elements[keyIndex].Next;
+            this.elements[keyIndex] = new Element<TKey, TValue>(new KeyValuePair<TKey, TValue>(key, value))
+            {
+                Next = next
+            };
         }
 
         private int GetKeyIndex(TKey key, out int previous)
         {
-            int current = this.buckets[GetKeyBucket(key)];
             previous = -1;
-            if (current == -1)
-            {
-                return current;
-            }
-
-            while (!this.elements[current].Pair.Key.Equals(key))
+            for (int current = this.buckets[GetKeyBucket(key)];
+                current != -1 && !this.elements[current].Pair.Key.Equals(key);
+                current = this.elements[current].Next)
             {
                 previous = current;
-                current = this.elements[current].Next;
-                if (current == -1)
-                {
-                    return current;
-                }
             }
 
-            return current;
+            return this.elements[previous].Next;
         }
 
-        private bool RemoveAt(int index, int prev)
+        private void RemoveAt(int index, int prev)
         {
             int bucketPos = GetKeyBucket(this.elements[index].Pair.Key);
             if (prev == -1)
@@ -291,7 +273,6 @@ namespace ArrayLibrary
             this.elements[index].Next = freeIndex;
             freeIndex = index;
             this.Count--;
-            return true;
         }
     }
 }
