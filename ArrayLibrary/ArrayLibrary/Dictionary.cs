@@ -42,6 +42,12 @@ namespace ArrayLibrary
         public void Add(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
             int actualPosition;
+            ThrowKeyIsNull(item.Key);
+            if (GetKeyIndex(item.Key, out _) != -1)
+            {
+                throw new InvalidOperationException("The key of your item is already being used in this dictionary");
+            }
+
             if (freeIndex != -1)
             {
                 actualPosition = freeIndex;
@@ -64,6 +70,7 @@ namespace ArrayLibrary
 
         public bool Contains(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
+            ThrowKeyIsNull(item.Key);
             if (!TryGetValue(item.Key, out TValue value))
             {
                 return false;
@@ -106,6 +113,7 @@ namespace ArrayLibrary
 
         public bool Remove(TKey key)
         {
+            ThrowKeyIsNull(key);
             int keyIndex = GetKeyIndex(key, out int previous);
             if (keyIndex == -1)
             {
@@ -118,6 +126,7 @@ namespace ArrayLibrary
 
         public bool Remove(System.Collections.Generic.KeyValuePair<TKey, TValue> item)
         {
+            ThrowKeyIsNull(item.Key);
             int itemIndex = GetKeyIndex(item.Key, out int previous);
             if (itemIndex == -1 || !this.elements[itemIndex].Pair.Equals(item))
             {
@@ -130,6 +139,7 @@ namespace ArrayLibrary
 
         public bool TryGetValue(TKey key, out TValue value)
         {
+            ThrowKeyIsNull(key);
             int bucketPos = GetKeyBucket(key);
             value = default;
             for (int bucketIndex = this.buckets[bucketPos]; bucketIndex != -1; bucketIndex = this.elements[bucketIndex].Next)
@@ -179,11 +189,7 @@ namespace ArrayLibrary
         private int GetKeyBucket(TKey key)
         {
             int output = key.GetHashCode();
-            while (output >= this.buckets.Length)
-            {
-                output %= this.buckets.Length;
-            }
-
+            output %= this.buckets.Length;
             return output;
         }
 
@@ -222,9 +228,10 @@ namespace ArrayLibrary
 
         private TValue GetIndexerValue(TKey key)
         {
+            ThrowKeyIsNull(key);
             if (!TryGetValue(key, out TValue value))
             {
-                throw new InvalidOperationException("The key used as index does not belong to this dictionary.");
+                throw new KeyNotFoundException("The key used as index does not belong to this dictionary.");
             }
 
             return value;
@@ -232,26 +239,28 @@ namespace ArrayLibrary
 
         private void SetIndexerValue(TKey key, TValue value)
         {
+            ThrowKeyIsNull(key);
             int keyIndex = GetKeyIndex(key, out _);
             if (keyIndex == -1)
             {
-                throw new InvalidOperationException("The key of which value you are trying to set does not belong to this dictionary.");
+                AddOn(keyIndex, new KeyValuePair<TKey, TValue>(key, value));
             }
 
             int next = this.elements[keyIndex].Next;
-            this.elements[keyIndex] = new Element<TKey, TValue>(new KeyValuePair<TKey, TValue>(key, value))
-            {
-                Next = next
-            };
+            this.elements[keyIndex].Pair = new KeyValuePair<TKey, TValue>(key, value);
+            this.elements[keyIndex].Next = next;
         }
 
         private int GetKeyIndex(TKey key, out int previous)
         {
             previous = -1;
-            for (int current = this.buckets[GetKeyBucket(key)];
-                current != -1 && !this.elements[current].Pair.Key.Equals(key);
-                current = this.elements[current].Next)
+            for (int current = this.buckets[GetKeyBucket(key)]; current != -1; current = this.elements[current].Next)
             {
+                if (this.elements[current].Pair.Key.Equals(key))
+                {
+                    return current;
+                }
+
                 previous = current;
             }
 
@@ -273,6 +282,14 @@ namespace ArrayLibrary
             this.elements[index].Next = freeIndex;
             freeIndex = index;
             this.Count--;
+        }
+
+        private void ThrowKeyIsNull(TKey key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException($"{nameof(key)} is null");
+            }
         }
     }
 }
