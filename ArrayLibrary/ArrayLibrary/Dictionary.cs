@@ -15,7 +15,7 @@ namespace ArrayLibrary
         public Dictionary(int horizontalLength)
         {
             this.buckets = new int[horizontalLength];
-            PopulateArr(buckets);
+            Array.Fill(buckets, -1);
             this.elements = new Element<TKey, TValue>[horizontalLength];
             this.freeIndex = -1;
         }
@@ -168,14 +168,6 @@ namespace ArrayLibrary
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        private void PopulateArr(int[] buckets)
-        {
-            for (int i = 0; i < buckets.Length; i++)
-            {
-                buckets[i] = -1;
-            }
         }
 
         private void EnsureCapacity()
