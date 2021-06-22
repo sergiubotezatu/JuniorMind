@@ -235,7 +235,7 @@ namespace ArrayLibrary
             int keyIndex = GetKeyIndex(key, out _);
             if (keyIndex == -1)
             {
-                AddOn(keyIndex, new KeyValuePair<TKey, TValue>(key, value));
+                return;
             }
 
             int next = this.elements[keyIndex].Next;
