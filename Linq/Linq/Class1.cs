@@ -8,10 +8,8 @@ namespace Linq
     {
         public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            if (source.Equals(null) || predicate.Equals(null))
-            {
-                throw new ArgumentNullException($"{0}was null", source.Equals(null)? nameof(source) : nameof(predicate));
-            }
+            ThrowIsNull(source);
+            ThrowIsNull(predicate);
             foreach(TSource element in source)
             {
                 if (!predicate(element))
@@ -21,6 +19,14 @@ namespace Linq
             }
 
             return true;
+        }
+
+        static void ThrowIsNull<T>(T toValidate)
+        {
+            if (toValidate.Equals(null))
+            {
+                throw new ArgumentNullException($"{nameof(toValidate)}was null");
+            }
         }
     }
 }
