@@ -55,6 +55,19 @@ namespace Linq
             throw new InvalidOperationException("There is no element in this collection that meets the correct criteria.");
         }
 
+        public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
+        {
+            ThrowIsNull(source);
+            ThrowIsNull(selector);
+            List<TResult> result = new List<TResult>();
+            foreach (TSource element in source)
+            {
+                result.Add(selector(element));
+            }
+
+            return result;
+        }
+
         static void ThrowIsNull<T>(T toValidate)
         {
             if (toValidate.Equals(null))
