@@ -40,10 +40,6 @@ namespace Linq
         {
             ThrowIsNull(source);
             ThrowIsNull(predicate);
-            if (source.Count() == 0)
-            {
-                throw new InvalidOperationException("The source sequence is empty.");
-            }
             foreach (TSource element in source)
             {
                 if (predicate(element))
@@ -74,16 +70,6 @@ namespace Linq
             {
                 throw new ArgumentNullException($"{nameof(toValidate)}was null");
             }
-        }
-
-        static int Count<T>(this IEnumerable<T> elements)
-        {
-            int count = 0;
-
-            foreach (var element in elements)
-                count += 1;
-
-            return count;
-        }
+        }        
     }
 }
