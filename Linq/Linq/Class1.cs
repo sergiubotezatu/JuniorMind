@@ -58,10 +58,8 @@ namespace Linq
             List<TResult> result = new List<TResult>();
             foreach (TSource element in source)
             {
-                result.Add(selector(element));
+                yield return selector(element);
             }
-
-            return result;
         }
 
         static void ThrowIsNull<T>(T toValidate)
