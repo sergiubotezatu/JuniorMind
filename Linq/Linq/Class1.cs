@@ -55,10 +55,34 @@ namespace Linq
         {
             ThrowIsNull(source);
             ThrowIsNull(selector);
-            List<TResult> result = new List<TResult>();
             foreach (TSource element in source)
             {
-                yield return selector(element);
+                if (!selector(element).Equals(null))
+                {
+                    yield return selector(element);
+                }                
+            }
+        }
+
+        public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
+        {
+            ThrowIsNull(source);
+            ThrowIsNull(selector);
+            foreach (TSource element in source)
+            {
+                if (selector(element).Equals(null))
+                {
+                    continue;
+                }
+
+                foreach (TResult item in selector(element))
+                {
+                   if (!item.Equals(null))
+                   {
+                       yield return item;
+                   }                        
+                }
+                
             }
         }
 
