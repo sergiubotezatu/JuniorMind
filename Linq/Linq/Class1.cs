@@ -8,9 +8,9 @@ namespace Linq
     {
         public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            ThrowIsNull(source);
-            ThrowIsNull(predicate);
-            foreach(TSource element in source)
+            ThrowIsNull(source, nameof(source));
+            ThrowIsNull(predicate, nameof(predicate));
+            foreach (TSource element in source)
             {
                 if (!predicate(element))
                 {
@@ -23,8 +23,8 @@ namespace Linq
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            ThrowIsNull(source);
-            ThrowIsNull(predicate);
+            ThrowIsNull(source, nameof(source));
+            ThrowIsNull(predicate, nameof(predicate));
             foreach (TSource element in source)
             {
                 if (predicate(element))
@@ -38,8 +38,8 @@ namespace Linq
 
         public static TSource First<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            ThrowIsNull(source);
-            ThrowIsNull(predicate);
+            ThrowIsNull(source, nameof(source));
+            ThrowIsNull(predicate, nameof(predicate));
             foreach (TSource element in source)
             {
                 if (predicate(element))
@@ -53,44 +53,46 @@ namespace Linq
 
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
-            ThrowIsNull(source);
-            ThrowIsNull(selector);
+            ThrowIsNull(source, nameof(source));
+            ThrowIsNull(selector, nameof(selector));
             foreach (TSource element in source)
             {
-                if (!selector(element).Equals(null))
-                {
-                    yield return selector(element);
-                }                
+                yield return selector(element);                              
             }
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
         {
-            ThrowIsNull(source);
-            ThrowIsNull(selector);
+            ThrowIsNull(source, nameof(source));
+            ThrowIsNull(selector, nameof(selector));
             foreach (TSource element in source)
             {
-                if (selector(element).Equals(null))
-                {
-                    continue;
-                }
-
                 foreach (TResult item in selector(element))
-                {
-                   if (!item.Equals(null))
-                   {
-                       yield return item;
-                   }                        
+                {                         
+                      yield return item;                                       
                 }
                 
             }
         }
 
-        static void ThrowIsNull<T>(T toValidate)
+        public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
+        {
+            ThrowIsNull(source, nameof(source));
+            ThrowIsNull(predicate, nameof(predicate));
+            foreach (TSource element in source)
+            {
+                if (predicate(element))
+                {
+                    yield return element;
+                }
+            }
+        }
+
+        static void ThrowIsNull<T>(T toValidate, string name)
         {
             if (toValidate.Equals(null))
             {
-                throw new ArgumentNullException($"{nameof(toValidate)}was null");
+                throw new ArgumentNullException(name);
             }
         }        
     }
