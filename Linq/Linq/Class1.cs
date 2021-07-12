@@ -101,17 +101,26 @@ namespace Linq
             {
                 string keyIsNull = $"key generated for one of the elements";
                 ThrowIsNull(keySelector(element), keyIsNull);
-                try
-                {
-                    result.Add(keySelector(element), elementSelector(element));
-                }
-                catch (ArgumentException)
-                {
-                    throw new ArgumentException($"{nameof(keySelector)} produces duplicate keys for two elements.");
-                }
+                result.Add(keySelector(element), elementSelector(element));
             }
 
             return result;
+        }
+
+        public static IEnumerable<TResult> Zip<TFirst, TSecond, TResult>(
+        this IEnumerable<TFirst> first,
+        IEnumerable<TSecond> second,
+        Func<TFirst, TSecond, TResult> resultSelector)
+        {
+            ThrowIsNull(first, nameof(first));
+            ThrowIsNull(second, nameof(second));
+            ThrowIsNull(resultSelector, nameof(resultSelector));
+            IEnumerator<TFirst> firstEnum = first.GetEnumerator();
+            IEnumerator<TSecond> secondEnum = second.GetEnumerator();
+            while(firstEnum.MoveNext() && secondEnum.MoveNext())
+            {
+                yield return resultSelector(firstEnum.Current, secondEnum.Current);
+            }
         }
 
         static void ThrowIsNull<T>(T toValidate, string name)
@@ -120,6 +129,16 @@ namespace Linq
             {
                 throw new ArgumentNullException(name);
             }
-        }        
+        }
+
+        static int Count<T>(this IEnumerable<T> elements)
+        {
+            int count = 0;
+
+            foreach (var element in elements)
+                count += 1;
+
+            return count;
+        }
     }
 }
