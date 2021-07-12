@@ -88,6 +88,32 @@ namespace Linq
             }
         }
 
+        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        Func<TSource, TElement> elementSelector)
+        {
+            ThrowIsNull(source, nameof(source));
+            ThrowIsNull(keySelector, nameof(keySelector));
+            ThrowIsNull(elementSelector, nameof(elementSelector));
+            Dictionary<TKey, TElement> result = new Dictionary<TKey, TElement>();
+            foreach (TSource element in source)
+            {
+                string keyIsNull = $"key generated for one of the elements";
+                ThrowIsNull(keySelector(element), keyIsNull);
+                try
+                {
+                    result.Add(keySelector(element), elementSelector(element));
+                }
+                catch (ArgumentException)
+                {
+                    throw new ArgumentException($"{nameof(keySelector)} produces duplicate keys for two elements.");
+                }
+            }
+
+            return result;
+        }
+
         static void ThrowIsNull<T>(T toValidate, string name)
         {
             if (toValidate.Equals(null))
