@@ -6,13 +6,18 @@ using System.Text;
 
 namespace Linq
 {
-    class OrderedSequence<T> : IOrderedEnumerable<T>
+    class OrderedSequence<TKey, T> : IOrderedEnumerable<T>
     {
         private readonly List<T> ordered;
+        private IComparer<TKey> comparer;
+        private Func<T, TKey> keySelector;
         
-        public OrderedSequence(IEnumerable<T> source)
+        public OrderedSequence(IEnumerable<T> source, IComparer<TKey> comparer, Func<T, TKey> keySelector)
         {
             this.ordered = new List<T>(source);
+            this.comparer = comparer;
+            this.keySelector = keySelector;
+            Sort(keySelector, comparer, false);
         }
 
         public IOrderedEnumerable<T> CreateOrderedEnumerable<TKey>(Func<T, TKey> keySelector, IComparer<TKey> comparer, bool descending)
@@ -23,7 +28,10 @@ namespace Linq
 
         public IEnumerator<T> GetEnumerator()
         {
-            return this.ordered.GetEnumerator();
+            for (int i = 1; i < this.ordered.Count; i++)
+            {
+                yield return this.ordered[i];
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

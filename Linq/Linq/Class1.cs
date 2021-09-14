@@ -17,7 +17,7 @@ namespace Linq
                 {
                     return false;
                 }
-            }
+            }            
 
             return true;
         }
@@ -146,7 +146,7 @@ namespace Linq
                         break;
                     }
                 }
-            }
+            }            
         }
 
         public static TAccumulate Aggregate<TSource, TAccumulate>(
@@ -244,8 +244,8 @@ namespace Linq
         Func<TSource, TKey> keySelector,
         IComparer<TKey> comparer)
         {
-            IOrderedEnumerable<TSource> result = new OrderedSequence<TSource>(source);
-            return result.CreateOrderedEnumerable(keySelector, comparer, false);
+            IOrderedEnumerable<TSource> result = new OrderedSequence<TKey, TSource>(source, comparer, keySelector);
+            return result;
         }
 
         static void ThrowIsNull<T>(T toValidate, string name)
