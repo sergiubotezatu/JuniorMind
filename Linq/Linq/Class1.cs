@@ -245,7 +245,7 @@ namespace Linq
         IComparer<TKey> comparer)
         {
             IComparer<TSource> baseComparer = new SourceComparer<TSource, TKey>(comparer, keySelector);
-            IOrderedEnumerable<TSource> result = new OrderedSequence<TKey, TSource>(source, baseComparer);
+            IOrderedEnumerable<TSource> result = new OrderedSequence<TSource>(source, baseComparer);
             return result;
         }
 

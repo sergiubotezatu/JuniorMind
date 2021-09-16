@@ -14,6 +14,7 @@ namespace Linq
             this.baseComparer = comparer;
             this.baseKeySelector = keySelector;
         }
+
         public int Compare(TSource x, TSource y)
         {
             return baseComparer.Compare(baseKeySelector(x), baseKeySelector(y));
