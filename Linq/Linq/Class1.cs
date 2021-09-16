@@ -244,8 +244,17 @@ namespace Linq
         Func<TSource, TKey> keySelector,
         IComparer<TKey> comparer)
         {
-            IOrderedEnumerable<TSource> result = new OrderedSequence<TKey, TSource>(source, comparer, keySelector);
+            IComparer<TSource> baseComparer = new SourceComparer<TSource, TKey>(comparer, keySelector);
+            IOrderedEnumerable<TSource> result = new OrderedSequence<TKey, TSource>(source, baseComparer);
             return result;
+        }
+
+        public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(
+        this IOrderedEnumerable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        IComparer<TKey> comparer)
+        {
+            return source.CreateOrderedEnumerable<TKey>(keySelector, comparer, false);
         }
 
         static void ThrowIsNull<T>(T toValidate, string name)
@@ -254,16 +263,6 @@ namespace Linq
             {
                 throw new ArgumentNullException(name);
             }
-        }
-
-        static int Count<T>(this IEnumerable<T> elements)
-        {
-            int count = 0;
-
-            foreach (var element in elements)
-                count += 1;
-
-            return count;
         }
     }
 }
