@@ -257,6 +257,14 @@ namespace Linq
             return source.CreateOrderedEnumerable<TKey>(keySelector, comparer, false);
         }
 
+        public static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
+        {
+            foreach (TSource item in source)
+            {
+                action(item);
+            }
+        }
+
         static void ThrowIsNull<T>(T toValidate, string name)
         {
             if (toValidate.Equals(null))
