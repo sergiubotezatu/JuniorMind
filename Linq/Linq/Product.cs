@@ -7,25 +7,19 @@ namespace Linq
     public class Product
     {
         public string Name;
+        public int Quantity;
 
-        public Product(string name)
+        public Product(string name, int quantity)
         {
             this.Name = name;
+            this.Quantity = quantity;
         }
+        
+        public delegate string Notification(Product product, int after);
 
-        public int Quantity { get; internal set; }
-
-        public int SelectedQty
+        public string GetWarningMessage(Notification notification, int sale)
         {
-            internal get => SelectedQty;
-            set
-            {
-                if (value > Quantity)
-                {
-                    throw new InvalidOperationException("The quantity requested is greater than the current available quantity");
-                }
-                SelectedQty = value;
-            }
-        }         
-    }
+            return notification(this, sale);          
+        }
+    }   
 }

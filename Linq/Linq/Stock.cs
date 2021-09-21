@@ -7,69 +7,101 @@ namespace Linq
 {
     public class Stock
     {
-        private List<Product> products;
-
-        public Stock(List<Product> Products)
+        public readonly List<string> notifications;
+        private readonly List<Product> products;
+        
+        public Stock(IEnumerable<Product> Products)
         {
-            this.products = Products;
+            this.products = (List<Product>)Products;
         }
 
         public void Add(Product newProduct)
-        {
-            if (!products.Contains(newProduct))
+        {            
+            if (!products.Exists(x => x.Name.Equals(newProduct.Name)))
             {
                 products.Add(newProduct);
                 return;
             }
 
-            products[products.IndexOf(newProduct)].Quantity += newProduct.Quantity;
+            TryGet(newProduct).Quantity += newProduct.Quantity;
+        }
+
+        public void BulkAdd(IEnumerable<Product> products)
+        {
+            foreach (Product item in products)
+            {
+                Add(item);
+            }
         }
 
         public void SellProduct(Product[] bought)
         {
+            string note = "";
             foreach(Product product in bought)
             {
-                int productIndex = products.IndexOf(product);
-                if (productIndex != -1)
+                Product sold = products.Find(x => x.Name.Equals(product.Name));
+                if (!sold.Equals(null))
                 {
-                    products[productIndex].Quantity -= product.SelectedQty;
+                    ThrowInvalidRequest(sold, product);
+                    note = sold.GetWarningMessage(WarningMessage, product.Quantity);
+                    sold.Quantity -= product.Quantity;                    
+                }
+
+                if (note != null)
+                {
+                    notifications.Add(note);
+                }
+            }            
+        }      
+
+        public static string WarningMessage(Product product, int sold)
+        {
+            string toReturn = $"Running out of {product.Name}. Quantity left is below ";
+            int initialQty = product.Quantity;
+            string limit = "";
+            int rest = initialQty - sold;
+            int[] thresholds = new int[] { 2, 5, 10 };
+            for (int i = thresholds.Length - 1; i >= 0 ; i--)
+            {
+                if (initialQty >= thresholds[i])
+                {
+                    limit = ReturnThreshold(rest, thresholds, i);
                 }
             }
-
-            NotifyCriticalQty();
+            
+            if (limit.Equals(null) || limit == "")
+            {
+                return null;
+            }
+            
+            
+            return toReturn + limit + "Products left: " + rest;
         }
 
-        public Func<Product, bool> isCriticalQty = leftQty => leftQty.Quantity < 10;
-
-        private void NotifyCriticalQty()
+        private Product TryGet(Product product)
         {
-            var fewProducts = products.Where(isCriticalQty);            
-            var notification = fewProducts.GroupBy(product => GetKey(product));
-            notification.ForEach(Notify);            
+            return products.Find(x => x.Name.Equals(product.Name));            
         }
 
-        private Action<IGrouping<string, Product>> Notify = leftInStock =>
+        private static string ReturnThreshold(int rest, int[] thresholds, int index)
         {
-            Console.WriteLine("Running out of products. Quantity of following products is {0}", leftInStock.Key);
-            foreach (Product product in leftInStock)
+            for (int i = 0; i <= index; i++)
             {
-                Console.WriteLine("{0} - left pieces: {1}", product.Name, product.Quantity);
-            }            
-        };
+                if (rest < thresholds[i])
+                {
+                    return thresholds[i].ToString() + ". ";
+                }
+            }           
+            
+                return null;            
+        }
 
-        private string GetKey(Product product)
+        private void ThrowInvalidRequest(Product inStock, Product requested)
         {
-            if (product.Quantity < 2)
+            if (requested.Quantity > inStock.Quantity)
             {
-                return "below 2";
+                throw new InvalidOperationException($"Invalid quantity. There are only {inStock.Quantity} products in stock.");
             }
-
-            if (product.Quantity < 5)
-            {
-                return "below 5";
-            }
-
-            return "below 10";
         }
     }
 }
