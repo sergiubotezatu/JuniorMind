@@ -14,12 +14,5 @@ namespace Linq
             this.Name = name;
             this.Quantity = quantity;
         }
-        
-        public delegate string Notification(Product product, int after);
-
-        public string GetWarningMessage(Notification notification, int sale)
-        {
-            return notification(this, sale);          
-        }
     }   
 }

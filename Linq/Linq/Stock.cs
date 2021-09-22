@@ -7,12 +7,14 @@ namespace Linq
 {
     public class Stock
     {
-        public readonly List<string> notifications;
+        public readonly List<Notification> notifications;
         private readonly List<Product> products;
+        private readonly CallBack StockAlert;
         
         public Stock(IEnumerable<Product> Products)
         {
             this.products = (List<Product>)Products;
+            StockAlert = new CallBack();
         }
 
         public void Add(Product newProduct)
@@ -36,64 +38,34 @@ namespace Linq
 
         public void SellProduct(Product[] bought)
         {
-            string note = "";
-            foreach(Product product in bought)
+            foreach (Product product in bought)
             {
                 Product sold = products.Find(x => x.Name.Equals(product.Name));
                 if (!sold.Equals(null))
                 {
                     ThrowInvalidRequest(sold, product);
-                    note = sold.GetWarningMessage(WarningMessage, product.Quantity);
-                    sold.Quantity -= product.Quantity;                    
-                }
-
-                if (note != null)
-                {
-                    notifications.Add(note);
+                    int beforeSale = product.Quantity;
+                    product.Quantity -= sold.Quantity;
+                    if (ExceededThreshold(beforeSale, product.Quantity))
+                    {
+                        int exceeded = GetExceededLimit(product.Quantity);
+                        StockAlert.critical = product;
+                        notifications.Add(StockAlert.GetAlert(Notify, exceeded));
+                    }
                 }
             }            
         }      
 
-        public static string WarningMessage(Product product, int sold)
+        public Notification Notify(Product product, int threshold)
         {
-            string toReturn = $"Running out of {product.Name}. Quantity left is below ";
-            int initialQty = product.Quantity;
-            string limit = "";
-            int rest = initialQty - sold;
-            int[] thresholds = new int[] { 2, 5, 10 };
-            for (int i = thresholds.Length - 1; i >= 0 ; i--)
-            {
-                if (initialQty >= thresholds[i])
-                {
-                    limit = ReturnThreshold(rest, thresholds, i);
-                }
-            }
-            
-            if (limit.Equals(null) || limit == "")
-            {
-                return null;
-            }
-            
-            
-            return toReturn + limit + "Products left: " + rest;
+            string message = $"Running out of {product.Name}. Quantity left is below {threshold}." +
+                $" Products left : {product.Quantity}";
+            return new Notification(product, message);
         }
 
         private Product TryGet(Product product)
         {
             return products.Find(x => x.Name.Equals(product.Name));            
-        }
-
-        private static string ReturnThreshold(int rest, int[] thresholds, int index)
-        {
-            for (int i = 0; i <= index; i++)
-            {
-                if (rest < thresholds[i])
-                {
-                    return thresholds[i].ToString() + ". ";
-                }
-            }           
-            
-                return null;            
         }
 
         private void ThrowInvalidRequest(Product inStock, Product requested)
@@ -102,6 +74,35 @@ namespace Linq
             {
                 throw new InvalidOperationException($"Invalid quantity. There are only {inStock.Quantity} products in stock.");
             }
+        }
+
+        private bool ExceededThreshold(int initialQty, int currentQty)
+        {
+            int[] thresholds = new int[] { 10, 5, 2 };
+            for (int i = 0; i < thresholds.Length; i++)
+            {
+                if (initialQty >= thresholds[i])
+                {
+                    return currentQty < thresholds[i];
+                }
+            }
+
+            return false;
+        }
+
+        private int GetExceededLimit(int quantity)
+        {
+            if (quantity < 2)
+            {
+                return 2;
+            }
+
+            if (quantity < 5)
+            {
+                return 5;
+            }
+
+            return 10;
         }
     }
 }
