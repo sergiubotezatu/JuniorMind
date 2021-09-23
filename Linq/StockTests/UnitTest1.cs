@@ -19,9 +19,16 @@ namespace StockTests
             Product sodaToBuy = new Product("soda", 10);
             Product beerToBuy = new Product("beer", 5);
             Product[] toBuy = new Product[] { breadToBuy, sodaToBuy, beerToBuy };
+            void Notify(Product product, int threshold)
+            {
+                string message = $"Running out of {product.Name}. Quantity left is below {threshold}." +
+                    $" Products left : {product.Quantity}";
+                stock.notifications.Add(new Notification(product, message));
+            }
+            stock.GetAlert = Notify;
             stock.SellProduct(toBuy);
             string firstResult = "Running out of {product.Name}. Quantity left is below 10. Products left: 9";
-            Assert.True(firstResult.Equals(stock.notifications[0]));
+            Assert.True(firstResult.Equals(stock.notifications[0].message));
         }
     }
 }

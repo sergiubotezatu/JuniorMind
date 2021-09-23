@@ -4,18 +4,6 @@ using System.Text;
 
 namespace Linq
 {
-    public delegate Notification Notify(Product product, int after);
-
-    public class CallBack
-    {
-        public Product critical;
-
-        public Notification GetAlert(Notify notification, int sale)
-        {
-            return notification(critical, sale);
-        }
-    }
-
     public class Notification
     {
         public Product critical;

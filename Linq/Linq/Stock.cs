@@ -5,16 +5,17 @@ using System.Text;
 
 namespace Linq
 {
+    public delegate Notification Notify(Product product, int after);
+
     public class Stock
     {
         public readonly List<Notification> notifications;
         private readonly List<Product> products;
-        private readonly CallBack StockAlert;
-        
+               
         public Stock(IEnumerable<Product> Products)
         {
             this.products = (List<Product>)Products;
-            StockAlert = new CallBack();
+            notifications = new List<Notification>();
         }
 
         public void Add(Product newProduct)
@@ -49,18 +50,19 @@ namespace Linq
                     if (ExceededThreshold(beforeSale, product.Quantity))
                     {
                         int exceeded = GetExceededLimit(product.Quantity);
-                        StockAlert.critical = product;
-                        notifications.Add(StockAlert.GetAlert(Notify, exceeded));
+                        GetAlert(product, exceeded);
                     }
                 }
             }            
-        }      
+        }
 
-        public Notification Notify(Product product, int threshold)
+        public Action<Product, int> GetAlert;
+
+        public void Notify(Product product, int threshold)
         {
             string message = $"Running out of {product.Name}. Quantity left is below {threshold}." +
                 $" Products left : {product.Quantity}";
-            return new Notification(product, message);
+            notifications.Add(new Notification(product, message));
         }
 
         private Product TryGet(Product product)
