@@ -5,13 +5,11 @@ using System.Text;
 
 namespace Linq
 {
-    public delegate Notification Notify(Product product, int after);
-
     public class Stock
     {
         public readonly List<Notification> notifications;
         private readonly List<Product> products;
-               
+
         public Stock(IEnumerable<Product> Products)
         {
             this.products = (List<Product>)Products;
@@ -19,7 +17,7 @@ namespace Linq
         }
 
         public void Add(Product newProduct)
-        {            
+        {
             if (!products.Exists(x => x.Name.Equals(newProduct.Name)))
             {
                 products.Add(newProduct);
@@ -47,27 +45,20 @@ namespace Linq
                     ThrowInvalidRequest(sold, product);
                     int beforeSale = product.Quantity;
                     product.Quantity -= sold.Quantity;
-                    if (ExceededThreshold(beforeSale, product.Quantity))
+                    int exceeded = ExceededThreshold(beforeSale, product.Quantity);
+                    if (exceeded != 0)
                     {
-                        int exceeded = GetExceededLimit(product.Quantity);
                         GetAlert(product, exceeded);
                     }
                 }
-            }            
+            }
         }
 
         public Action<Product, int> GetAlert;
 
-        public void Notify(Product product, int threshold)
-        {
-            string message = $"Running out of {product.Name}. Quantity left is below {threshold}." +
-                $" Products left : {product.Quantity}";
-            notifications.Add(new Notification(product, message));
-        }
-
         private Product TryGet(Product product)
         {
-            return products.Find(x => x.Name.Equals(product.Name));            
+            return products.Find(x => x.Name.Equals(product.Name));
         }
 
         private void ThrowInvalidRequest(Product inStock, Product requested)
@@ -78,33 +69,11 @@ namespace Linq
             }
         }
 
-        private bool ExceededThreshold(int initialQty, int currentQty)
+        private int ExceededThreshold(int initialQty, int currentQty)
         {
-            int[] thresholds = new int[] { 10, 5, 2 };
-            for (int i = 0; i < thresholds.Length; i++)
-            {
-                if (initialQty >= thresholds[i])
-                {
-                    return currentQty < thresholds[i];
-                }
-            }
-
-            return false;
-        }
-
-        private int GetExceededLimit(int quantity)
-        {
-            if (quantity < 2)
-            {
-                return 2;
-            }
-
-            if (quantity < 5)
-            {
-                return 5;
-            }
-
-            return 10;
+            List<int> thresholds = new List<int>() { 2, 5, 10 };
+            int exceeded = thresholds.Find(x => initialQty >= x && currentQty < x);
+            return exceeded;
         }
     }
 }
