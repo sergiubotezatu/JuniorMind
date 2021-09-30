@@ -7,13 +7,12 @@ namespace Linq
 {
     public class Stock
     {
-        public readonly List<Notification> notifications;
+        public Notification notification;
         private readonly List<Product> products;
 
         public Stock(IEnumerable<Product> Products)
         {
             this.products = (List<Product>)Products;
-            notifications = new List<Notification>();
         }
 
         public void Add(Product newProduct)
