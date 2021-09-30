@@ -24,8 +24,8 @@ namespace StockTests
             {
                 string message = $"Running out of {product.Name}. Quantity left is below {threshold}." +
                     $" Products left : {product.Quantity}";
+                Notification notification = new Notification(product, message);
                 messages.Add(message);
-                stock.notification = new Notification(product, message);
             }
             stock.GetAlert = Notify;
             stock.SellProduct(toBuy);
