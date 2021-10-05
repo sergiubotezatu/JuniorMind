@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Linq\Linq.csproj" />
+    <ProjectReference Include="..\ObserverPattern\ObserverPattern.csproj" />
   </ItemGroup>
 
 </Project>

@@ -44,15 +44,15 @@ namespace Linq
                     int beforeSale = product.Quantity;
                     product.Quantity -= sold.Quantity;
                     int exceeded = ExceededThreshold(beforeSale, product.Quantity);
-                    if (exceeded != 0)
+                    if (exceeded != 0 && !LowStockAlert.Equals(null))
                     {
-                        GetAlert(product, exceeded);
+                        LowStockAlert(product, exceeded);
                     }
                 }
             }
         }
 
-        public Action<Product, int> GetAlert;
+        public Action<Product, int> LowStockAlert;
 
         private Product TryGet(Product product)
         {

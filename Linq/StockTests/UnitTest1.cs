@@ -27,7 +27,7 @@ namespace StockTests
                 Notification notification = new Notification(product, message);
                 messages.Add(message);
             }
-            stock.GetAlert = Notify;
+            stock.LowStockAlert = Notify;
             stock.SellProduct(toBuy);
             string firstResult = "Running out of bread. Quantity left is below 10. Products left: 9";
             string secondResult = "Running out of soda. Quantity left is below 2. Products left: 1";
