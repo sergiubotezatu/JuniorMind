@@ -6,7 +6,7 @@ namespace Diverse
 {
     public class LetterCount
     {
-        public string CountVowelsAndCons(string word)
+        public ValueTuple<tuple<string, int>, tuple<string,int>> CountVowelsAndCons(string word)
         {
             IEnumerable<char> characters = word.ToCharArray().AsEnumerable();
             var letters = characters.Where(x => char.IsLetter(x));
