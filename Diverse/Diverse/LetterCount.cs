@@ -14,7 +14,6 @@ namespace Diverse
             (int consonants, int vowels) result = ((letters.Count() - vowelsNumber), vowelsNumber);
             return result;
         }
-
         private bool IsVowel(char letter)
         {
             string vowels = "aeiou";
