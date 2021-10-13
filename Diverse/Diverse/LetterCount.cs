@@ -8,12 +8,11 @@ namespace Diverse
     {
         public (int, int) CountVowelsAndCons(string word)
         {
-            IEnumerable<char> characters = word.ToCharArray().AsEnumerable();
-            var letters = characters.Where(x => char.IsLetter(x));
+            var letters = word.Where(x => char.IsLetter(x));
             int vowelsNumber = letters.Aggregate(0, (count, character) => IsVowel(character) ? count + 1 : count);
-            (int consonants, int vowels) result = ((letters.Count() - vowelsNumber), vowelsNumber);
-            return result;
+            return ((letters.Count() - vowelsNumber), vowelsNumber);
         }
+
         private bool IsVowel(char letter)
         {
             string vowels = "aeiou";
