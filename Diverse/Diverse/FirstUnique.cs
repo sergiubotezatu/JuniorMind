@@ -10,7 +10,7 @@ namespace Diverse
     {
         private char GetOneOccurence(string input)
         {
-            return input.GroupBy(x => x).Where(x => x.Count() == 1).Select(x => x.Key).FirstOrDefault();
+            return input.GroupBy(x => x).FirstOrDefault(x => x.Count() == 1).Key;
         }
     }
 }
