@@ -10,37 +10,26 @@ namespace Diverse
         public bool TryConvertToInt(string input, out int result)
         {
             result = 0;
+            IEnumerable<char> toWorkWith = input;
             Func<IEnumerable<char>, int, int> ToInteger = Convert;
-            if (!IsCorrectLead(input, out char lead))
+            if (input.First() == '-')
+            {
+                toWorkWith = toWorkWith.Skip(1);
+                ToInteger = ConvertNegative;
+            }
+
+            if (!IsConvertable(toWorkWith))
             {
                 return false;
             }
 
-            IEnumerable<char> toWorkWith = GetDigitsOnly(input, lead, ref ToInteger);
-            if(toWorkWith.Count() != input.Length - 1)
-            {
-                return false;
-            }
-
-            int tens = toWorkWith.Count() - 1;
-            result = ToInteger(toWorkWith, tens);
+            result = ToInteger(toWorkWith, toWorkWith.Count() - 1);
             return true;
         }
 
-        private IEnumerable<char> GetDigitsOnly(string toConvert, char first, ref Func<IEnumerable<char>, int, int> method)
+        private int Convert(IEnumerable<char> input, int digits)
         {
-            IEnumerable<char> result;
-            if (first == '-')
-            {
-                result = toConvert.Skip(1).Where(x => IsNumeric(x));
-                method = ConvertNegative;
-            }
-            else
-            {
-                result = toConvert.Where(x => IsNumeric(x));
-            }
-
-            return result;
+            return input.Select(x => ToTens(x, digits--)).Aggregate(0, (result, number) => result + number);
         }
 
         private int ConvertNegative(IEnumerable<char> toConvert, int digits)
@@ -48,13 +37,24 @@ namespace Diverse
             return 0 - Convert(toConvert, digits);
         }
 
-        private int Convert(IEnumerable<char> toConvert, int digits)
+        private bool IsConvertable(IEnumerable<char> toCheck)
         {
-            return toConvert.Aggregate(0, (number, character) => number + ToTens(character, digits--));
-        }
+            char lead = toCheck.First();
+            if (toCheck.Count() == 1)
+            {
+                return IsInRange(lead, ('0', '9'));
+            }
+
+            return IsInRange(lead, ('1', '9')) && toCheck.Skip(1).All(x => IsInRange(x, ('0','9')));
+        }       
 
         private int ToTens(char toMultiply, int exponent)
         {
+            if (toMultiply == '0')
+            {
+                return 0;
+            }
+
             return ToUnit(toMultiply) * TenToThe(exponent);
         }
 
@@ -74,30 +74,9 @@ namespace Diverse
             return result;
         }
 
-        private bool IsCorrectLead(string toCheck, out char lead)
-        {
-            lead = toCheck.First();
-            if (lead == '-' && toCheck.Length > 1)
-            {
-                return IsInRange(toCheck.Skip(1).First(), ('1', '9'));
-            }
-
-            if (toCheck.Length == 1)
-            {
-                return IsInRange(lead, ('0', '9'));
-            }
-
-            return lead >= '1' && lead <= '9';
-        }
-
-        private bool IsNumeric (char toCheck)
-        {
-            return IsInRange(toCheck, ('0', '9'));
-        }
-
         private bool IsInRange(char toCheck, (char, char) range)
         {
             return toCheck >= range.Item1 && toCheck <= range.Item2;
-        }
+        }        
     }
 }
