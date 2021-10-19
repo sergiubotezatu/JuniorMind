@@ -7,9 +7,11 @@ namespace Diverse
 {
     class MaximOccurrence
     {
-        public IEnumerable<char> GetMaxOccurence(string input)
+        public char GetMaxOccurence(string input)
         {
-            return input.GroupBy(x => x).OrderByDescending(x => x.Count()).GroupBy(x => x.Count()).First().Take(1).Select(x => x.Key);
+            var groupedChars = input.GroupBy(x => x);
+            return groupedChars.Aggregate(groupedChars.First(), (greatest, current) =>
+             current.Count() > greatest.Count() ? greatest = current : greatest).Key;
         }
     }
 }
