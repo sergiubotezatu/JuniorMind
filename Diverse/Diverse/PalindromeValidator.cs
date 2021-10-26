@@ -10,23 +10,17 @@ namespace Diverse
         public IEnumerable<string> GetPalindrome(string input)
         {
             int skipped = 0;
-            int selection = 1;
-            while(selection <= input.Length)
-            {
-                while(skipped + selection <= input.Length)
+            int selection = 0;
+            IEnumerable<string> result = new List<string>();
+            while(skipped + selection <= input.Length)
                 {
-                    string result = input.Skip(skipped).Take(selection).ToString();
-                    if (result.Equals(result.Reverse()))
-                    {
-                        yield return result;
-                    }
-
-                    skipped++;
+                    result = input.Select(x => x + input.Skip(skipped++).Take(selection).ToString())
+                    .Where(x => x.Equals(x.Reverse()));                    
+                    skipped = 0;
+                    selection++;
                 }
 
-                skipped = 0;
-                selection++;
-            }
+            return result;
         }
     }
 }
