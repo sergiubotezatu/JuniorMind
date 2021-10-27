@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace Diverse
@@ -9,16 +8,14 @@ namespace Diverse
     {
         public IEnumerable<string> GetPalindrome(string input)
         {
-            int skipped = 0;
-            int selection = 0;
             IEnumerable<string> result = new List<string>();
-            while(skipped + selection <= input.Length)
+            foreach (int selected in Enumerable.Range(0, input.Length - 1))
+            {
                 {
-                    result = input.Select(x => x + input.Skip(skipped++).Take(selection).ToString())
-                    .Where(x => x.Equals(x.Reverse()));                    
-                    skipped = 0;
-                    selection++;
+                    result = input.Select((x, i) => x + input.Skip(i + 1).Take(selected).ToString())
+                    .Where(x => x.Equals(x.Reverse()));
                 }
+            }
 
             return result;
         }
