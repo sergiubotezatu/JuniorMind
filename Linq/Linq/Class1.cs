@@ -62,7 +62,9 @@ namespace Linq
             }
         }
 
-        public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
+        public static IEnumerable<TResult> SelectMany<TSource, TResult>
+            (this IEnumerable<TSource> source, 
+            Func<TSource, IEnumerable<TResult>> selector)
         {
             ThrowIsNull(source, nameof(source));
             ThrowIsNull(selector, nameof(selector));
