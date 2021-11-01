@@ -6,13 +6,16 @@ namespace Diverse
 {
     public class PalindromeValidator
     {
-        public IEnumerable<string> GetPalindrome(string input)
+        int selection = 0;
+        int skips = 0;
+        public IEnumerable<string> GetPalindromes(string input)
         {
-            return Enumerable.Repeat(input, input.Length - 1)
-            .SelectMany((x, i) => x.Select((y, j) => y + input.Skip(j++)
-            .Take(i)
-            .ToString()).
-            Where(partition => partition.Equals(partition.Reverse())));            
-        }
+            return Enumerable.Range(0, 10).Select(selection =>
+            input.Select((x, i) => x + input
+            .Skip(i + 1)
+            .Take(selection).ToString())
+            .Where(partition => partition.Equals(partition.Reverse())))
+            .Cast<string>();             
+        }        
     }
 }

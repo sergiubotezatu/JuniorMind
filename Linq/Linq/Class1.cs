@@ -72,7 +72,7 @@ namespace Linq
             {
                 foreach (TResult item in selector(element))
                 {                         
-                      yield return item;                                       
+                      yield return item;                                
                 }
                 
             }
