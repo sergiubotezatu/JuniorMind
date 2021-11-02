@@ -10,12 +10,10 @@ namespace Diverse
         int skips = 0;
         public IEnumerable<string> GetPalindromes(string input)
         {
-            return Enumerable.Range(0, 10).Select(selection =>
-            input.Select((x, i) => x + input
-            .Skip(i + 1)
-            .Take(selection).ToString())
-            .Where(partition => partition.Equals(partition.Reverse())))
-            .Cast<string>();             
+            return Enumerable.Range(0, 10).Select(count =>
+            input.Select((x, i) => x + input[(i + 1)..count]))
+            .Where(partition => partition.Equals(partition.Reverse()))
+            .Cast<string>();
         }        
     }
 }
