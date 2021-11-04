@@ -13,7 +13,7 @@ namespace Diverse
             int sequenceSum = sequence.Sum();
             if (sequenceSum < k || sequenceSum - k % 2 != 0)
             {
-                return null;
+                return Enumerable.Empty<IEnumerable<int>>();
             }
             
             if (sequenceSum == k)
@@ -22,26 +22,21 @@ namespace Diverse
             }
 
             int tosubstract = sequenceSum - k / 2;
-            return GetPartitionsToNegate(sequence, tosubstract)
-            .Select(x => sequence.Concat(x)
-            .GroupBy(x => x)
-            .Select(x => x.Count() > 1 ? GetNegativeOf(x.Key) : x.Key));     
+            return GetPartitionsToNegate(sequence)
+           .Distinct()
+           .Where(subsequence => subsequence.Sum() <= tosubstract)
+           .Select(x => sequence
+           .Select(initial => x.Contains(initial) ? -initial : initial));
+             
         }
 
-        private int GetNegativeOf(int positive)
-        {
-            return positive - positive * 2;
-        }
-
-        private IEnumerable<IEnumerable<int>> GetPartitionsToNegate(IEnumerable<int> toNegate, int toSubstract)
+        private IEnumerable<IEnumerable<int>> GetPartitionsToNegate(IEnumerable<int> toNegate)
         {
             return toNegate.SelectMany((x, index) =>
             Enumerable.Range(index + 1, toNegate.Count() - 1)
            .SelectMany(i => Enumerable.Range(0, toNegate.Count() - i)
-           .Select(j => new List<int> { x }
-           .Concat(toNegate.Skip(i).Take(j)))))
-           .Distinct()
-           .Where(subsequence => subsequence.Sum() <= toSubstract);
+           .Select(j => new int[] { x }
+           .Concat(toNegate.Skip(i).Take(j)))));
         }        
     }
 }
