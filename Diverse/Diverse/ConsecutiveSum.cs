@@ -40,6 +40,7 @@ namespace Diverse
            .SelectMany(i => Enumerable.Range(0, toNegate.Count() - i)
            .Select(j => new List<int> { x }
            .Concat(toNegate.Skip(i).Take(j)))))
+           .Distinct()
            .Where(subsequence => subsequence.Sum() <= toSubstract);
         }        
     }

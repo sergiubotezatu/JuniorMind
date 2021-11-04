@@ -14,6 +14,7 @@ namespace Diverse
             .SelectMany(i => Enumerable.Range(0, input.Length - i)
             .Select(j => new List<int> { x }
             .Concat(input.Skip(i).Take(j)))))
+            .Distinct()
             .Where(subsequence => subsequence.Sum() <= sum);
         }
     }
