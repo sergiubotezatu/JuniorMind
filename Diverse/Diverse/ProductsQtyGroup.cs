@@ -11,7 +11,7 @@ namespace Diverse
         public int Quantity;
     }
 
-    class ProductsQtySort
+    class ProductsQtyGroup
     {
         public IEnumerable<Product2> SortQuantityBased(List<Product2> first, List<Product2> second)
         {
