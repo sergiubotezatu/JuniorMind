@@ -9,13 +9,11 @@ namespace Diverse
     {
         public IEnumerable<IEnumerable<int>> GetSumPartitions(int[] input, int sum)
         {
-             return input.SelectMany((x, index) =>
-             Enumerable.Range(index + 1, input.Length - 1)
-            .SelectMany(i => Enumerable.Range(0, input.Length - i)
-            .Select(j => new List<int> { x }
-            .Concat(input.Skip(i).Take(j)))))
-            .Distinct()
-            .Where(subsequence => subsequence.Sum() <= sum);
+            return Enumerable.Range(1, input.Length - 1)
+           .SelectMany(i => Enumerable.Range(0, input.Length - i)
+           .Select(j => new List<int> { input[i - 1] }
+           .Concat(input.Skip(i).Take(j))))
+           .Where(subsequence => subsequence.Sum() <= sum);
         }
     }
 }
