@@ -18,7 +18,7 @@ namespace Diverse
         {
             return results.GroupBy(family => family.FamilyId)
                 .Select(x => x
-                .Aggregate(x.First(),(highest, current) => current.Score > highest.Score ? highest = current : highest));
+                .Aggregate(x.First(),(highest, current) => current.Score > highest.Score ? current : highest));
         }
     }
     
