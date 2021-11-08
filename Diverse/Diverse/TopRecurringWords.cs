@@ -7,13 +7,12 @@ namespace Diverse
 {
     class TopRecurringWords
     {
-        public IEnumerable<string> GetMostRecurring(string text)
+        public IEnumerable<(int, string)> GetMostRecurring(string text)
         {
-            char[] notWords = new char[] { ' ', '\n', '\t', '\r', '?', '!', '"','\'', '.', ',', '-', '1', '2','3', '4', '5', '7', '8', '9','0', ')', '(', '\\'};
-            return text.Split(notWords)
+            return text.Split(".,!?:;'".ToCharArray())
                 .GroupBy(word => word)
                 .OrderByDescending(criteria => criteria.Count())
-                .Select((x, i) => $"{i + 1} : {x.Key}");
+                .Select((x, i) => (i + 1, $": {x.Key}"));
         }
     }
 }
