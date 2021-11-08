@@ -16,7 +16,9 @@ namespace Diverse
     {
         public IEnumerable<TestResults> GetHighScores(IEnumerable<TestResults> results)
         {
-            return results.GroupBy(family => family.FamilyId).Select(x => x.OrderByDescending(criteria => criteria.Score).First());
+            return results.GroupBy(family => family.FamilyId)
+                .Select(x => x
+                .Aggregate(x.First(),(highest, current) => current.Score > highest.Score ? highest = current : highest));
         }
     }
     
