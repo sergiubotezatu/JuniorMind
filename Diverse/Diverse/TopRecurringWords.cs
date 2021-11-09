@@ -12,7 +12,8 @@ namespace Diverse
             return text.Split(".,!?:;'".ToCharArray())
                 .GroupBy(word => word)
                 .OrderByDescending(criteria => criteria.Count())
-                .Select((x, i) => (i + 1, $": {x.Key}"));
+                .Select((x, i) => (i + 1, x.Key));
         }
     }
 }
+
