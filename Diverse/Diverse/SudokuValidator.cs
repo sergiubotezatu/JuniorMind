@@ -14,27 +14,16 @@ namespace Diverse
                 return false;
             }
 
-            return ValidateLines(sudoku) && ValidateRows(sudoku) && ValidateSquares(sudoku);
+            return Validate(sudoku);
         }
 
 
-        private bool ValidateLines(int[][] board)
+        private bool Validate(int[][] board)
         {
-            return board.All(line => line.Length == line.Distinct().Count());
-        }
-
-        private bool ValidateRows(int[][] board)
-        {
-            return Enumerable.Range(0, 8)
-                .Select(j => Enumerable.Range(0, 8)
-                .Select(i => board[i][j])
-                .Distinct())
-                .All(rows => rows.Count() == 9);                
-        }
-
-        private bool ValidateSquares(int[][] board)
-        {
-            return GetSquares(board).All(square => square.Distinct().Count() == 9);
+            return GetLines(board)
+                .Concat(GetRows(board)
+                .Concat(GetSquares(board)))
+                .All(sequence => sequence.Count() == 9);
         }
 
         private IEnumerable<IEnumerable<int>> CreateGroups(IEnumerable<IEnumerable<int>> board, int skipped)
@@ -46,6 +35,19 @@ namespace Diverse
         {
             IEnumerable<IEnumerable<int>> sudoku = board;
             return CreateGroups(CreateGroups(sudoku, 3), 9);
+        }
+
+        private IEnumerable<IEnumerable<int>> GetRows(int[][] board)
+        {
+            return Enumerable.Range(0, 8)
+                .Select(j => Enumerable.Range(0, 8)
+                .Select(i => board[i][j])
+                .Distinct());
+        }
+
+        private IEnumerable<IEnumerable<int>> GetLines(int[][] board)
+        {
+            return board.Select(lines => lines.Distinct());
         }
     }
 }
