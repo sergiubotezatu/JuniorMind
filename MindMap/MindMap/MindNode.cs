@@ -2,32 +2,123 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Collections;
 
 namespace MindMap
 {
-    class MindNode
+    class MindNode : IEnumerable<MindNode>
     {
-        string category;
-        IEnumerable<MindNode> hierarchy;
+        public string category;
+        public List<MindNode> hierarchy;
 
-        public MindNode()
+        public MindNode(int ideasCount)
         {
-            category = "[Add Info]";
-            hierarchy = new LinkedList<MindNode>();
+            category = GetNumeralPrefix(ideasCount) + " idea";
+            hierarchy = new List<MindNode>();
         }
 
-        private string Notes { get; set; }
+        public MindNode(string category)
+        {
+            this.category = category;
+            hierarchy = new List<MindNode>();
+        }
 
-        private int BranchCount { get; set; } = 0;
+        public int BranchCount { get; set; } = 0;
+
+        private string Notes { get; set; }        
 
         public void Create(string newCategory)
         {
             category = newCategory;
         }
 
-        public void AddBranch()
+        public void AddBranch(int place)
         {
-            hierarchy.Prepend(new MindNode());
+            hierarchy.Add(new MindNode(place));
+            BranchCount++;
         }
+
+        public void RemoveBranches()
+        {
+            BranchCount = 0;
+            hierarchy.Clear();
+        }
+
+        public void RemoveIdea(string idea)
+        {
+            foreach (MindNode node in this)
+            {
+                if (node.ContainsIdea(idea))
+                {
+                    this.hierarchy = this.hierarchy.Where(x => x.category != idea).ToList();
+                }
+            }
+        }
+
+        public bool ContainsIdea(string idea)
+        {
+            for (int i = 0; i < this.BranchCount; i++)
+            {
+                if (this.hierarchy[i].category == idea)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public MindNode GetLast()
+        {
+            if (hierarchy.Count == 0)
+            {
+                return null;
+            }
+
+            return hierarchy[^1];
+        }
+
+        public IEnumerator<MindNode> GetEnumerator()
+        {
+            foreach(MindNode node in hierarchy)
+            {
+                foreach (MindNode subNode in EnumerateNodes(node))
+                {
+                    yield return subNode;
+                }
+            }            
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        private IEnumerable<MindNode> EnumerateNodes(MindNode node)
+        {
+            yield return node;
+            for (int i = 0; i < node.hierarchy.Count(); i++)
+            {
+                foreach (MindNode subNode in EnumerateNodes(node.hierarchy[i]))
+                {
+                    yield return subNode;
+                }
+            }
+        }
+
+        private string GetNumeralPrefix(int prefix)
+        {
+            switch (prefix)
+            {
+                case 1:
+                    return "1st";
+                case 2:
+                    return "2nd";
+                case 3:
+                    return "3rd";
+            }
+
+            return $"{prefix}th";
+        }        
     }
 }

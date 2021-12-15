@@ -9,8 +9,8 @@ namespace MindMap
     class MainMenu
     {
         private int selected;
-        private string[] options;
-        private string title;
+        private readonly string[] options;
+        private readonly string title;
 
         public MainMenu()
         {
@@ -22,23 +22,24 @@ namespace MindMap
         public void Run()
         {
             ShowMenu();
-            int selection = Select();
-            if (selection == 0)
+            Select();
+            if (selected == 0)
             {
                 PrintInfo();
             }
             
-            if (selection == 2)
+            if (selected == 2)
             {
                 Exit();
             }
 
             Clear();
             MapSource map = new MapSource();
-            map.DisplayMap();
+            MapNavigation mapping = new MapNavigation(map, map.GetMapDisplay(), this);
+            mapping.Run();
         }
 
-        private int Select()
+        private void Select()
         {
             ConsoleKey[] navigations = new ConsoleKey[] { ConsoleKey.UpArrow, ConsoleKey.DownArrow };
             ConsoleKey selection;
@@ -51,9 +52,7 @@ namespace MindMap
                     selected += MoveSelection(selection);
                     ShowMenu();
                 }
-            } while (selection != ConsoleKey.Enter);
-
-            return selected;
+            } while (selection != ConsoleKey.Enter);           
         }
 
         private void ShowMenu()

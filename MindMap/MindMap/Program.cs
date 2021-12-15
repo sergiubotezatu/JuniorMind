@@ -4,7 +4,7 @@ namespace MindMap
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             MainMenu menu = new MainMenu();
             menu.Run();
