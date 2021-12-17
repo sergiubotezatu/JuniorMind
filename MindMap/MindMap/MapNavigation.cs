@@ -8,11 +8,14 @@ namespace MindMap
     class MapNavigation
     {
         private MapSource map;
-        private (string, string)[] display;
+        private (string, string, int)[] display;
         private MainMenu menu;
         private const ConsoleKey Up = ConsoleKey.UpArrow;
         private const ConsoleKey Down = ConsoleKey.DownArrow;
+        private const ConsoleKey Right = ConsoleKey.RightArrow;
+        private const ConsoleKey Left = ConsoleKey.LeftArrow;
         private const ConsoleKey Enter = ConsoleKey.Enter;
+        private const ConsoleKey Tab = ConsoleKey.Tab;
         private const ConsoleKey Rename = ConsoleKey.R;
         private const ConsoleKey Notes = ConsoleKey.N;
         private const ConsoleKey Delete = ConsoleKey.Delete;
@@ -20,7 +23,7 @@ namespace MindMap
 
         private int Selected { get; set; } = 0;
 
-        public MapNavigation(MapSource Map, (string, string)[] Display, MainMenu Menu)
+        public MapNavigation(MapSource Map, (string, string, int)[] Display, MainMenu Menu)
         {
             this.map = Map;
             this.display = Display;
@@ -41,6 +44,9 @@ namespace MindMap
                     case Enter:
                         AddPlaceHolder();
                         break;
+                    case Tab:
+                        AddSibling();
+                        break;
                     case Delete:
                         Remove();
                         break;
@@ -51,15 +57,16 @@ namespace MindMap
 
             GoBack();
         }
-
+        
         public ConsoleKey Navigate()
         {
-            ConsoleKey[] action = new ConsoleKey[] { Enter, Rename, Notes, Delete, Escape };
+            ConsoleKey[] action = new ConsoleKey[] { Enter, Rename, Notes, Delete, Escape, Tab };
+            ConsoleKey[] arrows = { Up, Down, Right, Left };
             ConsoleKey selection;
             do
             {
-                selection = Console.ReadKey().Key;
-                if (selection == Up || selection == Down)
+                selection = Console.ReadKey(true).Key;
+                if (arrows.Contains(selection))
                 {
                     Console.Clear();
                     Selected += MoveSelection(selection);
@@ -73,10 +80,10 @@ namespace MindMap
 
         private void PrintMap()
         {
-            Console.WriteLine("\t\t\tNavigation keys:\n1. \"Up\" and \"Down\" arrows to navigate the map.\n " +
-                "(Selected item is highlighted in white)\n\n2. \"Enter\" Add new empty idea(placeholder)\n\n" +
-                "3. \"R\" - Press R to add/modify the name of any selected idea/placeholder\nOnce renamed, press enter to continue mapping\n\n" +
-                "4. \"Del\" - Delete any selected idea/placeholder.\n\n\n");
+            Console.WriteLine("\t\t\tNavigation keys:\n\n\n" +
+                "1. \"Enter\" - add new empty idea(placeholder) -> use ↑↓ to navigate map | " +
+                "3. \"R\" - (re)name idea (press enter to continue mapping) | \"Tab\" add related idea -> ←→ navigate relatives\n\n\n");
+                
             for (int i = 0; i < display.Length; i++)
             {
                 Console.Write(display[i].Item1);
@@ -85,19 +92,77 @@ namespace MindMap
                     Console.BackgroundColor = ConsoleColor.White;
                     Console.ForegroundColor = ConsoleColor.Black;
                 }
-                Console.Write(display[i].Item2 + '\n');
+                Console.Write((display[i].Item2.Equals(string.Empty) ? " " : display[i].Item2));
                 Console.ResetColor();
+                if (display[i].Item3 == 0)
+                {
+                    Console.Write("\n");
+                }                
+            }
+        }
+
+        private void PrintSiblingsBlock((string, string, int)[] display, int index)
+        {
+            for (int i = index + 1; i <= index + display[index].Item3; i++)
+            {
+                Console.Write(display[i].Item1 + display[i].Item2);
             }
         }
 
         private int MoveSelection(ConsoleKey keyPressed)
         {
-            if (keyPressed == ConsoleKey.UpArrow)
+            int siblingsCount = display[Selected].Item3;
+            bool horizontalMove = siblingsCount > 0 || display[Selected].Item1 == "<->";
+            int horizontalLimit = Selected + siblingsCount;
+            switch (keyPressed)
             {
-                return Selected == 0 ? display.Length - 1 : -1;
+                case Up:
+                    return Selected == 0 ? MoveToEnd(display.Length - 1) : - DecrementSiblings(Selected);
+                    break;
+                case Down:
+                    return Selected == display.Length - siblingsCount - 1 ? -Selected : 1 + siblingsCount;
+                    break;
+                case Right:
+                    return horizontalMove ? MoveRight(horizontalLimit) : 0;
+                    break;
+                case Left:
+                    return horizontalMove ? MoveLeft(horizontalLimit, siblingsCount) : 0;
             }
 
-            return Selected == display.Length - 1 ? -Selected : 1;
+            return 0;
+        }
+
+        private int MoveRight(int limit)
+        {
+            return Selected == limit ? - DecrementSiblings(Selected) : 1;
+        }
+
+        private int MoveLeft(int limit, int siblings)
+        {
+            return display[Selected].Item1 != "<->" ? siblings : -1; 
+        }
+
+        private int MoveToEnd(int currentPos)
+        {
+            while (display[currentPos].Item1 == "<->")
+            {
+                currentPos--;
+            }
+
+            return currentPos;
+        }
+
+        private int DecrementSiblings(int currentPos)
+        {
+            int prev = currentPos - 1;
+            int positions = 1;
+            while(display[prev].Item1 == "<->")
+            {
+                prev--;
+                positions++;
+            }
+
+            return positions;
         }
 
         private void AddPlaceHolder()
@@ -120,16 +185,19 @@ namespace MindMap
         {
             string former = display[Selected].Item2;
             display[Selected].Item2 = "";
-            ConsoleKey renaming = Console.ReadKey().Key;
+            Console.Clear();
+            PrintMap();
+            ConsoleKey renaming = Console.ReadKey(true).Key;
             while (renaming != Enter)
             {
+                string toRename = display[Selected].Item2;
                 switch (renaming)
                 {
                     case ConsoleKey.Spacebar:
                         display[Selected].Item2 += " ";
                         break;
                     case ConsoleKey.Backspace:
-                        display[Selected].Item2 = display[Selected].Item2[0..^1];
+                        display[Selected].Item2 = toRename.Equals(string.Empty) ? toRename : toRename[0..^1];
                         break;
                     default:
                         display[Selected].Item2 += renaming.ToString();
@@ -137,7 +205,7 @@ namespace MindMap
                 }                
                 Console.Clear();
                 PrintMap();
-                renaming = Console.ReadKey().Key;
+                renaming = Console.ReadKey(true).Key;
             }
 
             map.ReplaceIdea(former, display[Selected].Item2);
@@ -172,6 +240,19 @@ namespace MindMap
                 PrintMap();
             }
         }
+
+        private void AddSibling()
+        {
+            if (Selected > 0)
+            {
+                map.AddSibling(display[Selected].Item2);
+            }
+
+            display = map.GetMapDisplay();
+            Console.Clear();
+            PrintMap();
+        }
+
 
         private void GoBack()
         {

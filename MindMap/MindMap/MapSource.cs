@@ -11,15 +11,15 @@ namespace MindMap
     {
         public readonly MindNode map;
         private readonly HashSet<string> values;
-        private (string, string)[] toDisplay;
+        private (string, string, int)[] toDisplay;
         private const string corner = " └─>";
         private const string intersection = " ├─>";
         private const string vertical = " │ ";
-
+        
         public MapSource()
         {
             map = new MindNode("[Source]");
-            toDisplay = new (string, string)[]{("", map.category)};            
+            toDisplay = new (string, string, int)[]{("", map.category, 0)};            
         }
 
         public int Count { get; private set; } = 0;
@@ -42,6 +42,18 @@ namespace MindMap
             }
 
             Count++;
+        }
+
+        public void AddSibling(string idea)
+        {
+            foreach (MindNode node in map)
+            {
+                if ($"[{node.category}]".Equals(idea) || node.siblings.Any(x => $"[{x}]".Equals(idea)))
+                {
+                    node.AddSibling();
+                    break;
+                }
+            }
         }
 
         public void ReplaceIdea(string idea, string newIdea)
@@ -69,9 +81,9 @@ namespace MindMap
             }
         }
 
-        public (string, string)[] GetMapDisplay()
+        public (string, string, int)[] GetMapDisplay()
         {
-            toDisplay = new (string, string)[] { ("", map.category) };
+            toDisplay = new (string, string, int)[] { ("", map.category, 0) };
             List<MindNode> tree = map.hierarchy;
             for (int i = 0; i < tree.Count; i++)
             {
@@ -83,7 +95,7 @@ namespace MindMap
 
         private void TurnToGraphic(MindNode mindNode, bool isLast, string appendix)
         {
-            (string, string) branch = (appendix, "[" + mindNode.category + "]");
+            (string, string, int) branch = (appendix, $"[{mindNode.category}]", mindNode.siblings.Count);
             if (isLast)
             {
                 branch.Item1 += corner;
@@ -97,9 +109,24 @@ namespace MindMap
 
             Array.Resize(ref toDisplay, toDisplay.Length + 1);
             toDisplay[^1] = branch;
+            if (branch.Item3 > 0)
+            {
+                GetSiblingsBlock(mindNode.siblings);
+            }
+
             for (int i = 0; i < mindNode.BranchCount; i++)
             {
                 TurnToGraphic(mindNode.hierarchy[i], i == mindNode.BranchCount - 1, appendix); 
+            }
+        }
+
+        private void GetSiblingsBlock(HashSet<string> block)
+        {
+            int lastSibling = block.Count() - 1;       
+            foreach(string sibling in block)
+            {
+                Array.Resize(ref toDisplay, toDisplay.Length + 1);
+                toDisplay[^1] = ("<->", $"[{sibling}]", lastSibling--);
             }
         }
     }

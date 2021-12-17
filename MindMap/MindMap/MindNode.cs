@@ -9,12 +9,14 @@ namespace MindMap
     class MindNode : IEnumerable<MindNode>
     {
         public string category;
+        public HashSet<string> siblings;
         public List<MindNode> hierarchy;
 
         public MindNode(int ideasCount)
         {
             category = GetNumeralPrefix(ideasCount) + " idea";
             hierarchy = new List<MindNode>();
+            siblings = new HashSet<string>();
         }
 
         public MindNode(string category)
@@ -76,6 +78,11 @@ namespace MindMap
             }
 
             return hierarchy[^1];
+        }
+
+        public void AddSibling()
+        {
+            siblings.Add($"related{siblings.Count + 1}");
         }
 
         public IEnumerator<MindNode> GetEnumerator()
